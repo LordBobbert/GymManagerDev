@@ -24,7 +24,7 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-          pip install -r requirements.txt  # Ensure the requirements.txt path is correct
+          pip install -r backend/requirements.txt  # Ensure the requirements.txt path is correct
 
       # Create a ZIP package of the application for deployment
       - name: Create ZIP package
