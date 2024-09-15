@@ -1,0 +1,12 @@
+django>=5.1.1
+djangorestframework>=3.15
+djangorestframework-simplejwt>=5.3.1
+django-cors-headers>=4.4.0
+watchdog>=5.0.2
+psycopg2-binary
+python-dotenv
+django-filter>=24.3
+django-extensions>=3.2.3
+celery>=5.3
+gunicorn>=23
+django-debug-toolbar

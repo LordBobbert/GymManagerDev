@@ -1,0 +1,32 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "nodemon": "nodemon -L --watch pages --watch components --watch lib --exec 'npm run dev'"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/server": "^11.11.0",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.0",
+    "@mui/material": "^6.1.0",
+    "axios": "^1.7.7",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.11",
+    "nodemon": "latest",
+    "typescript": "^5"
+  }
+}
