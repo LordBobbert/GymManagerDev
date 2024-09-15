@@ -27,7 +27,7 @@ SECRET_KEY=os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [ 'localhost' ]
+ALLOWED_HOSTS = [ 'unifiedgymmanager-auc4gramc0b4fcgb.canadacentral-01.azurewebsites.net' ]
 
 
 # Application definition
@@ -129,6 +129,12 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',  # Frontend URL
 ]
 
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+SECURE_SSL_REDIRECT = True
+
+
 # Trusted Origins for CSRF
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
@@ -170,7 +176,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
