@@ -1,13 +1,15 @@
+// src/components/dashboard/ClientList.tsx
+
 import React from 'react';
 import { List, ListItem, ListItemText } from '@mui/material';
 import { Client } from '../../../interfaces/client';
 
 interface ClientListProps {
-    clients: Client[]; // List of clients to display
-    onSelectClient: (client: Client) => void; // Callback when a client is selected
+    clients: Client[]; // Expecting clients to be an array
+    onSelectClient: (client: Client) => void;
 }
 
-const ClientList: React.FC<ClientListProps> = ({ clients, onSelectClient }) => {
+const ClientList: React.FC<ClientListProps> = ({ clients = [], onSelectClient }) => { // Default clients to an empty array
     return (
         <List>
             {clients.map((client) => (

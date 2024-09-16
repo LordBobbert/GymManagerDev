@@ -6,31 +6,15 @@ import ClientList from './ClientList';
 import ClientProfile from './ClientProfile';
 import AddClientForm from './AddClientForm';
 import { Client } from '../../../interfaces/client';
-import { fetchClients } from '../../../api/clientApi'; // Import the API function
 
 interface ClientsPageProps {
-    clients?: Client[]; // Make the clients prop optional
+    clients: Client[];
 }
 
-const ClientsPage: React.FC<ClientsPageProps> = ({ clients: initialClients = [] }) => {
-    const [clients, setClients] = useState<Client[]>(initialClients); // Use initialClients as the initial state
+const ClientsPage: React.FC<ClientsPageProps> = ({ clients: initialClients }) => {
+    const [clients, setClients] = useState<Client[]>(initialClients); // Use initialClients for SSR
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
     const [showAddClientForm, setShowAddClientForm] = useState(false);
-
-    useEffect(() => {
-        // Only fetch clients if initialClients is empty
-        if (initialClients.length === 0) {
-            const loadClients = async () => {
-                try {
-                    const clientsData = await fetchClients(); // Use the fetchClients function from clientApi.ts
-                    setClients(clientsData);
-                } catch (error) {
-                    console.error('Error fetching clients', error);
-                }
-            };
-            loadClients();
-        }
-    }, [initialClients]);
 
     // Handler to toggle the add client form visibility
     const handleAddClientClick = () => {
@@ -38,14 +22,21 @@ const ClientsPage: React.FC<ClientsPageProps> = ({ clients: initialClients = [] 
         setSelectedClient(null); // Clear selected client when showing the add client form
     };
 
+    // Handler when a client is selected
     const handleSelectClient = (client: Client) => {
         setSelectedClient(client);
         setShowAddClientForm(false); // Hide add form when selecting a client
     };
 
-    // Handler to update the client in the list after editing
+    // Handler to update client list when a new client is added
+    const handleClientAdded = (newClient: Client) => {
+        setClients((prevClients) => [...prevClients, newClient]); // Add the new client to the list
+        setShowAddClientForm(false); // Hide the add client form
+    };
+
+    // Handler to update client list when a client is edited
     const updateClientList = (updatedClient: Client) => {
-        setClients((prevClients) => 
+        setClients((prevClients) =>
             prevClients.map((client) =>
                 client.id === updatedClient.id ? updatedClient : client
             )
@@ -73,10 +64,10 @@ const ClientsPage: React.FC<ClientsPageProps> = ({ clients: initialClients = [] 
                     />
                 </Grid>
 
-                {/* Right side: Client Profile (75%) */}
+                {/* Right side: Client Profile or Add Client Form (75%) */}
                 <Grid item xs={9}>
                     {showAddClientForm ? (
-                        <AddClientForm onClientAdded={() => setShowAddClientForm(false)} />
+                        <AddClientForm onClientAdded={handleClientAdded} />
                     ) : (
                         <ClientProfile client={selectedClient} onClientUpdated={updateClientList} />
                     )}
