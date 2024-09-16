@@ -127,7 +127,7 @@ SECURE_COOKIES=True
 # CORS configuration
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',  # Frontend URL
+    'https://calm-tree-0e675c90f.5.azurestaticapps.net',  # Frontend URL
 ]
 
 CSRF_COOKIE_SECURE = True
@@ -138,8 +138,7 @@ SECURE_SSL_REDIRECT = True
 
 # Trusted Origins for CSRF
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',
-    'https://localhost:3000',
+    'https://calm-tree-0e675c90f.5.azurestaticapps.net',
 ]
 
 
