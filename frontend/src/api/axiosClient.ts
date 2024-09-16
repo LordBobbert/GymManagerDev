@@ -15,13 +15,13 @@ const axiosClient = axios.create({
 });
 
 // Interceptor to adjust the baseURL for certain routes
-axiosClient.interceptors.request.use((config) => {
+// axiosClient.interceptors.request.use((config) => {
     // If the request URL starts with '/auth', change the baseURL to omit the '/api' prefix
-    if (config.url && config.url.startsWith('/auth')) {
-        config.baseURL = (process.env.NEXT_PUBLIC_API_BASE_URL as string).replace('/api', '');
-    }
-    return config;
-});
+    // if (config.url && config.url.startsWith('/auth')) {
+        // config.baseURL = (process.env.NEXT_PUBLIC_API_BASE_URL as string).replace('/api', '');
+    //}
+    // return config;
+// });
 
 // Include CSRF token from the cookie in headers
 axiosClient.interceptors.request.use((config) => {
