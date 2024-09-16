@@ -1,4 +1,4 @@
-// src/components/ClientProfile.tsx
+// src/pages/admin/clients/ClientProfile.tsx
 
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Grid, TextField, Typography } from '@mui/material';
@@ -42,66 +42,73 @@ const ClientProfile: React.FC<ClientProfileProps> = ({ client }) => {
     const handleSave = async () => {
         try {
             if (formData && formData.id) {
-                // Prepare updatedData by finding differences between original client data and the modified formData
-                const updatedData: any = {}; // Start with an empty object
-
-                // Check for changes in user data and include them in the updatedData object
+                const updatedData: Partial<Client> = {}; // Use Partial<Client> to allow for partial updates
+    
+                // Ensure that `updatedData.user` is initialized properly as a Partial<User>
+                updatedData.user = updatedData.user || {
+                    id: formData.user.id ?? 0, // Set a default value for `id` if it's undefined
+                    username: formData.user.username, // Set default values for initial user data
+                    email: formData.user.email,
+                    first_name: formData.user.first_name,
+                    last_name: formData.user.last_name,
+                    phone_number: formData.user.phone_number,
+                    gender: formData.user.gender,
+                    birthday: formData.user.birthday,
+                    role: formData.user.role, // Include the `role` property
+                };
+    
+                // Construct the updatedData object with the changes
                 if (client?.user?.username !== formData.user.username) {
-                    updatedData.user = updatedData.user || {};
                     updatedData.user.username = formData.user.username;
                 }
-
                 if (client?.user?.email !== formData.user.email) {
-                    updatedData.user = updatedData.user || {};
                     updatedData.user.email = formData.user.email;
                 }
-
                 if (client?.user?.first_name !== formData.user.first_name) {
-                    updatedData.user = updatedData.user || {};
                     updatedData.user.first_name = formData.user.first_name;
                 }
-
                 if (client?.user?.last_name !== formData.user.last_name) {
-                    updatedData.user = updatedData.user || {};
                     updatedData.user.last_name = formData.user.last_name;
                 }
-
-                // Check for changes in client profile data
+                if (client?.user?.phone_number !== formData.user.phone_number) {
+                    updatedData.user.phone_number = formData.user.phone_number;
+                }
+                if (client?.user?.gender !== formData.user.gender) {
+                    updatedData.user.gender = formData.user.gender;
+                }
+                if (client?.user?.birthday !== formData.user.birthday) {
+                    updatedData.user.birthday = formData.user.birthday;
+                }
+                if (client?.user?.role !== formData.user.role) { // Check and update `role`
+                    updatedData.user.role = formData.user.role;
+                }
+    
+                // Client-specific fields
                 if (client?.training_status !== formData.training_status) {
                     updatedData.training_status = formData.training_status;
                 }
-
                 if (client?.personal_training_rate !== formData.personal_training_rate) {
                     updatedData.personal_training_rate = formData.personal_training_rate;
                 }
-
                 if (client?.rate_type !== formData.rate_type) {
                     updatedData.rate_type = formData.rate_type;
                 }
-
                 if (client?.emergency_contact_name !== formData.emergency_contact_name) {
                     updatedData.emergency_contact_name = formData.emergency_contact_name;
                 }
-
                 if (client?.emergency_contact_phone !== formData.emergency_contact_phone) {
                     updatedData.emergency_contact_phone = formData.emergency_contact_phone;
                 }
-
-                // Check if trainer has changed
-                if (client?.trainer?.id !== formData.trainer?.id) {
-                    updatedData.trainer_id = formData.trainer?.id;
-                }
-
+    
                 // Only make the API call if there are changes
                 if (Object.keys(updatedData).length > 0) {
                     const url = `/api/clients/${formData.id}/`;
-
+    
                     // Use PATCH method for partial updates
-                    const response = await axiosClient.patch(url, updatedData); // Change here to PATCH
-                    setFormData(response.data); // Update formData with the latest server data
+                    const response = await axiosClient.patch(url, updatedData);
+                    setFormData(response.data);
                     setEditMode(false);
                 } else {
-                    // No changes detected, just exit edit mode
                     setEditMode(false);
                 }
             }
@@ -156,8 +163,6 @@ const ClientProfile: React.FC<ClientProfileProps> = ({ client }) => {
                                 value={formData?.user?.email || ''}
                                 onChange={handleChange}
                                 fullWidth
-                                error={!!errors.email}
-                                helperText={errors.email}
                             />
                         </Grid>
                         <Grid item xs={6}>
@@ -167,8 +172,6 @@ const ClientProfile: React.FC<ClientProfileProps> = ({ client }) => {
                                 value={formData?.user?.username || ''}
                                 onChange={handleChange}
                                 fullWidth
-                                error={!!errors.username}
-                                helperText={errors.username}
                             />
                         </Grid>
                         <Grid item xs={6}>

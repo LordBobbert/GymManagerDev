@@ -9,3 +9,7 @@ export interface Trainer {
     monthly_rate: '200' | '250' | '1000';  // Using ENUM values from MONTHLY_RATE_CHOICES
     rent_rate_per_session: '15' | '20';  // Using ENUM values from GYM_SESSION_RATE_CHOICES
 }
+
+export interface TrainerProfileProps {
+    trainer: Trainer | null; // Allow null values for the client
+}

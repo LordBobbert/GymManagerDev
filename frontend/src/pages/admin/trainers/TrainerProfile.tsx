@@ -1,13 +1,10 @@
-// src/components/TrainerProfile.tsx
+// src/pages/admin/trainers/TrainerProfile.tsx
 
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Grid, TextField, Typography } from '@mui/material';
-import { Trainer } from '../../../interfaces/trainer';
+import { Trainer, TrainerProfileProps } from '../../../interfaces/trainer';
 import axiosClient from '../../../api/axiosClient';
-
-interface TrainerProfileProps {
-    trainer: Trainer | null;
-}
+import { User } from '../../../interfaces/user'; // Import the User interface
 
 const TrainerProfile: React.FC<TrainerProfileProps> = ({ trainer }) => {
     const [editMode, setEditMode] = useState(false);
@@ -43,69 +40,93 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ trainer }) => {
         });
     };
 
-    const handleSave = async () => {
-        try {
-            if (formData && formData.id) {
-                const updatedData: any = {}; // Start with an empty object
+    // Inside your component or function
+// ... other imports and code ...
 
-                // Check for changes in user data and include them in the updatedData object
-                if (trainer?.user?.username !== formData.user.username) {
-                    updatedData.user = updatedData.user || {};
-                    updatedData.user.username = formData.user.username;
-                }
+// Inside your component or function
+const handleSave = async () => {
+    try {
+        if (formData && formData.id) {
+            // Prepare updatedData by finding differences between original trainer data and the modified formData
+            const updatedData: Partial<Trainer> = {}; // Use Partial<Trainer> to allow for partial updates
 
-                if (trainer?.user?.email !== formData.user.email) {
-                    updatedData.user = updatedData.user || {};
-                    updatedData.user.email = formData.user.email;
-                }
+            // Ensure that `updatedData.user` is initialized as an object of type Partial<User> before accessing its properties
+            updatedData.user = updatedData.user || {
+                id: formData.user.id ?? 0, // Provide a default value (0) if `id` is undefined
+                username: formData.user.username, // Assuming `formData.user.username` is available
+                email: formData.user.email,       // Assuming `formData.user.email` is available
+                first_name: formData.user.first_name, // Assuming `formData.user.first_name` is available
+                last_name: formData.user.last_name,   // Assuming `formData.user.last_name` is available
+                role: formData.user.role // Assuming `formData.user.role` is available
+            };
 
-                if (trainer?.user?.first_name !== formData.user.first_name) {
-                    updatedData.user = updatedData.user || {};
-                    updatedData.user.first_name = formData.user.first_name;
-                }
-
-                if (trainer?.user?.last_name !== formData.user.last_name) {
-                    updatedData.user = updatedData.user || {};
-                    updatedData.user.last_name = formData.user.last_name;
-                }
-
-                // Check for changes in trainer profile data
-                if (trainer?.status !== formData.status) {
-                    updatedData.status = formData.status;
-                }
-
-                if (trainer?.monthly_rate !== formData.monthly_rate) {
-                    updatedData.monthly_rate = formData.monthly_rate;
-                }
-
-                if (trainer?.rent_rate_per_session !== formData.rent_rate_per_session) {
-                    updatedData.rent_rate_per_session = formData.rent_rate_per_session;
-                }
-
-                // Only make the API call if there are changes
-                if (Object.keys(updatedData).length > 0) {
-                    const url = `/api/trainers/${formData.id}/`;
-
-                    // Use PATCH method for partial updates
-                    const response = await axiosClient.patch(url, updatedData);
-                    setFormData(response.data); // Update formData with the latest server data
-                    setEditMode(false);
-                } else {
-                    // No changes detected, just exit edit mode
-                    setEditMode(false);
-                }
+            // Check for changes in user data and include them in the updatedData object
+            if (trainer?.user?.username !== formData.user.username) {
+                updatedData.user.username = formData.user.username;
             }
-        } catch (error: any) {
-            if (error.response) {
-                console.error('Server responded with an error:', error.response.data);
-                setErrors(error.response.data);
-            } else if (error.request) {
-                console.error('No response received:', error.request);
+
+            if (trainer?.user?.email !== formData.user.email) {
+                updatedData.user.email = formData.user.email;
+            }
+
+            if (trainer?.user?.first_name !== formData.user.first_name) {
+                updatedData.user.first_name = formData.user.first_name;
+            }
+
+            if (trainer?.user?.last_name !== formData.user.last_name) {
+                updatedData.user.last_name = formData.user.last_name;
+            }
+
+            // Only set `id` if it actually exists in `formData.user`
+            if (formData.user.id !== undefined) {
+                updatedData.user.id = formData.user.id;
+            }
+
+            // Check for changes in other trainer-specific profile data
+            if (trainer?.status !== formData.status) {
+                updatedData.status = formData.status;
+            }
+
+            if (trainer?.monthly_rate !== formData.monthly_rate) {
+                updatedData.monthly_rate = formData.monthly_rate;
+            }
+
+            if (trainer?.rent_rate_per_session !== formData.rent_rate_per_session) {
+                updatedData.rent_rate_per_session = formData.rent_rate_per_session;
+            }
+
+            // Check if changes exist before making the API call
+            if (Object.keys(updatedData).length > 0) {
+                const url = `/api/trainers/${formData.id}/`;
+
+                // Use PATCH method for partial updates
+                const response = await axiosClient.patch(url, updatedData); // Change here to PATCH
+                setFormData(response.data); // Update formData with the latest server data
+                setEditMode(false);
             } else {
-                console.error('Error:', error.message);
+                // No changes detected, just exit edit mode
+                setEditMode(false);
             }
         }
-    };
+    } catch (error: any) {
+        if (error.response) {
+            console.error('Server responded with an error:', error.response.data);
+            setErrors(error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Error:', error.message);
+        }
+    }
+};
+
+
+
+
+
+// ... rest of the file ...
+
+
 
     // Populate formData with selected trainer data
     useEffect(() => {
@@ -146,8 +167,6 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ trainer }) => {
                                 value={formData?.user?.email || ''}
                                 onChange={handleChange}
                                 fullWidth
-                                error={!!errors.email}
-                                helperText={errors.email}
                             />
                         </Grid>
                         <Grid item xs={6}>
@@ -157,8 +176,33 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ trainer }) => {
                                 value={formData?.user?.username || ''}
                                 onChange={handleChange}
                                 fullWidth
-                                error={!!errors.username}
-                                helperText={errors.username}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                label="Phone Number"
+                                name="phone_number"
+                                value={formData?.user?.phone_number || ''}
+                                onChange={handleChange}
+                                fullWidth
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                label="Gender"
+                                name="gender"
+                                value={formData?.user?.gender || ''}
+                                onChange={handleChange}
+                                fullWidth
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                label="Birthday"
+                                name="birthday"
+                                value={formData?.user?.birthday || ''}
+                                onChange={handleChange}
+                                fullWidth
                             />
                         </Grid>
 
@@ -169,15 +213,8 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ trainer }) => {
                                 name="status"
                                 value={formData?.status || ''}
                                 onChange={handleChange}
-                                select
                                 fullWidth
-                            >
-                                <option value="sub_part_time">Sub Part Time</option>
-                                <option value="sub_full_time">Sub Full Time</option>
-                                <option value="emp_part_time">Emp Part Time</option>
-                                <option value="emp_full_time">Emp Full Time</option>
-                                <option value="inactive">Inactive</option>
-                            </TextField>
+                            />
                         </Grid>
                         <Grid item xs={6}>
                             <TextField
@@ -219,6 +256,21 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ trainer }) => {
                         <Grid item xs={6}>
                             <Typography variant="body1">
                                 <strong>Username:</strong> {formData?.user?.username}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="body1">
+                                <strong>Phone Number:</strong> {formData?.user?.phone_number}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="body1">
+                                <strong>Gender:</strong> {formData?.user?.gender}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="body1">
+                                <strong>Birthday:</strong> {formData?.user?.birthday}
                             </Typography>
                         </Grid>
 

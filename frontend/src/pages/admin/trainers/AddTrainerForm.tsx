@@ -16,8 +16,8 @@ const AddTrainerForm: React.FC<AddTrainerFormProps> = ({ onTrainerAdded }) => {
         firstName: '',
         lastName: '',
         status: 'sub_part_time',
-        monthlyRate: '',
-        rentRatePerSession: '',
+        monthly_rate: '',
+        rent_rate_per_session: '',
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,8 +40,8 @@ const AddTrainerForm: React.FC<AddTrainerFormProps> = ({ onTrainerAdded }) => {
                     last_name: formData.lastName,
                 },
                 status: formData.status,
-                monthlyRate: formData.monthlyRate,
-                rentRatePerSession: formData.rentRatePerSession,
+                monthly_rate: formData.monthly_rate,
+                rent_rate_per_session: formData.rent_rate_per_session,
             };
 
             await axiosClient.post<Trainer>('/api/trainers/', requestData);
@@ -107,16 +107,16 @@ const AddTrainerForm: React.FC<AddTrainerFormProps> = ({ onTrainerAdded }) => {
                 </TextField>
                 <TextField
                     label="Monthly Rate"
-                    name="monthlyRate"
-                    value={formData.monthlyRate}
+                    name="monthly_rate"
+                    value={formData.monthly_rate}
                     onChange={handleChange}
                     fullWidth
                     margin="normal"
                 />
                 <TextField
                     label="Rent Rate Per Session"
-                    name="rentRatePerSession"
-                    value={formData.rentRatePerSession}
+                    name="rent_rate_per_session"
+                    value={formData.rent_rate_per_session}
                     onChange={handleChange}
                     fullWidth
                     margin="normal"

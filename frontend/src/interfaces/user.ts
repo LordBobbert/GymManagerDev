@@ -9,3 +9,8 @@ export interface User {
     birthday?: string; // Optional
     role: 'client' | 'trainer' | 'admin';
 }
+
+
+export interface UserProfileProps {
+    user: User | null; // Allow null values for the client
+}
