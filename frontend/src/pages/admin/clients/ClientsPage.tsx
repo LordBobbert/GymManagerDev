@@ -1,6 +1,6 @@
 // src/pages/admin/clients/ClientsPage.tsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Grid, Typography, Button } from '@mui/material';
 import ClientList from './ClientList';
 import ClientProfile from './ClientProfile';
