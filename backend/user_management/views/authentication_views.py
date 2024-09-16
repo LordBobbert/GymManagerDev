@@ -97,3 +97,11 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
+
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]  # Ensure the user is authenticated
+
+    def get(self, request):
+        # Serialize the current user and return the data
+        user_serializer = UserSerializer(request.user)
+        return Response(user_serializer.data)

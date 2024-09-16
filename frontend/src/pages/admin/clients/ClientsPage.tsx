@@ -1,12 +1,10 @@
-// src/pages/admin/clients/ClientsPage.tsx
-
 import React, { useState, useEffect } from 'react';
 import { Box, Grid, Typography, Button } from '@mui/material';
 import ClientList from './ClientList';
 import ClientProfile from './ClientProfile';
 import AddClientForm from './AddClientForm';
 import { Client } from '../../../interfaces/client';
-import axiosClient from '../../../api/axiosClient';
+import { fetchClients } from '../../../api/clientApi'; // Import the API function
 
 const ClientsPage: React.FC = () => {
     const [clients, setClients] = useState<Client[]>([]);
@@ -14,20 +12,17 @@ const ClientsPage: React.FC = () => {
     const [showAddClientForm, setShowAddClientForm] = useState(false);
 
     useEffect(() => {
-        const fetchClients = async () => {
+        const loadClients = async () => {
             try {
-                const response = await axiosClient.get<Client[]>('/api/clients/', {
-                    withCredentials: true, // Explicitly include cookies in this request
-                });
-                setClients(response.data);
+                const clientsData = await fetchClients(); // Use the fetchClients function from clientApi.ts
+                setClients(clientsData);
             } catch (error) {
                 console.error('Error fetching clients', error);
             }
         };
-    
-        fetchClients();
+
+        loadClients();
     }, []);
-    
 
     // Handler to toggle the add client form visibility
     const handleAddClientClick = () => {

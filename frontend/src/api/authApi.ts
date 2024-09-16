@@ -15,3 +15,9 @@ export const logout = async () => {
 };
 
 // Add more authentication-related API calls as needed
+export const fetchCurrentUser = async () => {
+    const response = await axiosClient.get('/api/auth/current_user/', {
+        withCredentials: true, // Include cookies in the request
+    });
+    return response.data;
+};
