@@ -10,8 +10,8 @@ const getCookie = (name: string) => {
 
 // Create an Axios instance
 const axiosClient = axios.create({
-    baseURL: 'http://localhost:8000', // Your backend API base URL
-    withCredentials: true, // Important to include cookies in requests
+    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
+        withCredentials: true, // Important to include cookies in requests
 });
 
 // Include CSRF token from the cookie in headers
