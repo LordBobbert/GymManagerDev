@@ -10,7 +10,7 @@ const getCookie = (name: string) => {
 
 // Create an Axios instance
 const axiosClient = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
+    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
         withCredentials: true, // Important to include cookies in requests
 });
 
