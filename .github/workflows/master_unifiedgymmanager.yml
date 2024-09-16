@@ -30,7 +30,8 @@ jobs:
       - name: Create ZIP package
         run: |
           cp backend/requirements.txt ./  # Copy requirements.txt to the root
-          zip -r app.zip . -x "*.git*" -x "*venv*"
+          zip -r ../app.zip . -x "*.git*" -x "*venv*"
+          cd ..
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v3
