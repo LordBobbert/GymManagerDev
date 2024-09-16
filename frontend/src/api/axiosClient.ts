@@ -13,6 +13,8 @@ const axiosClient = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_BASE_URL, // Your backend API base URL
         withCredentials: true, // Important to include cookies in requests
 });
+console.log('Base URL:', process.env.NEXT_PUBLIC_API_BASE_URL);
+
 
 // Interceptor to adjust the baseURL for certain routes
 // axiosClient.interceptors.request.use((config) => {
