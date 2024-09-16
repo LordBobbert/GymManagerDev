@@ -129,6 +129,9 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     'https://calm-tree-0e675c90f.5.azurestaticapps.net',  # Frontend URL
 ]
+CORS_ORIGIN_WHITELIST = [
+    'https://calm-tree-0e675c90f.5.azurestaticapps.net',  # Add your frontend URL
+]
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True

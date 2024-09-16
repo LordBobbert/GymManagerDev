@@ -45,10 +45,16 @@ class LoginView(APIView):
             # Optionally include the CSRF token in the response if needed
             response['X-CSRFToken'] = get_token(request)
 
+            # Debugging information (Remove in production)
+            print(f"User {user.username} logged in. Roles: {user_roles}")
+            print(f"Access Token: {refresh.access_token}")
+            print(f"Refresh Token: {refresh}")
+
             return response
 
         # If authentication fails, return an error response
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 class CookieTokenRefreshView(TokenRefreshView):
