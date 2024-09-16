@@ -3,10 +3,14 @@ import axiosClient from './axiosClient';
 import { Client } from '../interfaces/client';
 
 // Fetch the list of clients
-export const fetchClients = async (): Promise<Client[]> => {
-    const response = await axiosClient.get<Client[]>('/api/clients/');
+export const fetchClients = async (cookie?: string): Promise<Client[]> => {
+    const response = await axiosClient.get<Client[]>('/api/clients/', {
+        withCredentials: true, // Include cookies in the request
+        headers: cookie ? { Cookie: cookie } : {}, // Pass cookies for SSR
+    });
     return response.data;
 };
+
 
 // Fetch a specific client
 export const fetchClientById = async (clientId: number): Promise<Client> => {

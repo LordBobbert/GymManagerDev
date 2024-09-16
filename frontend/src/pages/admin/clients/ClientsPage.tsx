@@ -1,3 +1,5 @@
+// src/pages/admin/clients/ClientsPage.tsx
+
 import React, { useState, useEffect } from 'react';
 import { Box, Grid, Typography, Button } from '@mui/material';
 import ClientList from './ClientList';
@@ -6,23 +8,29 @@ import AddClientForm from './AddClientForm';
 import { Client } from '../../../interfaces/client';
 import { fetchClients } from '../../../api/clientApi'; // Import the API function
 
-const ClientsPage: React.FC = () => {
-    const [clients, setClients] = useState<Client[]>([]);
+interface ClientsPageProps {
+    clients?: Client[]; // Make the clients prop optional
+}
+
+const ClientsPage: React.FC<ClientsPageProps> = ({ clients: initialClients = [] }) => {
+    const [clients, setClients] = useState<Client[]>(initialClients); // Use initialClients as the initial state
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
     const [showAddClientForm, setShowAddClientForm] = useState(false);
 
     useEffect(() => {
-        const loadClients = async () => {
-            try {
-                const clientsData = await fetchClients(); // Use the fetchClients function from clientApi.ts
-                setClients(clientsData);
-            } catch (error) {
-                console.error('Error fetching clients', error);
-            }
-        };
-
-        loadClients();
-    }, []);
+        // Only fetch clients if initialClients is empty
+        if (initialClients.length === 0) {
+            const loadClients = async () => {
+                try {
+                    const clientsData = await fetchClients(); // Use the fetchClients function from clientApi.ts
+                    setClients(clientsData);
+                } catch (error) {
+                    console.error('Error fetching clients', error);
+                }
+            };
+            loadClients();
+        }
+    }, [initialClients]);
 
     // Handler to toggle the add client form visibility
     const handleAddClientClick = () => {
@@ -33,6 +41,15 @@ const ClientsPage: React.FC = () => {
     const handleSelectClient = (client: Client) => {
         setSelectedClient(client);
         setShowAddClientForm(false); // Hide add form when selecting a client
+    };
+
+    // Handler to update the client in the list after editing
+    const updateClientList = (updatedClient: Client) => {
+        setClients((prevClients) => 
+            prevClients.map((client) =>
+                client.id === updatedClient.id ? updatedClient : client
+            )
+        );
     };
 
     return (
@@ -61,7 +78,7 @@ const ClientsPage: React.FC = () => {
                     {showAddClientForm ? (
                         <AddClientForm onClientAdded={() => setShowAddClientForm(false)} />
                     ) : (
-                        <ClientProfile client={selectedClient} />
+                        <ClientProfile client={selectedClient} onClientUpdated={updateClientList} />
                     )}
                 </Grid>
             </Grid>

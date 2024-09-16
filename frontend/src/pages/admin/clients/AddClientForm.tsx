@@ -4,11 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, TextField, Typography, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import axiosClient from '../../../api/axiosClient';
 import { Client } from '../../../interfaces/client';
-import { SelectChangeEvent } from '@mui/material'; // Import this at the top
-
+import { SelectChangeEvent } from '@mui/material';
 
 interface AddClientFormProps {
-    onClientAdded: () => void; // Callback to call when a client is added
+    onClientAdded: (newClient: Client) => void; // Callback to call when a client is added
 }
 
 const AddClientForm: React.FC<AddClientFormProps> = ({ onClientAdded }) => {
@@ -24,7 +23,7 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ onClientAdded }) => {
         trainingStatus: 'active',
         personalTrainingRate: '',
         rateType: 'one_on_one',
-        trainer: '', // Use ID or username depending on your backend requirement
+        trainer: '', // Store trainer ID here
         emergencyContactName: '',
         emergencyContactPhone: '',
     });
@@ -72,13 +71,13 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ onClientAdded }) => {
                 training_status: formData.trainingStatus,
                 personal_training_rate: formData.personalTrainingRate,
                 rate_type: formData.rateType,
-                trainer: formData.trainer,
+                trainer: formData.trainer ? parseInt(formData.trainer) : null, // Use the trainer ID here
                 emergency_contact_name: formData.emergencyContactName,
                 emergency_contact_phone: formData.emergencyContactPhone,
             };
 
-            await axiosClient.post<Client>('/api/clients/', requestData);
-            onClientAdded(); // Call the callback to update the client list
+            const response = await axiosClient.post<Client>('/api/clients/', requestData);
+            onClientAdded(response.data); // Call the callback to update the client list
         } catch (error) {
             console.error('Error adding client', error);
         }
@@ -200,7 +199,7 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ onClientAdded }) => {
                     >
                         <MenuItem value=""><em>None</em></MenuItem>
                         {trainers.map((trainer) => (
-                            <MenuItem key={trainer.id} value={trainer.username}> {/* Ensure the value matches what the backend expects */}
+                            <MenuItem key={trainer.id} value={trainer.id.toString()}> {/* Use the trainer ID */}
                                 {trainer.first_name} {trainer.last_name}
                             </MenuItem>
                         ))}

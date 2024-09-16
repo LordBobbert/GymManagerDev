@@ -16,7 +16,7 @@ export interface Client {
 
 // src/interfaces/client.ts
 
-// Define the ClientProfileProps interface
 export interface ClientProfileProps {
     client: Client | null; // Allow null values for the client
+    onClientUpdated: (updatedClient: Client) => void; // Add this line
 }
