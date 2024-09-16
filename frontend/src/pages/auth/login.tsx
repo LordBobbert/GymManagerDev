@@ -17,7 +17,7 @@ const LoginPage = () => {
 
     const handleLogin = async () => {
         try {
-            const response = await axiosClient.post('/api/auth/login/', {
+            const response = await axiosClient.post('/auth/login/', {
                 username,
                 password,
             });
