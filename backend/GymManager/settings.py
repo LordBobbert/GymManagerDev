@@ -27,7 +27,7 @@ SECRET_KEY=os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['unifiedgymmanager-auc4gramc0b4fcgb.canadacentral-01.azurewebsites.net', 'localhost']
+ALLOWED_HOSTS = ['unifiedgymmanager-auc4gramc0b4fcgb.canadacentral-01.azurewebsites.net']
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
