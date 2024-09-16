@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import theme from '../theme';
-import axiosClient from '../api/axiosClient'; // Import the axiosClient for global config
 import { fetchCurrentUser } from '../api/authApi'; // Import a function to fetch the current user
 
 function MyApp({ Component, pageProps }: AppProps) {
