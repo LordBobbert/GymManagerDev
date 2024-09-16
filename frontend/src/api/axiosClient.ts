@@ -9,6 +9,7 @@ const getCookie = (name: string) => {
 };
 
 // Create an Axios instance
+console.log("Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
 const axiosClient = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_BASE_URL, // Your backend API base URL
         withCredentials: true, // Important to include cookies in requests
