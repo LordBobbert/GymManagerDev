@@ -12,7 +12,10 @@ const getCookie = (name: string) => {
 console.log("Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
 const axiosClient = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_BASE_URL, // Your backend API base URL
-        withCredentials: true, // Important to include cookies in requests
+    withCredentials: true, // Set globally to include cookies in all requests
+    headers: {
+        'Content-Type': 'application/json',
+    },
 });
 console.log('Base URL:', process.env.NEXT_PUBLIC_API_BASE_URL);
 
