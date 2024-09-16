@@ -29,9 +29,12 @@ jobs:
       # Create a ZIP package of the application for deployment
       - name: Create ZIP package
         run: |
-          cp backend/requirements.txt ./  # Copy requirements.txt to the root
-          zip -r ../app.zip . -x "*.git*" -x "*venv*"
-          cd ..
+          cd backend  # Navigate into the backend directory
+          zip -r ../app.zip . -x "*.git*" -x "*venv*"  # Create app.zip at the root
+          
+      # Debugging step to check if app.zip is present
+      - name: List files for debugging
+        run: ls -la
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v3
