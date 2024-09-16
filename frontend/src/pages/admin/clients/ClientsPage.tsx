@@ -16,15 +16,18 @@ const ClientsPage: React.FC = () => {
     useEffect(() => {
         const fetchClients = async () => {
             try {
-                const response = await axiosClient.get<Client[]>('/api/clients/');
+                const response = await axiosClient.get<Client[]>('/api/clients/', {
+                    withCredentials: true, // Explicitly include cookies in this request
+                });
                 setClients(response.data);
             } catch (error) {
                 console.error('Error fetching clients', error);
             }
         };
-
+    
         fetchClients();
     }, []);
+    
 
     // Handler to toggle the add client form visibility
     const handleAddClientClick = () => {
