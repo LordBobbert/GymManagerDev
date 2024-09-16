@@ -8,7 +8,6 @@ import axiosClient from '../../../api/axiosClient';
 const ClientProfile: React.FC<ClientProfileProps> = ({ client }) => {
     const [editMode, setEditMode] = useState(false);
     const [formData, setFormData] = useState<Client | null>(client);
-    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     // Toggle between edit and view mode
     const handleEditClick = () => {
@@ -112,13 +111,8 @@ const ClientProfile: React.FC<ClientProfileProps> = ({ client }) => {
                     setEditMode(false);
                 }
             }
-        } catch (error: any) {
-            if (error.response) {
-                console.error('Server responded with an error:', error.response.data);
-                setErrors(error.response.data);
-            } else if (error.request) {
-                console.error('No response received:', error.request);
-            } else {
+        } catch (error: unknown) { // Replaced `any` with `unknown`
+            if (error instanceof Error) { // Type guard for error
                 console.error('Error:', error.message);
             }
         }

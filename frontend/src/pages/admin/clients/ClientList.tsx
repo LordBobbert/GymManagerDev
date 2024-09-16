@@ -12,7 +12,7 @@ interface ClientListProps {
 const ClientList: React.FC<ClientListProps> = ({ clients, onSelectClient }) => {
     return (
         <List>
-            {clients.map((client) => (
+            {clients?.map((client) => (
                 <ListItem
                     key={client.id}
                     onClick={() => onSelectClient(client)}

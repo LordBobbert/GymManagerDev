@@ -12,7 +12,7 @@ interface SessionListProps {
 const SessionList: React.FC<SessionListProps> = ({ sessions, onSelectSession }) => {
     return (
         <List>
-            {sessions.map((session) => (
+            {sessions?.map((session) => (
                 <ListItem
                     key={session.id}
                     onClick={() => onSelectSession(session)}

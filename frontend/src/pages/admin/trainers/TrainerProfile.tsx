@@ -4,12 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Grid, TextField, Typography } from '@mui/material';
 import { Trainer, TrainerProfileProps } from '../../../interfaces/trainer';
 import axiosClient from '../../../api/axiosClient';
-import { User } from '../../../interfaces/user'; // Import the User interface
 
 const TrainerProfile: React.FC<TrainerProfileProps> = ({ trainer }) => {
     const [editMode, setEditMode] = useState(false);
     const [formData, setFormData] = useState<Trainer | null>(trainer);
-    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     // Toggle between edit and view mode
     const handleEditClick = () => {
@@ -108,13 +106,8 @@ const handleSave = async () => {
                 setEditMode(false);
             }
         }
-    } catch (error: any) {
-        if (error.response) {
-            console.error('Server responded with an error:', error.response.data);
-            setErrors(error.response.data);
-        } else if (error.request) {
-            console.error('No response received:', error.request);
-        } else {
+    } catch (error: unknown) { // Replaced `any` with `unknown`
+        if (error instanceof Error) { // Type guard for error
             console.error('Error:', error.message);
         }
     }

@@ -1,10 +1,10 @@
 // src/pages/auth/login.tsx
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';  // Import useRouter for navigation
 import axiosClient from '../../api/axiosClient';
 import { Box, Button, TextField, Typography, Checkbox, FormControlLabel, Card, Link } from '@mui/material';
 import { useRoleRedirect } from '../../hooks/useRoleRedirect'; // Import the custom hook
+import Image from 'next/image'; // Import the Image component
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -35,16 +35,21 @@ const LoginPage = () => {
     };
 
     return (
-        <Box 
-            display="flex" 
-            justifyContent="center" 
-            alignItems="center" 
+        <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
             minHeight="100vh"
             bgcolor="#f5f5f5"
         >
             <Card sx={{ padding: 4, maxWidth: 400, width: '100%' }}>
                 <Box sx={{ mb: 3, textAlign: 'center' }}>
-                    <img src="/images/Gym+Logo+copy.png" alt="Logo" style={{ width: 100, height: 100, borderRadius: '50%' }} />
+                    <Image
+                        src="/Gym+Fitness+Logo.png" // Image path
+                        alt="Description"
+                        width={500} // Specify width and height
+                        height={300}
+                    />
                 </Box>
                 <Typography variant="h5" gutterBottom textAlign="center">
                     Unified Health and Fitness

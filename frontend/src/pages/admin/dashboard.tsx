@@ -1,6 +1,5 @@
 // src/components/dashboard/AdminDashboard.tsx
 import React from 'react';
-import DashboardLayout from '../../components/layout/DashboardLayout';
 
 const AdminDashboard: React.FC = () => {
     return (

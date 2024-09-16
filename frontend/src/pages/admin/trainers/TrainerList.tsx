@@ -12,7 +12,7 @@ interface TrainerListProps {
 const TrainerList: React.FC<TrainerListProps> = ({ trainers, onSelectTrainer }) => {
     return (
         <List>
-            {trainers.map((trainer) => (
+            {trainers?.map((trainer) => (
                 <ListItem
                     key={trainer.id}
                     onClick={() => onSelectTrainer(trainer)}
