@@ -20,7 +20,7 @@ router.register(r'users', user_management_views.UserViewSet, basename='user')
 
 urlpatterns = [
     # Authentication routes
-    path('api/auth/login/', authentication_views.LoginView.as_view(), name='login'),
+    path('/auth/login/', authentication_views.LoginView.as_view(), name='login'),
     path('auth/logout/', authentication_views.LogoutView.as_view(), name='logout'),
     path('auth/refresh/', authentication_views.CookieTokenRefreshView.as_view(), name='token_refresh'),
 
