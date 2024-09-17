@@ -24,16 +24,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     try {
         // Parse cookies using nookies
         const cookies = nookies.get(context);
-        
-        // Extract the access token from the cookies
-        const accessToken = cookies['access_token'];
 
-        // Fetch the current user, passing the accessToken
+        // Extract the access token from the cookies
+        const accessToken = cookies['access_token']; // Ensure this matches the key used when setting the cookie
+
+        // Fetch the current user, passing the access token
         const user = await fetchCurrentUser(accessToken);
 
         // Check if the user has the 'admin' role
-        if (!user.role.includes('admin')) { // Corrected to use 'roles' here
-            // Redirect to the login page if the user is not an admin
+        if (!user || !user.role.includes('admin')) { // Ensure this condition accurately checks for the 'admin' role
             return {
                 redirect: {
                     destination: '/auth/login',
@@ -60,5 +59,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         };
     }
 };
+
 
 export default AdminPage;
