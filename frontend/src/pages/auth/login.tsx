@@ -20,16 +20,6 @@ const LoginPage: React.FC = () => {
                 password,
             });
 
-            // Extract the token from the response (assuming JWT is sent in response)
-            const accessToken = response.data.access_token;
-
-            // Set the token as an HTTP-only cookie using nookies
-            setCookie(null, 'access_token', accessToken, {
-                path: '/',
-                maxAge: 30 * 24 * 60 * 60, // 30 days
-                httpOnly: true, // Make it HTTP-only
-                secure: process.env.NODE_ENV === 'production', // Only use secure cookies in production
-            });
 
             // Assuming response.data.user.roles contains the user's roles
             const userRoles = response.data.user.roles;
