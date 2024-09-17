@@ -27,7 +27,7 @@ const LoginPage: React.FC = () => {
             if (userRoles.includes('admin')) {
                 router.push('/admin');
             } else {
-                router.push('/dashboard'); // Adjust the path as needed
+                router.push('/AdminDashboard'); // Adjust the path as needed
             }
         } catch (error) {
             console.error('Login failed', error);
