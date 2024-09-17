@@ -25,7 +25,7 @@ const LoginPage: React.FC = () => {
 
             // Redirect based on user roles, adjust the paths based on your setup
             if (userRoles.includes('admin')) {
-                router.push('/admin');
+                router.push('/admin/AdminDashboard');
             } else {
                 router.push('/AdminDashboard'); // Adjust the path as needed
             }
