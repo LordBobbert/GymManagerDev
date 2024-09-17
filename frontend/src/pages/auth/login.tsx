@@ -1,4 +1,5 @@
 // src/pages/auth/login.tsx
+// src/pages/auth/login.tsx
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { login } from '../../api/authApi'; // Import the login function
@@ -16,7 +17,7 @@ const LoginPage = () => {
             await login(username, password);
 
             // Redirect to the admin dashboard after a successful login
-            router.push('/admin/AdminDashboard');
+            router.push('/admin');
         } catch (error) {
             console.error('Login failed:', error);
             setError('Invalid username or password');
