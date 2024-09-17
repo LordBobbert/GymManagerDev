@@ -73,8 +73,12 @@ const ClientsPage: React.FC<ClientsPageProps> = ({ clients: initialClients }) =>
 // Add getServerSideProps for SSR
 export const getServerSideProps: GetServerSideProps = async (context) => {
     try {
+        // Retrieve the access token from cookies
         const cookies = context.req.headers.cookie;
-        const clients = await fetchClients(cookies); // Fetch the clients server-side
+        const accessToken = cookies?.split('; ').find(c => c.startsWith('access_token='))?.split('=')[1];
+
+        // Fetch clients using the access token
+        const clients = await fetchClients(accessToken); // Pass the accessToken here
 
         return {
             props: {
@@ -90,5 +94,3 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         };
     }
 };
-
-export default ClientsPage;

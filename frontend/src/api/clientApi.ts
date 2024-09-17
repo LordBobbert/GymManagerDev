@@ -2,13 +2,14 @@
 import axiosClient from './axiosClient';
 import { Client } from '../interfaces/client';
 
-export const fetchClients = async (cookie?: string): Promise<Client[]> => {
+export const fetchClients = async (accessToken?: string): Promise<Client[]> => {
     const response = await axiosClient.get<Client[]>('/api/clients/', {
         withCredentials: true,
-        headers: cookie ? { Cookie: cookie } : {},
+        headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
     });
     return response.data;
 };
+
 
 
 
