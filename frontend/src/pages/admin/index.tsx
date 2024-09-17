@@ -3,7 +3,7 @@ import React from 'react';
 import { GetServerSideProps } from 'next';
 import nookies from 'nookies'; // Import nookies for cookie parsing
 import DashboardLayout from '../../components/layout/DashboardLayout'; // Adjust the path if necessary
-import AdminDashboard from '../../components/dashboard/AdminDashboard'; // Adjust the path if necessary
+import AdminDashboard from './AdminDashboard'; // Adjust the path if necessary
 import { fetchCurrentUser } from '../../api/authApi';
 import { User } from '../../interfaces/user';
 
@@ -48,7 +48,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         if (!user.role.includes('admin')) { // Make sure to use 'roles' if it's an array
             return {
                 redirect: {
-                    destination: '/auth/login',
+                    destination: '/admin/AdminDashboard', // Redirect to a different page if the user is not an admin
                     permanent: false,
                 },
             };
