@@ -94,3 +94,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         };
     }
 };
+
+// Ensure the component is exported
+export default ClientsPage;
