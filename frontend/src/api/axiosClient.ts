@@ -18,10 +18,11 @@ const axiosClient = axios.create({
         'Content-Type': 'application/json',
     },
 });
+console.log('Base URL:', process.env.NEXT_PUBLIC_API_BASE_URL);
 
 // Include CSRF token from the cookie in headers
 axiosClient.interceptors.request.use((config) => {
-    const csrfToken = getCookie('csrftoken');
+    const csrfToken = getCookie('csrftoken'); // Implement this function to get the CSRF token
     if (csrfToken) {
         config.headers['X-CSRFToken'] = csrfToken;
     }

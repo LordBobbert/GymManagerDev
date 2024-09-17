@@ -26,6 +26,7 @@ urlpatterns = [
     path('auth/logout/', authentication_views.LogoutView.as_view(), name='logout'),
     path('auth/refresh/', authentication_views.CookieTokenRefreshView.as_view(), name='token_refresh'),
     path('auth/current_user/', CurrentUserView.as_view(), name='current_user'),
+    
 
 
     # Dashboard routes

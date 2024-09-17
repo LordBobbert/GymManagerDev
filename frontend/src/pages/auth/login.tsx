@@ -1,20 +1,18 @@
 // src/pages/auth/login.tsx
 
 import React, { useState } from 'react';
-import axiosClient from '../../api/axiosClient';
-import { Box, Button, TextField, Typography, Checkbox, FormControlLabel, Card, Link } from '@mui/material';
-import { useRoleRedirect } from '../../hooks/useRoleRedirect'; // Import the custom hook
-import Image from 'next/image'; // Import the Image component
+import { useRouter } from 'next/router';
+import { Box, Button, TextField, Typography, Alert } from '@mui/material';
+import axiosClient from '../../api/axiosClient'; // Ensure axiosClient is set up with 'withCredentials'
+import { setCookie } from 'nookies'; // Import nookies to set cookies
 
-const LoginPage = () => {
+const LoginPage: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [roles, setRoles] = useState<string[]>([]); // Track the user's roles
+    const router = useRouter();
 
-    // Call the hook to redirect based on roles
-    useRoleRedirect(roles);
-
+    // Handle login logic
     const handleLogin = async () => {
         try {
             const response = await axiosClient.post('/api/auth/login/', {
@@ -22,80 +20,61 @@ const LoginPage = () => {
                 password,
             });
 
+            // Extract the token from the response (assuming JWT is sent in response)
+            const accessToken = response.data.access_token;
+
+            // Set the token as an HTTP-only cookie using nookies
+            setCookie(null, 'access_token', accessToken, {
+                path: '/',
+                maxAge: 30 * 24 * 60 * 60, // 30 days
+                httpOnly: true, // Make it HTTP-only
+                secure: process.env.NODE_ENV === 'production', // Only use secure cookies in production
+            });
+
             // Assuming response.data.user.roles contains the user's roles
             const userRoles = response.data.user.roles;
 
-            // Set the roles which triggers useRoleRedirect
-            setRoles(userRoles);
-
+            // Redirect based on user roles, adjust the paths based on your setup
+            if (userRoles.includes('admin')) {
+                router.push('/admin');
+            } else {
+                router.push('/dashboard'); // Adjust the path as needed
+            }
         } catch (error) {
             console.error('Login failed', error);
-            setError('Invalid username or password');  // Display error message
+            setError('Invalid username or password'); // Display error message
         }
     };
 
     return (
-        <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="100vh"
-            bgcolor="#f5f5f5"
-        >
-            <Card sx={{ padding: 4, maxWidth: 400, width: '100%' }}>
-                <Box sx={{ mb: 3, textAlign: 'center' }}>
-                    <Image
-                        src="/Gym+Fitness+Logo.png" // Image path
-                        alt="Description"
-                        width={500} // Specify width and height
-                        height={300}
-                    />
-                </Box>
-                <Typography variant="h5" gutterBottom textAlign="center">
-                    Unified Health and Fitness
-                </Typography>
-                <Box sx={{ mt: 2 }}>
-                    <TextField
-                        fullWidth
-                        label="Username"
-                        variant="outlined"
-                        margin="normal"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                    <TextField
-                        fullWidth
-                        label="Password"
-                        type="password"
-                        variant="outlined"
-                        margin="normal"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    {error && (
-                        <Typography color="error" variant="body2">
-                            {error}
-                        </Typography>
-                    )}
-                    <FormControlLabel
-                        control={<Checkbox name="remember" color="primary" />}
-                        label="Remember Me"
-                    />
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        sx={{ mt: 2 }}
-                        onClick={handleLogin}
-                    >
-                        Login
-                    </Button>
-                </Box>
-                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
-                    <Link href="/auth/register" variant="body2">Create an Account</Link>
-                    <Link href="/auth/forgot-password" variant="body2">Forgot Password?</Link>
-                </Box>
-            </Card>
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="100vh">
+            <Typography variant="h4" mb={2}>Login</Typography>
+            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+            <Box component="form" noValidate autoComplete="off" onSubmit={(e) => e.preventDefault()}>
+                <TextField
+                    label="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                />
+                <TextField
+                    label="Password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleLogin}
+                    sx={{ mt: 2 }}
+                >
+                    Login
+                </Button>
+            </Box>
         </Box>
     );
 };

@@ -133,12 +133,6 @@ CORS_ORIGIN_WHITELIST = [
     'https://calm-tree-0e675c90f.5.azurestaticapps.net',  # Add your frontend URL
 ]
 
-CORS_ALLOW_HEADERS = [
-    'content-type',
-    'x-csrftoken',
-    # Add other headers if necessary
-]
-
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 

@@ -19,6 +19,7 @@
     "@mui/material": "^6.1.0",
     "axios": "^1.7.7",
     "next": "latest",
+    "nookies": "^2.5.2",
     "react": "latest",
     "react-dom": "latest"
   },
