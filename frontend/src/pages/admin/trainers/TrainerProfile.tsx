@@ -46,16 +46,16 @@ const handleSave = async () => {
     try {
         if (formData && formData.id) {
             // Prepare updatedData by finding differences between original trainer data and the modified formData
-            const updatedData: Partial<Trainer> = {}; // Use Partial<Trainer> to allow for partial updates
+            const updatedData: Partial<Trainer> = {};
 
-            // Ensure that `updatedData.user` is initialized as an object of type Partial<User> before accessing its properties
-            updatedData.user = updatedData.user || {
-                id: formData.user.id ?? 0, // Provide a default value (0) if `id` is undefined
+            // Initialize `updatedData.user` correctly
+            updatedData.user = {
+                id: formData.user.id ?? 0, // Use the ID or a default value of 0
                 username: formData.user.username, // Assuming `formData.user.username` is available
                 email: formData.user.email,       // Assuming `formData.user.email` is available
                 first_name: formData.user.first_name, // Assuming `formData.user.first_name` is available
                 last_name: formData.user.last_name,   // Assuming `formData.user.last_name` is available
-                role: formData.user.role // Assuming `formData.user.role` is available
+                roles: formData.user.roles ?? [] // Use the updated roles structure as an array
             };
 
             // Check for changes in user data and include them in the updatedData object
@@ -75,9 +75,12 @@ const handleSave = async () => {
                 updatedData.user.last_name = formData.user.last_name;
             }
 
-            // Only set `id` if it actually exists in `formData.user`
-            if (formData.user.id !== undefined) {
-                updatedData.user.id = formData.user.id;
+            // Handle roles changes - Compare if the roles array is different
+            const currentRoles = trainer?.user?.roles?.map(role => role.name) || [];
+            const newRoles = formData.user.roles.map(role => role.name);
+
+            if (JSON.stringify(currentRoles) !== JSON.stringify(newRoles)) {
+                updatedData.user.roles = formData.user.roles; // Update roles
             }
 
             // Check for changes in other trainer-specific profile data
@@ -94,11 +97,11 @@ const handleSave = async () => {
             }
 
             // Check if changes exist before making the API call
-            if (Object.keys(updatedData).length > 0) {
+            if (Object.keys(updatedData).length > 0 || Object.keys(updatedData.user).length > 0) {
                 const url = `/api/trainers/${formData.id}/`;
 
                 // Use PATCH method for partial updates
-                const response = await axiosClient.patch(url, updatedData); // Change here to PATCH
+                const response = await axiosClient.patch(url, updatedData);
                 setFormData(response.data); // Update formData with the latest server data
                 setEditMode(false);
             } else {
@@ -112,6 +115,7 @@ const handleSave = async () => {
         }
     }
 };
+
 
 
 
