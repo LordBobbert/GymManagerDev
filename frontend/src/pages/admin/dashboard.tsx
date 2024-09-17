@@ -1,48 +1,20 @@
 // src/components/dashboard/AdminDashboard.tsx
 
-import React, { useState, useEffect } from 'react';
-import { Box, CircularProgress, Typography, Grid } from '@mui/material';
+import React from 'react';
+import { Box, Typography, Grid } from '@mui/material';
 import { User } from '../../interfaces/user'; // Assuming you have a User interface
 
 interface AdminDashboardProps {
-    user: User; // The user prop passed from getServerSideProps
+    user: User | null; // Allow user to be of type User or null
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
-    // State for managing loading and error states
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    // Simulating data loading process
-    useEffect(() => {
-        console.log('User prop in AdminDashboard:', user); // Debug: Log user data
-
-        // Simulate data fetching and loading state management
-        if (user) {
-            // Assuming user data is present
-            setIsLoading(false); // Stop loading when user data is available
-        } else {
-            // Handle case where user data is not available
-            setError('User not found');
-            setIsLoading(false); // Stop loading in case of error
-        }
-    }, [user]);
-
-    // Show loading spinner while data is being loaded
-    if (isLoading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-                <CircularProgress />
-            </Box>
-        );
-    }
-
-    // Show error message if there was an error fetching data
-    if (error) {
+    // Check if user prop is valid
+    if (!user) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
                 <Typography variant="h6" color="error">
-                    {error}
+                    User not found or unauthorized
                 </Typography>
             </Box>
         );
