@@ -26,8 +26,6 @@ from user_management.utils import set_jwt_cookies
 from rest_framework import status
 
 class LoginView(APIView):
-    permission_classes = [AllowAny]  # Allow anyone to access this view
-
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -38,28 +36,17 @@ class LoginView(APIView):
             # Create a refresh token for the user
             refresh = RefreshToken.for_user(user)
 
-            # Get the user's roles as a list
-            user_roles = [role.name for role in user.roles.all()]
-
-            # Create the response without including tokens in the response body
+            # Create the response
             response = Response({
                 'message': 'Login successful',
                 'user': {
                     'username': user.username,
-                    'roles': user_roles,  # Include the user roles here
+                    'roles': [role.name for role in user.roles.all()],
                 },
             })
 
-            # Set JWT cookies in the response
+            # Set JWT cookies in the response (httpOnly)
             set_jwt_cookies(response, refresh)
-
-            # Optionally include the CSRF token in the response if needed
-            response['X-CSRFToken'] = get_token(request)
-
-            # Debugging information (Remove in production)
-            # print(f"User {user.username} logged in. Roles: {user_roles}")
-            # print(f"Access Token: {refresh.access_token}")
-            # print(f"Refresh Token: {refresh}")
 
             return response
 
