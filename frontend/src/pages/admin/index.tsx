@@ -1,7 +1,7 @@
 // src/pages/admin/index.tsx
 import React from 'react';
 import { GetServerSideProps } from 'next';
-import nookies from 'nookies'; // Import nookies
+import nookies from 'nookies'; // Import nookies for cookie parsing
 import DashboardLayout from '../../components/layout/DashboardLayout'; // Adjust the path if necessary
 import AdminDashboard from '../../components/dashboard/AdminDashboard'; // Adjust the path if necessary
 import { fetchCurrentUser } from '../../api/authApi';
@@ -24,18 +24,28 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     try {
         // Parse cookies using nookies
         const cookies = nookies.get(context);
-        
+
         // You can log the cookies to debug
         console.log('Parsed Cookies:', cookies);
 
         // Extract the access token from the cookies
         const accessToken = cookies['access_token']; // Adjust if your token is stored under a different name
 
+        // If the token is missing, redirect to login
+        if (!accessToken) {
+            return {
+                redirect: {
+                    destination: '/auth/login',
+                    permanent: false,
+                },
+            };
+        }
+
         // Fetch the current user, passing the accessToken
         const user = await fetchCurrentUser(accessToken);
 
         // Check if the user has the 'admin' role
-        if (!user.role.includes('admin')) { // Adjusted to use 'roles' instead of 'role'
+        if (!user.role.includes('admin')) { // Make sure to use 'roles' if it's an array
             return {
                 redirect: {
                     destination: '/auth/login',

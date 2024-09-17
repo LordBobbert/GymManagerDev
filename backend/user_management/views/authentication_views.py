@@ -16,7 +16,18 @@ from user_management.permissions import IsAdmin, IsAdminOrTrainer
 from user_management.serializers import UserSerializer
 
 
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from django.contrib.auth import authenticate
+from django.middleware.csrf import get_token
+from user_management.utils import set_jwt_cookies
+from rest_framework import status
+
 class LoginView(APIView):
+    permission_classes = [AllowAny]  # Allow anyone to access this view
+
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -46,14 +57,15 @@ class LoginView(APIView):
             response['X-CSRFToken'] = get_token(request)
 
             # Debugging information (Remove in production)
-            print(f"User {user.username} logged in. Roles: {user_roles}")
-            print(f"Access Token: {refresh.access_token}")
-            print(f"Refresh Token: {refresh}")
+            # print(f"User {user.username} logged in. Roles: {user_roles}")
+            # print(f"Access Token: {refresh.access_token}")
+            # print(f"Refresh Token: {refresh}")
 
             return response
 
         # If authentication fails, return an error response
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 
