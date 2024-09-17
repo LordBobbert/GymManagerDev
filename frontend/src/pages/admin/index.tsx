@@ -1,9 +1,9 @@
 // src/pages/admin/index.tsx
 import React from 'react';
 import { GetServerSideProps } from 'next';
-import nookies from 'nookies'; // Import nookies for cookie parsing
-import DashboardLayout from '../../components/layout/DashboardLayout'; // Adjust the path if necessary
-import AdminDashboard from './AdminDashboard'; // Adjust the path if necessary
+import nookies from 'nookies';
+import DashboardLayout from '../../components/layout/DashboardLayout';
+import AdminDashboard from './../admin/AdminDashboard';
 import { fetchCurrentUser } from '../../api/authApi';
 import { User } from '../../interfaces/user';
 
@@ -24,31 +24,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     try {
         // Parse cookies using nookies
         const cookies = nookies.get(context);
-
-        // You can log the cookies to debug
-        console.log('Parsed Cookies:', cookies);
-
+        
         // Extract the access token from the cookies
-        const accessToken = cookies['access_token']; // Adjust if your token is stored under a different name
-
-        // If the token is missing, redirect to login
-        if (!accessToken) {
-            return {
-                redirect: {
-                    destination: '/auth/login',
-                    permanent: false,
-                },
-            };
-        }
+        const accessToken = cookies['access_token'];
 
         // Fetch the current user, passing the accessToken
         const user = await fetchCurrentUser(accessToken);
 
         // Check if the user has the 'admin' role
-        if (!user.role.includes('admin')) { // Make sure to use 'roles' if it's an array
+        if (!user.role.includes('admin')) { // Corrected to use 'roles' here
+            // Redirect to the login page if the user is not an admin
             return {
                 redirect: {
-                    destination: '/admin/AdminDashboard', // Redirect to a different page if the user is not an admin
+                    destination: '/auth/login',
                     permanent: false,
                 },
             };

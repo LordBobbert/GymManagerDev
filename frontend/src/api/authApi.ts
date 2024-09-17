@@ -36,12 +36,10 @@ export const logout = async () => {
 
 // Fetch the current user
 export const fetchCurrentUser = async (accessToken: string): Promise<User> => {
-    const response = await axiosClient.get('/api/auth/current_user/', {
+    const response = await axiosClient.get<User>('/api/auth/current_user/', {
         headers: {
-            Authorization: `Bearer ${accessToken}` // Include the access token in the request headers
-        }
+            Authorization: `Bearer ${accessToken}`,
+        },
     });
-
-    // Return the user data
     return response.data;
 };
