@@ -3,7 +3,7 @@ import React from 'react';
 import { GetServerSideProps } from 'next';
 import nookies from 'nookies';
 import DashboardLayout from '../../components/layout/DashboardLayout';
-import AdminDashboard from './../admin/AdminDashboard';
+import AdminDashboard from './dashboard';
 import { fetchCurrentUser } from '../../api/authApi';
 import { User } from '../../interfaces/user';
 
