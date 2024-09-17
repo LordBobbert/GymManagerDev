@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "nodemon": "nodemon -L --watch pages --watch components --watch lib --exec 'npm run dev'"
+    "nodemon": "nodemon -L --watch pages --watch components --watch lib --exec 'npm run dev'",
+    "test": "jest"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
