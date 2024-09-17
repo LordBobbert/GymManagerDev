@@ -1,45 +1,41 @@
 // src/pages/auth/login.tsx
-
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { Box, Button, TextField, Typography, Alert } from '@mui/material';
-import axiosClient from '../../api/axiosClient'; // Ensure axiosClient is set up with 'withCredentials'
+import { login } from '../../api/authApi'; // Import the login function
+import axiosClient from '../../api/axiosClient'; // Import axios client for API requests
+import { Box, Button, TextField, Typography } from '@mui/material';
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
-    // Handle login logic
     const handleLogin = async () => {
         try {
-            const response = await axiosClient.post('/api/auth/login/', {
-                username,
-                password,
-            });
+            // Attempt to log in
+            await login(username, password);
 
-
-            // Assuming response.data.user.roles contains the user's roles
-            const userRoles = response.data.user.roles;
-
-            // Redirect based on user roles, adjust the paths based on your setup
-            if (userRoles.includes('admin')) {
-                router.push('/admin/AdminDashboard');
-            } else {
-                router.push('/AdminDashboard'); // Adjust the path as needed
-            }
+            // Redirect to the admin dashboard after a successful login
+            router.push('/admin/AdminDashboard');
         } catch (error) {
-            console.error('Login failed', error);
-            setError('Invalid username or password'); // Display error message
+            console.error('Login failed:', error);
+            setError('Invalid username or password');
         }
     };
 
     return (
-        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="100vh">
-            <Typography variant="h4" mb={2}>Login</Typography>
-            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-            <Box component="form" noValidate autoComplete="off" onSubmit={(e) => e.preventDefault()}>
+        <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            minHeight="100vh"
+        >
+            <Typography variant="h4" mb={4}>
+                Admin Login
+            </Typography>
+            <Box component="form" onSubmit={(e) => { e.preventDefault(); handleLogin(); }} width="300px">
                 <TextField
                     label="Username"
                     value={username}
@@ -55,13 +51,18 @@ const LoginPage: React.FC = () => {
                     fullWidth
                     margin="normal"
                 />
+                {error && (
+                    <Typography variant="body2" color="error" mb={2}>
+                        {error}
+                    </Typography>
+                )}
                 <Button
+                    type="submit"
                     variant="contained"
                     color="primary"
-                    onClick={handleLogin}
-                    sx={{ mt: 2 }}
+                    fullWidth
                 >
-                    Login
+                    Log In
                 </Button>
             </Box>
         </Box>
