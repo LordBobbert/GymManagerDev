@@ -41,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         console.log('Fetched User:', user); // Debug: Log the fetched user
 
         // Check if the user has the 'admin' role
-        if (!user || !user.role.includes('admin')) {
+        if (!user || !user.roles.some(role => role.name === 'admin')) {
             return {
                 redirect: {
                     destination: '/auth/login',

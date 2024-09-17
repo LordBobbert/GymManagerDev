@@ -1,16 +1,16 @@
+// Define a Role interface to represent individual role objects
+export interface Role {
+    name: 'client' | 'trainer' | 'admin'; // Define possible role names
+}
+
 export interface User {
     id: number;
     username: string;
     email: string;
-    first_name: string; // Adjusted to match API response
-    last_name: string;  // Adjusted to match API response
-    phone_number?: string; // Adjusted to match API response
+    first_name: string;
+    last_name: string;
+    phone_number?: string;
     gender?: 'male' | 'female'; // Optional
     birthday?: string; // Optional
-    role: 'client' | 'trainer' | 'admin';
-}
-
-
-export interface UserProfileProps {
-    user: User | null; // Allow null values for the client
+    roles: Role[]; // Adjusted to be an array of Role objects
 }
