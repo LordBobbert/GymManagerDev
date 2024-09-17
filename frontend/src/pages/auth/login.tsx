@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Box, Button, TextField, Typography, Alert } from '@mui/material';
 import axiosClient from '../../api/axiosClient'; // Ensure axiosClient is set up with 'withCredentials'
-import { setCookie } from 'nookies'; // Import nookies to set cookies
 
 const LoginPage: React.FC = () => {
     const [username, setUsername] = useState('');
