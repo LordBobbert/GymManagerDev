@@ -17,7 +17,7 @@ const LoginPage = () => {
             await login(username, password);
 
             // Redirect to the admin dashboard after a successful login
-            router.push('/admin');
+            router.push('/admin/dashboard/');
         } catch (error) {
             console.error('Login failed:', error);
             setError('Invalid username or password');
