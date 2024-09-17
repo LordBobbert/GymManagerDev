@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { login } from '../../api/authApi'; // Import the login function
-import axiosClient from '../../api/axiosClient'; // Import axios client for API requests
 import { Box, Button, TextField, Typography } from '@mui/material';
 
 const LoginPage = () => {
