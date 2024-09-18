@@ -1,10 +1,10 @@
-// src/pages/auth/login.tsx
+// src/app/auth/login/page.tsx
 
 import { Box, Typography } from '@mui/material';
-import LoginForm from '../../components/auth/LoginForm';
-import useLogin from '../../hooks/useLogin';
+import LoginForm from '../../../components/auth/LoginForm';
+import useLogin from '../../../hooks/useLogin';
 
-const LoginPage = () => {
+export default function LoginPage() {
     const { handleLogin, error } = useLogin();
 
     return (
@@ -21,6 +21,4 @@ const LoginPage = () => {
             <LoginForm onLogin={handleLogin} error={error} />
         </Box>
     );
-};
-
-export default LoginPage;
+}

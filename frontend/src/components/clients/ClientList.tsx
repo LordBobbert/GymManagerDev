@@ -1,29 +1,33 @@
-// src/components/dashboard/ClientList.tsx
+// src/components/clients/ClientList.tsx
 
-import React from 'react';
-import { List, ListItem, ListItemText } from '@mui/material';
+import { FC } from 'react';
+import { Box, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
 import { Client } from '../../interfaces/client';
+import { useRouter } from 'next/navigation';
 
 interface ClientListProps {
-    clients: Client[]; // Expecting clients to be an array
-    onSelectClient: (client: Client) => void;
+    clients: Client[];
 }
 
-const ClientList: React.FC<ClientListProps> = ({ clients = [], onSelectClient }) => { // Default clients to an empty array
+const ClientList: FC<ClientListProps> = ({ clients }) => {
+    const router = useRouter();
+
+    const handleClientClick = (id: number) => {
+        router.push(`/admin/clients/${id}`); // Navigate to the client's detail page
+    };
+
     return (
         <List>
-            {clients.map((client) => (
-                <ListItem
-                    key={client.id}
-                    onClick={() => onSelectClient(client)}
-                    component="div"
-                    sx={{ cursor: 'pointer' }}
-                >
-                    <ListItemText
-                        primary={`${client.user.first_name} ${client.user.last_name}`}
-                        secondary={client.user.email}
-                    />
-                </ListItem>
+            {clients.map(client => (
+                <div key={client.id}>
+                    <ListItem component="button" onClick={() => handleClientClick(client.id)} style={{ cursor: 'pointer' }}>
+                        <ListItemText
+                            primary={`${client.user.first_name} ${client.user.last_name}`}
+                            secondary={client.user.email}
+                        />
+                    </ListItem>
+                    <Divider />
+                </div>
             ))}
         </List>
     );

@@ -6,17 +6,18 @@ import { Trainer } from './trainer'; // Import the Trainer interface
 export interface Client {
     id: number;
     user: User;  // Include the user data
-    training_status: 'active' | 'inactive' | 'vacation'; // Using ENUM values from TRAINING_STATUS_CHOICES
-    personal_training_rate?: number;  // Assuming this is a decimal value
-    rate_type: 'one_on_one' | 'partner';  // Using ENUM values from PERSONAL_TRAINING_RATE_CHOICES
-    trainer?: Trainer;  // Reference to a Trainer object, optional
-    emergency_contact_name?: string;
-    emergency_contact_phone?: string;
+    training_status: 'active' | 'inactive' | 'vacation'; // ENUM values for training status
+    personal_training_rate?: number;  // Optional decimal value for training rate
+    rate_type: 'one_on_one' | 'partner';  // ENUM values for rate type
+    trainer?: Trainer;  // Optional reference to a Trainer object
+    emergency_contact_name?: string; // Optional emergency contact name
+    emergency_contact_phone?: string; // Optional emergency contact phone
 }
 
 // src/interfaces/client.ts
 
 export interface ClientProfileProps {
     client: Client | null; // Allow null values for the client
-    onClientUpdated: (updatedClient: Client) => void; // Add this line
+    onClientUpdated: (updatedClient: Client) => void; // Callback function to handle updates
 }
+

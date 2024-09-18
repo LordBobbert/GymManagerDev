@@ -1,18 +1,16 @@
-// src/pages/admin/index.tsx
-
-import React from 'react';
+// src/app/admin/page.tsx
 import { GetServerSideProps } from 'next';
-import nookies from 'nookies';
-import AdminDashboard from '../../components/dashboard/AdminDashboard';
-import { fetchCurrentUser } from '../../services/authApi'; // Adjust the path as necessary
-import { User } from '../../interfaces/user'; // Ensure this matches the User interface
+import nookies from 'nookies'; // Make sure to install nookies if you haven't already
+import AdminDashboard from '../../../components/dashboard/AdminDashboard'; // Adjust the path to AdminDashboard component
+import { fetchCurrentUser } from '../../../services/authApi'; // Adjust the path if necessary
+import { User } from '../../../interfaces/user'; // Adjust the path if necessary
 
 interface AdminPageProps {
     user: User | null; // User data passed to the page, or null if not found
 }
 
 const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
-    // If the user prop is null, we handle it in the AdminDashboard component
+    // Pass the user prop to AdminDashboard
     return <AdminDashboard user={user} />;
 };
 
@@ -24,7 +22,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
         // Extract the access token from the cookies
         const accessToken = cookies['access_token'];
-        console.log('Access Token:', accessToken); // Debug: Log the access token
 
         // If there's no access token, redirect to the login page
         if (!accessToken) {
@@ -36,19 +33,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             };
         }
 
-        // Fetch the current user, passing the access token
+        // Fetch the current user using the access token
         const user = await fetchCurrentUser(accessToken);
-        console.log('Fetched User:', user); // Debug: Log the fetched user
-
-        // Check if the user has the 'admin' role
-        if (!user || !user.roles.some(role => role.name === 'admin')) {
-            return {
-                redirect: {
-                    destination: '/auth/login',
-                    permanent: false,
-                },
-            };
-        }
 
         // Pass the user data to the page as props
         return {

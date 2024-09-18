@@ -13,9 +13,8 @@ export const fetchClients = async (accessToken?: string): Promise<Client[]> => {
 
 
 
-// Fetch a specific client
-export const fetchClientById = async (clientId: number): Promise<Client> => {
-    const response = await axiosClient.get<Client>(`/api/clients/${clientId}/`);
+export const fetchClientById = async (id: string): Promise<Client> => {
+    const response = await axiosClient.get(`/api/clients/${id}`);
     return response.data;
 };
 
