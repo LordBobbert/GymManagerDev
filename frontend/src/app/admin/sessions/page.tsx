@@ -1,4 +1,7 @@
 // src/app/admin/sessions/page.tsx
+
+"use_client";
+
 import { useState, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 import { fetchSessions } from '../../../services/sessionApi'; // Adjust path if needed

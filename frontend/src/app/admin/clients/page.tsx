@@ -1,4 +1,6 @@
 // src/app/admin/clients/page.tsx
+"use_client";
+
 
 import { useEffect, useState } from 'react';
 import { Box, List, ListItem, ListItemText, Typography } from '@mui/material';

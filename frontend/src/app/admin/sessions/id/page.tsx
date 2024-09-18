@@ -1,5 +1,7 @@
 // src/app/admin/sessions/[id]/page.tsx
 
+"use_client";
+
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Box, Typography } from '@mui/material';

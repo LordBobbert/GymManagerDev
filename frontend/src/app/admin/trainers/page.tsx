@@ -1,5 +1,7 @@
 // src/app/admin/trainers/page.tsx or wherever you are using TrainerList
 
+"use_client";
+
 import React, { useState, useEffect } from 'react';
 import { fetchTrainers } from '../../../services/trainerApi';
 import { Trainer } from '../../../interfaces/trainer';

@@ -1,5 +1,7 @@
 // src/app/admin/clients/[id]/page.tsx
 
+"use_client";
+
 import { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { useParams } from 'next/navigation';
