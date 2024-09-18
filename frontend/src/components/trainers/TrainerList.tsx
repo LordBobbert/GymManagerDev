@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { List, ListItem, ListItemText } from '@mui/material';
-import { Trainer } from '../../../interfaces/trainer';
+import { Trainer } from '../../interfaces/trainer';
 
 interface TrainerListProps {
     trainers: Trainer[];

@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { Box, Grid, Typography, Button } from '@mui/material';
-import SessionList from './SessionList';
-import SessionDetails from './SessionDetails';
+import SessionList from '../../../components/sessions/SessionList';
+import SessionDetails from '../../../components/sessions/SessionDetails';
 import SessionTable from '../../../components/session/SessionTable';
-import AddSessionForm from './AddSessionForm'; // Import AddSessionForm
+import AddSessionForm from '../../../components/sessions/AddSessionForm'; // Import AddSessionForm
 import { Session } from '../../../interfaces/session';
-import axiosClient from '../../../api/axiosClient';
+import axiosClient from '../../../services/axiosClient';
 
 const SessionsPage: React.FC = () => {
     const [sessions, setSessions] = useState<Session[]>([]);

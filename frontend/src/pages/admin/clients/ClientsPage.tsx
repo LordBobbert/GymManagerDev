@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { Box, Grid, Typography, Button } from '@mui/material';
-import ClientList from './ClientList';
-import ClientProfile from './ClientProfile';
-import AddClientForm from './AddClientForm';
+import ClientList from '../../../components/clients/ClientList';
+import ClientProfile from '../../../components/clients/ClientProfile';
+import AddClientForm from '../../../components/clients/AddClientForm';
 import { Client } from '../../../interfaces/client';
-import { fetchClients } from '../../../api/clientApi'; // Import the API call
+import { fetchClients } from '../../../services/clientApi'; // Import the API call
 
 interface ClientsPageProps {
     clients: Client[];

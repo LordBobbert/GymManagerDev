@@ -3,8 +3,8 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
 import nookies from 'nookies';
-import AdminDashboard from '../admin/dashboard';
-import { fetchCurrentUser } from '../../api/authApi'; // Adjust the path as necessary
+import AdminDashboard from '../../components/dashboard/AdminDashboard';
+import { fetchCurrentUser } from '../../services/authApi'; // Adjust the path as necessary
 import { User } from '../../interfaces/user'; // Ensure this matches the User interface
 
 interface AdminPageProps {

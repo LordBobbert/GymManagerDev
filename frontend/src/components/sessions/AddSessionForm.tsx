@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Box, Button, TextField, Typography, MenuItem, Select, FormControl, InputLabel, SelectChangeEvent } from '@mui/material'; // Import SelectChangeEvent
-import axiosClient from '../../../api/axiosClient';
-import { Client } from '../../../interfaces/client';
-import { Trainer } from '../../../interfaces/trainer';
+import axiosClient from '../../services/axiosClient';
+import { Client } from '../../interfaces/client';
+import { Trainer } from '../../interfaces/trainer';
 
 interface AddSessionFormProps {
     onSessionAdded: () => void; // Callback to update the session list after adding a session

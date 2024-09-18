@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Box, Grid, Typography, Button } from '@mui/material';
-import TrainerList from './TrainerList';
-import TrainerProfile from './TrainerProfile';
-import AddTrainerForm from './AddTrainerForm';
+import TrainerList from '../../../components/trainers/TrainerList';
+import TrainerProfile from '../../../components/trainers/TrainerProfile';
+import AddTrainerForm from '../../../components/trainers/AddTrainerForm';
 import { Trainer } from '../../../interfaces/trainer';
-import axiosClient from '../../../api/axiosClient';
+import axiosClient from '../../../services/axiosClient';
 
 const TrainersPage: React.FC = () => {
     const [trainers, setTrainers] = useState<Trainer[]>([]);

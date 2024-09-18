@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography } from '@mui/material';
-import axiosClient from '../../../api/axiosClient';
-import { Trainer } from '../../../interfaces/trainer';
+import axiosClient from '../../services/axiosClient';
+import { Trainer } from '../../interfaces/trainer';
 
 interface AddTrainerFormProps {
     onTrainerAdded: () => void; // Callback to call when a trainer is added

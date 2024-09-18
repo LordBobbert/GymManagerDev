@@ -3,7 +3,7 @@
 import React from 'react';
 import { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
-import DashboardLayout from '../components/layout/DashboardLayout';
+import DashboardLayout from '../layouts/DashboardLayout';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import theme from '../theme';
 

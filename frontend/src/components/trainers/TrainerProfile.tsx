@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Grid, TextField, Typography } from '@mui/material';
-import { Trainer, TrainerProfileProps } from '../../../interfaces/trainer';
-import axiosClient from '../../../api/axiosClient';
+import { Trainer, TrainerProfileProps } from '../../interfaces/trainer';
+import axiosClient from '../../services/axiosClient';
 
 const TrainerProfile: React.FC<TrainerProfileProps> = ({ trainer }) => {
     const [editMode, setEditMode] = useState(false);

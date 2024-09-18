@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { List, ListItem, ListItemText } from '@mui/material';
-import { Session } from '../../../interfaces/session';
+import { Session } from '../../interfaces/session';
 
 interface SessionListProps {
     sessions: Session[];

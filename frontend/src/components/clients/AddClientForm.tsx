@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Box, Button, TextField, Typography, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
-import axiosClient from '../../../api/axiosClient';
-import { Client } from '../../../interfaces/client';
+import axiosClient from '../../services/axiosClient';
+import { Client } from '../../interfaces/client';
 import { SelectChangeEvent } from '@mui/material';
 
 interface AddClientFormProps {

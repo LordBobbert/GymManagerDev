@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { List, ListItem, ListItemText } from '@mui/material';
-import { Client } from '../../../interfaces/client';
+import { Client } from '../../interfaces/client';
 
 interface ClientListProps {
     clients: Client[]; // Expecting clients to be an array

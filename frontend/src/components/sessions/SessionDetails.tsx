@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Box, Typography, Grid, TextField } from '@mui/material';
-import { Session } from '../../../interfaces/session';
+import { Session } from '../../interfaces/session';
 
 interface SessionDetailsProps {
     session: Session | null;

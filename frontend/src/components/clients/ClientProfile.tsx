@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Grid, TextField, Typography } from '@mui/material';
-import { Client, ClientProfileProps } from '../../../interfaces/client';
-import { updateClient } from '../../../api/clientApi'; // Make sure to use the new `updateClient` function from clientApi
+import { Client, ClientProfileProps } from '../../interfaces/client';
+import { updateClient } from '../../services/clientApi'; // Make sure to use the new `updateClient` function from clientApi
 
 const ClientProfile: React.FC<ClientProfileProps> = ({ client, onClientUpdated }) => {
     const [editMode, setEditMode] = useState(false);
