@@ -1,58 +1,39 @@
-// src/app/admin/page.tsx
-import { GetServerSideProps } from 'next';
-import nookies from 'nookies'; // Make sure to install nookies if you haven't already
-import AdminDashboard from '../../../components/dashboard/AdminDashboard'; // Adjust the path to AdminDashboard component
-import { fetchCurrentUser } from '../../../services/authApi'; // Adjust the path if necessary
-import { User } from '../../../interfaces/user'; // Adjust the path if necessary
+// app/admin/dashboard/page.tsx
 
-interface AdminPageProps {
-    user: User | null; // User data passed to the page, or null if not found
+import { cookies } from 'next/headers'; // For server-side cookie handling
+import axios from 'axios';
+
+async function fetchUser() {
+    const cookieStore = cookies();
+    const authCookie = cookieStore.get('access_token')?.value; // Use the correct cookie name for authentication
+
+    if (!authCookie) {
+        throw new Error('Not authenticated');
+    }
+
+    // Make a request to the backend to validate the user
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/current_user/`, {
+        headers: {
+            Cookie: `access_token=${authCookie}`,
+        },
+    });
+
+    return response.data;
 }
 
-const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
-    // Pass the user prop to AdminDashboard
-    return <AdminDashboard user={user} />;
-};
-
-// Server-side data fetching
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export default async function DashboardPage() {
     try {
-        // Parse cookies using nookies
-        const cookies = nookies.get(context);
+        // Fetch the user data on the server
+        const user = await fetchUser();
 
-        // Extract the access token from the cookies
-        const accessToken = cookies['access_token'];
-
-        // If there's no access token, redirect to the login page
-        if (!accessToken) {
-            return {
-                redirect: {
-                    destination: '/auth/login',
-                    permanent: false,
-                },
-            };
-        }
-
-        // Fetch the current user using the access token
-        const user = await fetchCurrentUser(accessToken);
-
-        // Pass the user data to the page as props
-        return {
-            props: {
-                user,
-            },
-        };
+        return (
+            <div>
+                <h1>Welcome, {user.username}</h1>
+                {/* Render dashboard components */}
+            </div>
+        );
     } catch (error) {
-        console.error('Error fetching user:', error);
-
-        // Redirect to login if there's an error (like unauthorized access)
-        return {
-            redirect: {
-                destination: '/auth/login',
-                permanent: false,
-            },
-        };
+        // Handle errors, such as redirecting to login or showing an error message
+        return <div>Error: Not authenticated</div>;
     }
-};
-
-export default AdminPage;
+}

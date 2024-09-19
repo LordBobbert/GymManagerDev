@@ -1,54 +1,57 @@
-// src/components/auth/LoginForm.tsx
+// File: components/auth/LoginForm.tsx
 
-import React, { useState } from 'react';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-interface LoginFormProps {
-    onLogin: (username: string, password: string) => void;
-    error: string | null;
+interface LoginFormData {
+  username: string;
+  password: string;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onLogin, error }) => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+interface LoginFormProps {
+  onSubmit: (data: LoginFormData) => void;
+  error?: string | null;
+}
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onLogin(username, password);
-    };
+const loginSchema = Yup.object().shape({
+  username: Yup.string().required("Username is required"),
+  password: Yup.string().min(8, "Password must be at least 8 characters").required("Password is required"),
+});
 
-    return (
-        <Box component="form" onSubmit={handleSubmit} width="300px">
-            <TextField
-                label="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                fullWidth
-                margin="normal"
-            />
-            <TextField
-                label="Password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                fullWidth
-                margin="normal"
-            />
-            {error && (
-                <Typography variant="body2" color="error" mb={2}>
-                    {error}
-                </Typography>
-            )}
-            <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-            >
-                Log In
-            </Button>
-        </Box>
-    );
+const LoginForm = ({ onSubmit, error }: LoginFormProps) => {
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+    resolver: yupResolver(loginSchema),
+  });
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <label>Username:</label>
+        <input type="text" {...register("username")} />
+        {errors.username && <p>{errors.username.message}</p>}
+      </div>
+
+      <div>
+        <label>Password:</label>
+        <input
+          type={showPassword ? "text" : "password"}
+          {...register("password")}
+        />
+        {errors.password && <p>{errors.password.message}</p>}
+        <button type="button" onClick={() => setShowPassword(!showPassword)}>
+          {showPassword ? "Hide" : "Show"} Password
+        </button>
+      </div>
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      <button type="submit">Login</button>
+    </form>
+  );
 };
 
 export default LoginForm;

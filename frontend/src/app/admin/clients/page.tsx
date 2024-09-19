@@ -1,75 +1,58 @@
-// src/app/admin/clients/page.tsx
-"use_client";
+"use client";
 
-
-import { useEffect, useState } from 'react';
-import { Box, List, ListItem, ListItemText, Typography } from '@mui/material';
-import { useRouter } from 'next/navigation';
-import { fetchClients } from '../../../services/clientApi'; // API call to fetch all clients
+import { useState, useEffect } from 'react';
+import DashboardLayout from '../../../components/admin/DashboardLayout/DashboardLayout'; // Import DashboardLayout
+import MainContentListDetails from '../../../components/admin/MainContent/MainContentListDetails';
+import ClientProfile from '../../../components/admin/clients/ClientProfile';
 import { Client } from '../../../interfaces/client';
+import { fetchClients } from '../../../services/clientApi'; // Ensure you have this API utility function
 
-export default function ClientsPage() {
+const ClientsPage = () => {
     const [clients, setClients] = useState<Client[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const router = useRouter();
+    const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
+    // Fetch clients when the component mounts
     useEffect(() => {
         const loadClients = async () => {
             try {
-                // Fetch all clients
-                const data = await fetchClients();
-                setClients(data);
+                const fetchedClients = await fetchClients();
+                setClients(fetchedClients);
             } catch (error) {
-                console.error('Error fetching clients:', error);
-                setError('Failed to load clients.');
-            } finally {
-                setLoading(false);
+                console.error('Failed to fetch clients:', error);
             }
         };
 
         loadClients();
     }, []);
 
-    // Handler to navigate to a specific client's detail page
-    const handleClientClick = (clientId: number) => {
-        router.push(`/admin/clients/${clientId}`);
+    // Function to render the list item text
+    const renderListItem = (client: Client) => {
+        return `${client.user.first_name} ${client.user.last_name}`;
     };
 
-    // Render loading state
-    if (loading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-                <Typography>Loading clients...</Typography>
-            </Box>
-        );
-    }
+    // Handle the client selection
+    const handleSelectClient = (client: Client) => {
+        setSelectedClient(client);
+    };
 
-    // Render error state
-    if (error) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-                <Typography color="error">{error}</Typography>
-            </Box>
-        );
-    }
+    // Placeholder for the onSave function (Replace with your actual implementation)
+    const handleSaveClient = (client: Client) => {
+        // Logic to handle saving client changes
+        console.log('Client saved:', client);
+    };
 
-    // Render the list of clients
     return (
-        <Box padding={4}>
-            <Typography variant="h4" gutterBottom>
-                Clients
-            </Typography>
-            <List>
-                {clients.map((client) => (
-                    <ListItem key={client.id} component="button" onClick={() => handleClientClick(client.id)} style={{ cursor: 'pointer' }}>
-                    <ListItemText
-                        primary={`${client.user.first_name} ${client.user.last_name}`}
-                        secondary={client.user.email}
-                    />
-                </ListItem>
-                ))}
-            </List>
-        </Box>
+        <DashboardLayout>
+            <MainContentListDetails<Client>
+                items={clients}
+                renderListItem={renderListItem}
+                renderDetails={(client) => (
+                    <ClientProfile client={client} onSave={handleSaveClient} />
+                )}
+                onSelect={handleSelectClient} // Corrected to match MainContentListDetails' prop
+            />
+        </DashboardLayout>
     );
-}
+};
+
+export default ClientsPage;
