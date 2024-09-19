@@ -28,28 +28,33 @@ const LoginForm = ({ onSubmit, error }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label>Username:</label>
-        <input type="text" {...register("username")} />
-        {errors.username && <p>{errors.username.message}</p>}
+    <form onSubmit={handleSubmit(onSubmit)} className="login-form">
+      <div className="form-group">
+        <label>Username</label>
+        <input
+          type="text"
+          {...register("username")}
+          className="form-input"
+        />
+        {errors.username && <p className="error-text">{errors.username.message}</p>}
       </div>
 
-      <div>
-        <label>Password:</label>
+      <div className="form-group">
+        <label>Password</label>
         <input
           type={showPassword ? "text" : "password"}
           {...register("password")}
+          className="form-input"
         />
-        {errors.password && <p>{errors.password.message}</p>}
-        <button type="button" onClick={() => setShowPassword(!showPassword)}>
+        {errors.password && <p className="error-text">{errors.password.message}</p>}
+        <button type="button" className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
           {showPassword ? "Hide" : "Show"} Password
         </button>
       </div>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className="error-text">{error}</p>}
 
-      <button type="submit">Login</button>
+      <button type="submit" className="submit-btn">Login</button>
     </form>
   );
 };

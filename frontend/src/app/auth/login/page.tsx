@@ -1,9 +1,10 @@
 // File: app/auth/login/page.tsx
-"use client"; // Add this at the top to mark it as a Client Component
+"use client"; // This marks the file as a Client Component
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";  // Use next/navigation instead of next/router
+import { useRouter } from "next/navigation";
 import LoginForm from "../../../components/auth/LoginForm";
+import './login.module.css'; // Import the CSS module for styling
 
 const LoginPage = () => {
   const [error, setError] = useState<string | null>(null);
@@ -13,7 +14,7 @@ const LoginPage = () => {
     setError(null);  // Clear any previous errors
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,8 +38,9 @@ const LoginPage = () => {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div className="login-page-container">
+      <h1 className="login-title">Login</h1>
+      <p className="login-description">Enter your credentials below to access your account.</p>
       <LoginForm onSubmit={handleLogin} error={error} />
     </div>
   );
