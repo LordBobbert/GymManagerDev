@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { TextField, Button, Typography, Box, IconButton, InputAdornment } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 interface LoginFormData {
   username: string;
@@ -28,34 +31,54 @@ const LoginForm = ({ onSubmit, error }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="login-form">
-      <div className="form-group">
-        <label>Username</label>
-        <input
-          type="text"
-          {...register("username")}
-          className="form-input"
-        />
-        {errors.username && <p className="error-text">{errors.username.message}</p>}
-      </div>
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
+      <TextField
+        label="Username"
+        fullWidth
+        margin="normal"
+        {...register("username")}
+        error={!!errors.username}
+        helperText={errors.username?.message}
+      />
 
-      <div className="form-group">
-        <label>Password</label>
-        <input
-          type={showPassword ? "text" : "password"}
-          {...register("password")}
-          className="form-input"
-        />
-        {errors.password && <p className="error-text">{errors.password.message}</p>}
-        <button type="button" className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
-          {showPassword ? "Hide" : "Show"} Password
-        </button>
-      </div>
+      <TextField
+        label="Password"
+        fullWidth
+        margin="normal"
+        type={showPassword ? "text" : "password"}
+        {...register("password")}
+        error={!!errors.password}
+        helperText={errors.password?.message}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                onClick={() => setShowPassword(!showPassword)}
+                edge="end"
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          )
+        }}
+      />
 
-      {error && <p className="error-text">{error}</p>}
+      {error && (
+        <Typography color="error" variant="body2">
+          {error}
+        </Typography>
+      )}
 
-      <button type="submit" className="submit-btn">Login</button>
-    </form>
+      <Button
+        type="submit"
+        fullWidth
+        variant="contained"
+        color="primary"
+        sx={{ mt: 2 }}
+      >
+        Login
+      </Button>
+    </Box>
   );
 };
 
