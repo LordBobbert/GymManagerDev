@@ -1,30 +1,24 @@
 // File: app/admin/dashboard/layout.tsx
-import React, { ReactNode } from 'react';
-import Sidebar from './components/Sidebar';
-import TopBar from './components/Topbar';
+import { ReactNode } from 'react';
+import { Box } from '@mui/material';
+import AppBarMenu from './components/AppBarMenu';
 
 interface AdminDashboardLayoutProps {
   children: ReactNode;
   role: 'admin' | 'trainer' | 'client'; // Role-based content switching
 }
 
-const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ children, role }) => {
+const AdminDashboardLayout = ({ children, role }: AdminDashboardLayoutProps) => {
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      {/* Sidebar occupies the left side */}
-      <Sidebar role={role} />
-
-      {/* Main content and TopBar are in a flex column layout */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* TopBar at the top of the page */}
-        <TopBar role={role} />
-
-        {/* Main content area below the TopBar */}
-        <main style={{ flex: 1, padding: '20px', marginTop: '64px' }}>
-          {children}
-        </main>
-      </div>
-    </div>
+    <Box sx={{ display: 'flex', height: '100vh' }}>
+      {/* AppBar with Menu */}
+      <AppBarMenu onMenuToggle={() => {}} role="admin" /> {/* Pass role here */}
+      
+      {/* Main Content Area */}
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        {children}
+      </Box>
+    </Box>
   );
 };
 

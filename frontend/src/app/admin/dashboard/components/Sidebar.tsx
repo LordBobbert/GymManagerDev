@@ -1,78 +1,133 @@
-// File: Sidebar.tsx
-import React from 'react';
-import { Drawer, List, ListItemIcon, ListItemText, ListItemButton, Box } from '@mui/material';
+"use client";
+
+import { useState } from 'react';
+import { Drawer, List, ListItemButton, ListItemIcon, ListItemText, IconButton, Box, Divider } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
-import EventIcon from '@mui/icons-material/Event';
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import ChatIcon from '@mui/icons-material/Chat';
-import Link from 'next/link'; // For navigation
+import MenuOpenIcon from '@mui/icons-material/MenuOpen'; // Icon for toggling sidebar
+import Link from 'next/link';
 import Image from 'next/image';
+import logoBlack from '/public/logo_black.png'; // Correct usage of Next.js Image
 
 interface SidebarProps {
-  role: 'admin' | 'trainer' | 'client';
+  role: 'admin' | 'trainer' | 'client'; // Role-based content switching
+}
+
+interface MenuItem {
+  text: string;
+  icon: JSX.Element;
+  href: string;
 }
 
 const Sidebar = ({ role }: SidebarProps) => {
-  // Define links based on roles
-  const adminLinks = [
-    { text: 'Dashboard', href: '/admin/dashboard', icon: <DashboardIcon /> },
-    { text: 'Clients', href: '/admin/clients', icon: <PeopleIcon /> },
-    { text: 'Trainers', href: '/admin/trainers', icon: <PeopleIcon /> },
-    { text: 'Sessions', href: '/admin/sessions', icon: <EventIcon /> },
-    { text: 'Financials', href: '/admin/financials', icon: <MonetizationOnIcon /> },
-    { text: 'Chat', href: '/admin/chat', icon: <ChatIcon /> },
+  const [isExpanded, setIsExpanded] = useState(true); // Sidebar starts expanded
+
+  const toggleSidebar = () => {
+    setIsExpanded((prev) => !prev);
+  };
+
+  // Menu items for each role
+  const adminMenuItems: MenuItem[] = [
+    { text: 'Dashboard', icon: <DashboardIcon />, href: '/admin/dashboard' },
+    { text: 'Clients', icon: <PeopleIcon />, href: '/admin/clients' },
+    { text: 'Trainers', icon: <FitnessCenterIcon />, href: '/admin/trainers' },
+    { text: 'Sessions', icon: <CalendarTodayIcon />, href: '/admin/sessions' },
+    { text: 'Financials', icon: <MonetizationOnIcon />, href: '/admin/financials' },
+    { text: 'Chat', icon: <ChatIcon />, href: '/admin/chat' },
   ];
 
-  const trainerLinks = [
-    { text: 'Dashboard', href: '/trainer/dashboard', icon: <DashboardIcon /> },
-    { text: 'My Clients', href: '/trainer/clients', icon: <PeopleIcon /> },
-    { text: 'My Sessions', href: '/trainer/sessions', icon: <EventIcon /> },
-    { text: 'Financials', href: '/trainer/financials', icon: <MonetizationOnIcon /> },
-    { text: 'Chat', href: '/trainer/chat', icon: <ChatIcon /> },
+  const trainerMenuItems: MenuItem[] = [
+    { text: 'My Clients', icon: <PeopleIcon />, href: '/trainer/clients' },
+    { text: 'My Sessions', icon: <CalendarTodayIcon />, href: '/trainer/sessions' },
+    { text: 'Chat', icon: <ChatIcon />, href: '/trainer/chat' },
   ];
 
-  const clientLinks = [
-    { text: 'Dashboard', href: '/client/dashboard', icon: <DashboardIcon /> },
-    { text: 'My Sessions', href: '/client/sessions', icon: <EventIcon /> },
-    { text: 'Chat', href: '/client/chat', icon: <ChatIcon /> },
+  const clientMenuItems: MenuItem[] = [
+    { text: 'My Sessions', icon: <CalendarTodayIcon />, href: '/client/sessions' },
+    { text: 'Progress', icon: <FitnessCenterIcon />, href: '/client/progress' },
+    { text: 'Chat', icon: <ChatIcon />, href: '/client/chat' },
   ];
 
-  const links = role === 'admin' ? adminLinks : role === 'trainer' ? trainerLinks : clientLinks;
+  // Select the correct menu items based on role
+  let menuItems: MenuItem[] = [];
+  switch (role) {
+    case 'admin':
+      menuItems = adminMenuItems;
+      break;
+    case 'trainer':
+      menuItems = trainerMenuItems;
+      break;
+    case 'client':
+      menuItems = clientMenuItems;
+      break;
+    default:
+      menuItems = [];
+  }
 
   return (
     <Drawer
       variant="permanent"
       sx={{
-        width: 250,
+        width: isExpanded ? 240 : 60, // Adjust the width based on expansion
         flexShrink: 0,
         '& .MuiDrawer-paper': {
-          width: 250,
+          width: isExpanded ? 240 : 60,
           boxSizing: 'border-box',
-          backgroundColor: '#fff', // White background
-          color: '#000', // Black text for the items
+          transition: 'width 0.3s ease', // Smooth transition when expanding/collapsing
+          boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)', // Add a drop shadow
         },
       }}
     >
-      {/* Logo at the top */}
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'center',
           alignItems: 'center',
-          padding: '20px 0',
+          justifyContent: isExpanded ? 'space-between' : 'center',
+          padding: '10px',
         }}
       >
-        <Image src="/logo_black.png" alt="Logo" width={100} height={100} />
+        {isExpanded && (
+          <Image src={logoBlack} alt="Logo" width={40} height={40} priority />
+        )}
+        <IconButton onClick={toggleSidebar}>
+          <MenuOpenIcon />
+        </IconButton>
       </Box>
-
-      {/* Sidebar Links */}
+      <Divider />
       <List>
-        {links.map((item) => (
-          <Link href={item.href} passHref key={item.text}>
-            <ListItemButton component={Link} href={item.href}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+        {menuItems.map((item, index) => (
+          <Link key={index} href={item.href} passHref style={{ textDecoration: 'none' }}> {/* Removes underline */}
+            <ListItemButton
+              sx={{
+                justifyContent: isExpanded ? 'initial' : 'center',
+                paddingLeft: isExpanded ? 2 : 1,
+                color: '#333', // Default text color
+                '&:hover': {
+                  backgroundColor: '#f0f0f0', // Light gray background on hover
+                  color: '#1976d2', // Change text color on hover
+                },
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  justifyContent: 'center',
+                  minWidth: 0,
+                  mr: isExpanded ? 3 : 'auto',
+                  color: 'inherit', // Inherit text color
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              {isExpanded && (
+                <ListItemText
+                  primary={item.text}
+                  sx={{ color: 'inherit' }} // Ensure the text color inherits the hover color
+                />
+              )}
             </ListItemButton>
           </Link>
         ))}
