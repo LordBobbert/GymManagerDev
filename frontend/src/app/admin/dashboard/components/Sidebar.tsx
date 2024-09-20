@@ -11,13 +11,14 @@ interface ListItemLinkProps {
 }
 
 // Use forwardRef to allow Next.js Link to be passed into ListItemButton correctly
-const ListItemLink = forwardRef<HTMLAnchorElement, ListItemLinkProps>(function ListItemLink(props, ref) {
+const ListItemLink = forwardRef<HTMLDivElement, ListItemLinkProps>(function ListItemLink(props, ref) {
   const { href, children, ...other } = props;
+
   return (
     <Link href={href} passHref>
-      <a ref={ref} {...other}>
+      <ListItemButton ref={ref} {...other}>
         {children}
-      </a>
+      </ListItemButton>
     </Link>
   );
 });
