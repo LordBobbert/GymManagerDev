@@ -1,8 +1,7 @@
-// File: app/auth/login/page.tsx
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; // Import next/navigation for routing
 import LoginForm from "../../../components/auth/LoginForm";
 import { Container, Typography, Box } from '@mui/material';
 
@@ -23,16 +22,26 @@ const LoginPage = () => {
           username: data.username,
           password: data.password,
         }),
-        credentials: 'include',
+        credentials: 'include',  // Ensure cookies are sent/received properly
       });
 
+      const result = await response.json();
+
       if (response.ok) {
-        router.push('/dashboard');
+        // Check if the user has the admin role
+        const isAdmin = result.user.roles.includes("admin");
+
+        if (isAdmin) {
+          // Redirect to admin dashboard
+          router.push('/admin/dashboard');
+        } else {
+          // Handle non-admin users, e.g., show a message or redirect to a different page
+          setError("You don't have admin access.");
+        }
       } else {
-        const responseData = await response.json();
-        setError(responseData.error || 'Login failed');
+        setError(result.error || 'Login failed');
       }
-    } catch (error) {
+    } catch (err) {
       setError('An unexpected error occurred. Please try again.');
     }
   };
