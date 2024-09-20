@@ -1,4 +1,4 @@
-"use client"; // Client-side component
+"use client";
 
 import React, { useState } from 'react';
 import {
@@ -13,7 +13,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 
 interface AppBarMenuProps {
   onMenuToggle: () => void;
-  role: 'admin' | 'trainer' | 'client'; // Ensure that role is passed correctly as a prop
+  role: 'admin' | 'trainer' | 'client';
 }
 
 const AppBarMenu: React.FC<AppBarMenuProps> = ({ onMenuToggle, role }) => {
@@ -27,49 +27,6 @@ const AppBarMenu: React.FC<AppBarMenuProps> = ({ onMenuToggle, role }) => {
     setAnchorEl(null);
   };
 
-  interface MenuItem {
-    text: string;
-    href: string;
-  }
-
-  // Define the menu items
-  const adminMenuItems: MenuItem[] = [
-    { text: 'Dashboard', href: '/admin/dashboard' },
-    { text: 'Clients', href: '/admin/clients' },
-    { text: 'Trainers', href: '/admin/trainers' },
-    { text: 'Sessions', href: '/admin/sessions' },
-    { text: 'Financials', href: '/admin/financials' },
-    { text: 'Chat', href: '/admin/chat' },
-  ];
-
-  const trainerMenuItems: MenuItem[] = [
-    { text: 'My Clients', href: '/trainer/clients' },
-    { text: 'My Sessions', href: '/trainer/sessions' },
-    { text: 'Chat', href: '/trainer/chat' },
-  ];
-
-  const clientMenuItems: MenuItem[] = [
-    { text: 'My Sessions', href: '/client/sessions' },
-    { text: 'Progress', href: '/client/progress' },
-  ];
-
-  // Initialize the menuItems with the correct type
-  let menuItems: MenuItem[] = [];
-
-  switch (role) {
-    case 'admin':
-      menuItems = adminMenuItems;
-      break;
-    case 'trainer':
-      menuItems = trainerMenuItems;
-      break;
-    case 'client':
-      menuItems = clientMenuItems;
-      break;
-    default:
-      menuItems = [];
-  }
-
   return (
     <AppBar position="static">
       <Toolbar>
@@ -77,12 +34,12 @@ const AppBarMenu: React.FC<AppBarMenuProps> = ({ onMenuToggle, role }) => {
           edge="start"
           color="inherit"
           aria-label="menu"
-          onClick={onMenuToggle} // Handle sidebar toggle
+          onClick={onMenuToggle}
         >
           <MenuIcon />
         </IconButton>
 
-        {/* Ensure role is defined and has a value */}
+        {/* Role-based Dashboard Title */}
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           {role ? `${role.charAt(0).toUpperCase() + role.slice(1)} Dashboard` : 'Dashboard'}
         </Typography>

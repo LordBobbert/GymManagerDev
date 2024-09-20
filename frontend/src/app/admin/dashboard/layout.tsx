@@ -1,4 +1,5 @@
 // File: app/admin/dashboard/layout.tsx
+"use client";
 import { ReactNode } from 'react';
 import { Box } from '@mui/material';
 import AppBarMenu from './components/AppBarMenu';
@@ -8,7 +9,7 @@ interface AdminDashboardLayoutProps {
   role: 'admin' | 'trainer' | 'client'; // Role-based content switching
 }
 
-const AdminDashboardLayout = ({ children, role }: AdminDashboardLayoutProps) => {
+const AdminDashboardLayout = ({ children }: AdminDashboardLayoutProps) => {
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       {/* AppBar with Menu */}
