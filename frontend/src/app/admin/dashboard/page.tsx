@@ -1,14 +1,10 @@
 // File: app/admin/dashboard/page.tsx
-import AdminDashboardLayout from './layout';
-import PlaceholderCard from './components/PlaceholderCard';
 
-const AdminDashboard = () => {
+export default function AdminDashboard() {
   return (
-    <AdminDashboardLayout role="admin">
-      <PlaceholderCard title="Admin Home" />
-      <PlaceholderCard title="Admin Overview" />
-    </AdminDashboardLayout>
+    <>
+      {/* Admin-specific content goes here */}
+      <h1>Admin Dashboard Content</h1>
+    </>
   );
-};
-
-export default AdminDashboard;
+}

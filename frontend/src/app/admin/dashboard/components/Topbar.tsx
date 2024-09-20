@@ -1,36 +1,31 @@
-// File: app/admin/dashboard/components/TopBar.tsx
-import { AppBar, Toolbar, Typography, IconButton, Avatar } from '@mui/material';
+// File: components/TopBar.tsx
+"use client";
+
+import { AppBar, Toolbar, Typography, IconButton, InputBase } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 interface TopBarProps {
-  role: 'admin' | 'trainer' | 'client'; // Dynamic role prop
+  role?: 'admin' | 'trainer' | 'client'; // Optional to avoid undefined errors
 }
 
-const TopBar = ({ role }: TopBarProps) => {
-  const getTitle = () => {
-    switch (role) {
-      case 'admin':
-        return 'Admin Dashboard';
-      case 'trainer':
-        return 'Trainer Dashboard';
-      case 'client':
-        return 'Client Dashboard';
-      default:
-        return 'Dashboard';
-    }
-  };
-
+const TopBar = ({ role = 'admin' }: TopBarProps) => {
   return (
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <AppBar position="static" sx={{ zIndex: 1201 }}>
       <Toolbar>
-        <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
+        <IconButton edge="start" color="inherit" aria-label="menu">
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-          {getTitle()} {/* Dynamic title based on role */}
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          {role.charAt(0).toUpperCase() + role.slice(1)} Dashboard
         </Typography>
+        <div style={{ position: 'relative', marginRight: '20px' }}>
+          <SearchIcon />
+          <InputBase placeholder="Search..." inputProps={{ 'aria-label': 'search' }} />
+        </div>
         <IconButton color="inherit">
-          <Avatar alt={`${role} Profile`} src="/path/to/profile-picture.jpg" />
+          <AccountCircleIcon />
         </IconButton>
       </Toolbar>
     </AppBar>
