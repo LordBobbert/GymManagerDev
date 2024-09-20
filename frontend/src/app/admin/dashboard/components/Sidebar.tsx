@@ -1,3 +1,5 @@
+"use client";
+
 import { List, ListItemText, Drawer, ListItemButton } from '@mui/material';
 import Link from 'next/link';
 import { forwardRef } from 'react';

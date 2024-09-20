@@ -1,4 +1,8 @@
 // File: app/admin/dashboard/layout.tsx
+// This could either be a server component if only rendering static data,
+// or a client component if it needs interactivity like passing roles.
+"use client";
+
 import Sidebar from './components/Sidebar';
 import TopBar from './components/Topbar';
 import { ReactNode } from 'react';
@@ -12,10 +16,10 @@ const AdminDashboardLayout = ({ children, role }: AdminDashboardLayoutProps) => 
   return (
     <div style={{ display: 'flex', height: '100vh', flexDirection: 'column' }}>
       <TopBar role={role} /> {/* Pass role to TopBar */}
-      <div style={{ display: 'flex', flexGrow: 1, marginTop: '64px' }}> {/* Margin to offset AppBar height */}
+      <div style={{ display: 'flex', flexGrow: 1, marginTop: '64px' }}>
         <Sidebar role={role} /> {/* Pass role to Sidebar */}
         <main style={{ flex: 1, padding: '20px' }}>
-          {children} {/* Main content */}
+          {children}
         </main>
       </div>
     </div>
