@@ -1,14 +1,14 @@
 // File: app/admin/dashboard/layout.tsx
+import React, { ReactNode } from 'react';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/Topbar';
-import { ReactNode } from 'react';
 
 interface AdminDashboardLayoutProps {
   children: ReactNode;
   role: 'admin' | 'trainer' | 'client'; // Role-based content switching
 }
 
-const AdminDashboardLayout = ({ children, role }: AdminDashboardLayoutProps) => {
+const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ children, role }) => {
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
       {/* Sidebar occupies the left side */}
