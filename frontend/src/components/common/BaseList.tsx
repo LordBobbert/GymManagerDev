@@ -1,4 +1,4 @@
-// File: components/BaseList.tsx
+// File: src/components/common/BaseList.tsx
 "use client";
 
 import React from 'react';

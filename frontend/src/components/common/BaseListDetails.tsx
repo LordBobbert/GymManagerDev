@@ -1,4 +1,4 @@
-// File: components/BaseListDetails.tsx
+// File: src/components/common/BaseListDetails.tsx
 "use client";
 
 import React from 'react';
@@ -18,7 +18,7 @@ const BaseListDetails = ({ selectedItem, getItemDetails }: BaseListDetailsProps)
   return (
     <Card>
       <CardContent>
-        {/* Use client.user.first_name and client.user.last_name */}
+        {/* Display selected client details */}
         <Typography variant="h5">
           {selectedItem.user.first_name} {selectedItem.user.last_name}
         </Typography>

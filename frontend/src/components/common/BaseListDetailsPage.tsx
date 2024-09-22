@@ -1,20 +1,20 @@
-// File: components/BaseListDetailsPage.tsx
-"use client"; // Ensure this is a Client Component
+// File: src/components/common/BaseListDetailsPage.tsx
+"use client"; // Mark this component as client-side
 
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import BaseList from './BaseList';
 import BaseListDetails from './BaseListDetails';
-import { Client } from '../../interfaces/client'; // Adjust path as needed
+import { Client } from '../../interfaces/client';
 
 interface BaseListDetailsPageProps {
-  data: Client[];  // Only pass serializable data (e.g., Client[]), not functions
+  data: Client[];  // Only pass serializable data
 }
 
 const BaseListDetailsPage = ({ data }: BaseListDetailsPageProps) => {
   const [selectedItem, setSelectedItem] = useState<Client | null>(null);
 
-  // Move these functions into the Client Component
+  // These functions are defined locally inside the Client Component
   const getItemText = (client: Client) => `${client.user.first_name} ${client.user.last_name}`;
   const getItemDetails = (client: Client) => `Training Status: ${client.training_status}, Rate Type: ${client.rate_type}`;
 
