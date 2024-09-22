@@ -1,4 +1,4 @@
-// File: src/components/common/BaseListDetailsPage.tsx
+// File: components/BaseListDetailsPage.tsx
 "use client"; // Ensure this is a Client Component
 
 import React, { useState } from 'react';

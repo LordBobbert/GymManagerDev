@@ -19,7 +19,9 @@ const BaseListDetails = ({ selectedItem, getItemDetails }: BaseListDetailsProps)
     <Card>
       <CardContent>
         {/* Use client.user.first_name and client.user.last_name */}
-        <Typography variant="h5">{selectedItem.user.first_name} {selectedItem.user.last_name}</Typography>
+        <Typography variant="h5">
+          {selectedItem.user.first_name} {selectedItem.user.last_name}
+        </Typography>
         <Typography>{getItemDetails(selectedItem)}</Typography>
       </CardContent>
     </Card>

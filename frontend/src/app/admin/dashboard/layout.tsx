@@ -4,7 +4,6 @@ import React, { ReactNode } from 'react';
 import AppBarMenu from './components/AppBarMenu';
 import { Box } from '@mui/material';
 
-// Remove additional props like "role" if unnecessary
 interface AdminDashboardLayoutProps {
   children: ReactNode; // Ensure children is defined, required by Next.js layouts
 }
