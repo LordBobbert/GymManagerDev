@@ -1,28 +1,23 @@
-// File: src/components/common/BaseListDetails.tsx
+// File: components/BaseListDetails.tsx
 "use client";
 
 import React from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
-import { Client } from '../../interfaces/client';  // Import your Client interface
+import { Client } from '../../interfaces/client';
 
 interface BaseListDetailsProps {
-  selectedItem: Client | null;
-  getItemDetails: (item: Client) => string;
+  selectedItem: Client;
+  renderDetails: (item: Client) => string;
 }
 
-const BaseListDetails = ({ selectedItem, getItemDetails }: BaseListDetailsProps) => {
-  if (!selectedItem) {
-    return <Typography>Select an item to view details.</Typography>;
-  }
-
+const BaseListDetails = ({ selectedItem, renderDetails }: BaseListDetailsProps) => {
   return (
     <Card>
       <CardContent>
-        {/* Display selected client details */}
         <Typography variant="h5">
           {selectedItem.user.first_name} {selectedItem.user.last_name}
         </Typography>
-        <Typography>{getItemDetails(selectedItem)}</Typography>
+        <Typography>{renderDetails(selectedItem)}</Typography>
       </CardContent>
     </Card>
   );

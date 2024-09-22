@@ -1,4 +1,5 @@
 // File: src/app/admin/clients/page.tsx
+
 import { cookies } from 'next/headers';
 import React from 'react';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
@@ -23,9 +24,9 @@ const ClientsPage = async () => {
     return <div>Error loading clients.</div>;
   }
 
-  const clients: Client[] = await res.json();  // This is just the data
+  const clients: Client[] = await res.json();  // Ensure clients is typed as Client[]
 
-  // Pass only serializable data to Client Component
+  // Pass the 'clients' array to the 'BaseListDetailsPage' as the 'data' prop
   return <BaseListDetailsPage data={clients} />;
 };
 
