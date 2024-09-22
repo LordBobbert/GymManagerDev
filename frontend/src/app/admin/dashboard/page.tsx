@@ -17,7 +17,7 @@ const AdminDashboard = async () => {
 
   try {
     // Fetch user details from the backend using the access token
-    const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/me`, {
+    const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login/`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
       },
