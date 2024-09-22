@@ -1,20 +1,17 @@
-// File: app/admin/clients/page.tsx (Server-Side Component)
+// File: src/app/admin/clients/page.tsx
+import React from 'react';
+import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
+import { Client } from '../../../interfaces/client';
 
-import List from './List'; // Client-side component
-
-// Server component that fetches data
-export default async function ClientPage() {
-  // Fetch data on the server
-  const response = await fetch('https://api.example.com/clients');
-  const clients = await response.json();
-
-  // Transform the data if needed
-  const transformedClients = clients.map(client => ({
-    id: client.id,
-    name: client.name,
-    email: client.email,
-  }));
-
-  // Pass the transformed data to the client-side component
-  return <List items={transformedClients} />;
+interface ClientsPageProps {
+  clients: Client[];
 }
+
+const ClientsPage = ({ clients }: ClientsPageProps) => {
+  const getItemText = (client: Client) => `${client.user.first_name} ${client.user.last_name}`;
+  const getItemDetails = (client: Client) => `Training Status: ${client.training_status}, Rate Type: ${client.rate_type}`;
+
+  return <BaseListDetailsPage data={clients} getItemText={getItemText} getItemDetails={getItemDetails} />;
+};
+
+export default ClientsPage;
