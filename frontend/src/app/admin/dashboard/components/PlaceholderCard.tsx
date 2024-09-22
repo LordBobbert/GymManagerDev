@@ -1,4 +1,5 @@
-// File: app/admin/dashboard/components/PlaceholderCard.tsx
+// File: src/app/admin/dashboard/components/PlaceholderCard.tsx
+
 import { Card, CardContent, Typography } from '@mui/material';
 
 const PlaceholderCard = ({ title }: { title: string }) => {

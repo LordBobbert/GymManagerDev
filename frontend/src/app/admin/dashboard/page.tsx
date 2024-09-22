@@ -1,10 +1,18 @@
-// frontend\src\app\admin\dashboard\page.tsx
+// File: src/app/admin/dashboard/page.tsx
 
-export default function AdminDashboard() {
+import React from 'react';
+import AdminDashboardLayout from './layout';
+import PlaceholderCard from './components/PlaceholderCard';
+
+const AdminDashboard = () => {
   return (
-    <>
-      <h1>Welcome to the Admin Dashboard</h1>
-    </>
+    <AdminDashboardLayout role="admin">
+      <PlaceholderCard title="Admin Home" />
+      <PlaceholderCard title="Client Management" />
+      <PlaceholderCard title="Session Management" />
+      <PlaceholderCard title="Financial Overview" />
+    </AdminDashboardLayout>
   );
-}
+};
 
+export default AdminDashboard;
