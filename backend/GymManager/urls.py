@@ -5,9 +5,9 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-     # Include user_management URLs with namespace
-    path('api/', include(('user_management.urls', 'user_management'), namespace='user_management')),
+      # Include user_management URLs with a unique path
+    path('api/user-management/', include(('user_management.urls', 'user_management'), namespace='user_management')),
 
-    # Include training_sessions URLs with namespace
-    path('api/', include(('training_sessions.urls', 'training_sessions'), namespace='training_sessions')),
+    # Include training_sessions URLs with a unique path
+    path('api/training-sessions/', include(('training_sessions.urls', 'training_sessions'), namespace='training_sessions')),
 ]
