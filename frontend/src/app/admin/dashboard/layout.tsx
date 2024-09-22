@@ -1,13 +1,13 @@
 // File: src/app/admin/dashboard/layout.tsx
+"use client"; // If you use client-side hooks or state in the layout
 
-"use client";
 import React, { ReactNode } from 'react';
 import AppBarMenu from './components/AppBarMenu';
 import { Box } from '@mui/material';
 
 interface AdminDashboardLayoutProps {
-  children: ReactNode;
-  role: 'admin' | 'trainer' | 'client';  // Ensure 'role' prop is correctly defined
+  children: ReactNode; // Ensure children is defined
+  role: 'admin' | 'trainer' | 'client';  // If you have other props like "role"
 }
 
 const AdminDashboardLayout = ({ children, role }: AdminDashboardLayoutProps) => {
@@ -24,7 +24,7 @@ const AdminDashboardLayout = ({ children, role }: AdminDashboardLayoutProps) => 
           backgroundColor: '#f4f4f4',
         }}
       >
-        {children}
+        {children}  {/* Render children */}
       </Box>
     </Box>
   );
