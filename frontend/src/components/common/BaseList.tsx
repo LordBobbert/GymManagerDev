@@ -1,4 +1,4 @@
-// File: components/BaseList.tsx
+// File: components/common/BaseList.tsx
 "use client";
 
 import React from 'react';
@@ -7,19 +7,19 @@ import { List, ListItemButton, ListItemText } from '@mui/material';
 interface BaseListProps<T> {
   items: T[];
   onItemClick: (item: T) => void;
-  renderText: (item: T) => string;
+  getItemText: (item: T) => string;
 }
 
-const BaseList = <T extends { id: string | number }>({
+const BaseList = <T extends { id: number }>({
   items,
   onItemClick,
-  renderText,
+  getItemText,
 }: BaseListProps<T>) => {
   return (
     <List>
       {items.map((item) => (
         <ListItemButton key={item.id} onClick={() => onItemClick(item)}>
-          <ListItemText primary={renderText(item)} />
+          <ListItemText primary={getItemText(item)} />
         </ListItemButton>
       ))}
     </List>

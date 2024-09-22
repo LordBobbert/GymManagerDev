@@ -1,15 +1,14 @@
-// File: components/BaseListDetailsPage.tsx
+// File: components/common/BaseListDetailsPage.tsx
 "use client";
 
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import BaseList from './BaseList';
 import BaseListDetails from './BaseListDetails';
-import { Client } from '../../interfaces/client';  // Ensure the Client interface is imported correctly
+import { Client } from '../../interfaces/client'; // Import the Client interface
 
-// Ensure props accept 'data' of type Client[]
 interface BaseListDetailsPageProps {
-  data: Client[];  // Type the data as an array of Client
+  data: Client[];  // Array of clients, properly typed
 }
 
 const BaseListDetailsPage = ({ data }: BaseListDetailsPageProps) => {
@@ -19,21 +18,19 @@ const BaseListDetailsPage = ({ data }: BaseListDetailsPageProps) => {
     setSelectedItem(item);
   };
 
+  // These functions are defined inside the Client Component
+  const getItemText = (client: Client) => `${client.user.first_name} ${client.user.last_name}`;
+  const getItemDetails = (client: Client) =>
+    `Training Status: ${client.training_status}, Rate Type: ${client.rate_type}`;
+
   return (
     <Box display="flex" height="100%">
       <Box width="25%">
-        <BaseList
-          items={data}
-          onItemClick={handleItemClick}
-          renderText={(client) => `${client.user.first_name} ${client.user.last_name}`}
-        />
+        <BaseList items={data} onItemClick={handleItemClick} getItemText={getItemText} />
       </Box>
       <Box width="75%" pl={2}>
         {selectedItem && (
-          <BaseListDetails
-            selectedItem={selectedItem}
-            renderDetails={(client) => `Training Status: ${client.training_status}, Rate Type: ${client.rate_type}`}
-          />
+          <BaseListDetails selectedItem={selectedItem} getItemDetails={getItemDetails} />
         )}
       </Box>
     </Box>

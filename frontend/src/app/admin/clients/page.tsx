@@ -1,9 +1,8 @@
 // File: src/app/admin/clients/page.tsx
-
 import { cookies } from 'next/headers';
 import React from 'react';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
-import { Client } from '../../../interfaces/client';
+import { Client } from '../../../interfaces/client'; // Import the Client interface
 
 const ClientsPage = async () => {
   const cookieStore = cookies();
@@ -24,9 +23,9 @@ const ClientsPage = async () => {
     return <div>Error loading clients.</div>;
   }
 
-  const clients: Client[] = await res.json();  // Ensure clients is typed as Client[]
+  const clients: Client[] = await res.json();  // Ensure clients are properly typed
 
-  // Pass the 'clients' array to the 'BaseListDetailsPage' as the 'data' prop
+  // Pass the clients array as 'data' to the Client Component
   return <BaseListDetailsPage data={clients} />;
 };
 
