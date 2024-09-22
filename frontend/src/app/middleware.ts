@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
 
   // Redirect to login if no access token
   if (!accessToken) {
-    return NextResponse.redirect(new URL('/api/auth/login', request.url));
+    return NextResponse.redirect(new URL('/auth/login', request.url));  // Corrected redirection path
   }
 
   // Allow the request to continue if access token exists
