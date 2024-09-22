@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Import next/navigation for routing
+import { useRouter } from "next/navigation";  // For client-side navigation
 import LoginForm from "../../../components/auth/LoginForm";
 import { Container, Typography, Box } from '@mui/material';
 
@@ -22,21 +22,21 @@ const LoginPage = () => {
           username: data.username,
           password: data.password,
         }),
-        credentials: 'include',  // Ensure cookies are sent/received properly
+        credentials: 'include',  // Ensure cookies are included in cross-origin requests
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        // Check if the user has the admin role
-        const isAdmin = result.user.roles.includes("admin");
+        const roles = result.user.roles;
 
-        if (isAdmin) {
-          // Redirect to admin dashboard
-          router.push('/admin/dashboard');
+        // Check roles and redirect accordingly
+        if (roles.includes('admin')) {
+          router.push('/admin/dashboard');  // Redirect to admin dashboard if the user is an admin
+        } else if (roles.includes('trainer')) {
+          router.push('/trainer/dashboard');  // Redirect to trainer dashboard if the user is a trainer
         } else {
-          // Handle non-admin users, e.g., show a message or redirect to a different page
-          setError("You don't have admin access.");
+          setError("You don't have the required permissions.");
         }
       } else {
         setError(result.error || 'Login failed');
