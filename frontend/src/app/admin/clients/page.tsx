@@ -1,38 +1,35 @@
 // File: src/app/admin/clients/page.tsx
-import { GetServerSideProps } from 'next';
-import { Client } from '../../../interfaces/client';
+import { cookies } from 'next/headers'; // Import cookies utility
+import React from 'react';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
+import { Client } from '../../../interfaces/client';
 
-interface ClientsPageProps {
-  clients: Client[];
-}
+const ClientsPage = async () => {
+  const cookieStore = cookies();  // Access cookies on the server
+  const accessToken = cookieStore.get('access_token')?.value;  // Retrieve token
 
-const ClientsPage = ({ clients }: ClientsPageProps) => {
-  const getItemText = (client: Client) => `${client.user.first_name} ${client.user.last_name}`;
-  const getItemDetails = (client: Client) => `Training Status: ${client.training_status}, Rate Type: ${client.rate_type}`;
+  if (!accessToken) {
+    return <div>You must be logged in to view this page.</div>;
+  }
 
-  return <BaseListDetailsPage data={clients} getItemText={getItemText} getItemDetails={getItemDetails} />;
-};
-
-export default ClientsPage;
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  // Fetch clients from API
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/clients/`, {
     headers: {
-      'Authorization': `Bearer ${context.req.cookies['access_token']}`, // Include your token
+      'Authorization': `Bearer ${accessToken}`,  // Use token from cookies
     },
   });
 
   if (!res.ok) {
-    return { notFound: true };  // Handle error if necessary
+    return <div>Error loading clients</div>;
   }
 
-  const clients = await res.json();  // Assuming the response is an array of Client objects
+  const clients: Client[] = await res.json();
 
-  return {
-    props: {
-      clients,  // Pass clients as a prop
-    },
-  };
+  const getItemText = (client: Client) => `${client.user.first_name} ${client.user.last_name}`;
+  const getItemDetails = (client: Client) => `Training Status: ${client.training_status}, Rate Type: ${client.rate_type}`;
+
+  return (
+    <BaseListDetailsPage data={clients} getItemText={getItemText} getItemDetails={getItemDetails} />
+  );
 };
+
+export default ClientsPage;
