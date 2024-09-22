@@ -13,7 +13,7 @@ const AdminDashboardPage = async () => {
   }
 
   // Fetch user details from the backend to validate roles
-  const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/me`, {
+  const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login/`, {
     headers: {
       'Authorization': `Bearer ${accessToken}`,
     },
