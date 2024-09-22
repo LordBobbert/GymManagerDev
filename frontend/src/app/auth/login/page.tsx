@@ -13,7 +13,8 @@ const LoginPage = () => {
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login/`, {
+      // Send a login request to your backend
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -22,7 +23,7 @@ const LoginPage = () => {
           username: data.username,
           password: data.password,
         }),
-        credentials: 'include',  // Ensure cookies are included in cross-origin requests
+        credentials: 'include',  // Ensure cookies are included for cross-origin requests
       });
 
       const result = await response.json();
@@ -30,11 +31,11 @@ const LoginPage = () => {
       if (response.ok) {
         const roles = result.user.roles;
 
-        // Check roles and redirect accordingly
+        // Check roles and redirect to the appropriate dashboard
         if (roles.includes('admin')) {
-          router.push('/admin/dashboard');  // Redirect to admin dashboard if the user is an admin
+          router.push('/admin/dashboard');  // Redirect to admin dashboard if user is an admin
         } else if (roles.includes('trainer')) {
-          router.push('/trainer/dashboard');  // Redirect to trainer dashboard if the user is a trainer
+          router.push('/trainer/dashboard');  // Redirect to trainer dashboard if user is a trainer
         } else {
           setError("You don't have the required permissions.");
         }

@@ -1,43 +1,56 @@
-// File: app/admin/dashboard/page.tsx
+// File: src/app/admin/dashboard/page.tsx
 
 import { redirect } from 'next/navigation';  // Server-side redirection
-import { cookies } from 'next/headers';  // Access cookies server-side
+import { cookies } from 'next/headers';  // To access cookies server-side
+import React from 'react';
+import AdminDashboardLayout from './layout';
+import PlaceholderCard from './components/PlaceholderCard';
 
-const AdminDashboardPage = async () => {
-  const cookieStore = cookies();
-  const accessToken = cookieStore.get('access_token')?.value;
-
-  if (!accessToken) {
-    // Redirect to login page if no access token is found
-    return redirect('/auth/login');
-  }
-
-  // Fetch user details from the backend to validate roles
-  const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/me`, {
+// Fetch current user info from the backend
+const fetchCurrentUser = async (accessToken: string) => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/current_user/`, {
+    method: 'GET',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
     },
+    credentials: 'include',  // Ensure the access token cookie is included
   });
 
-  if (!userRes.ok) {
-    // If token is invalid or expired, redirect to login
-    return redirect('/auth/login');
+  if (!response.ok) {
+    throw new Error('Failed to fetch user info');
   }
 
-  const userData = await userRes.json();
+  return await response.json();  // Expecting user details, including roles
+};
 
-  // Check if the user does not have the 'admin' role, redirect them
-  if (!userData.roles.includes('admin')) {
-    return redirect('/403');  // Redirect to a 403 Forbidden page or another restricted page
+const AdminDashboardPage = async () => {
+  const cookieStore = cookies();  // Access cookies on the server side
+  const accessToken = cookieStore.get('access_token')?.value;
+
+  if (!accessToken) {
+    return redirect('/auth/login');  // Redirect to login if no access token is found
   }
 
-  // If user is an admin, render the admin dashboard page
-  return (
-    <div>
-      <h1>Welcome to Admin Dashboard</h1>
-      {/* Render dashboard content here */}
-    </div>
-  );
+  try {
+    const userData = await fetchCurrentUser(accessToken);
+
+    // Check if the user is not an admin, redirect or show a restricted message
+    if (!userData.roles.includes('admin')) {
+      return redirect('/403');  // Redirect to a 403 Forbidden page or handle as needed
+    }
+
+    // If the user is an admin, render the dashboard
+    return (
+      <AdminDashboardLayout>
+        <PlaceholderCard title="Admin Home" />
+        <PlaceholderCard title="Client Management" />
+        <PlaceholderCard title="Session Management" />
+      </AdminDashboardLayout>
+    );
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    return redirect('/auth/login');  // Redirect if there's an issue fetching user data
+  }
 };
 
 export default AdminDashboardPage;
