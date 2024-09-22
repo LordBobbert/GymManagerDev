@@ -27,4 +27,3 @@ const BaseListDetails = ({ selectedItem }: BaseListDetailsProps) => {
 };
 
 export default BaseListDetails;
-

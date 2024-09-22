@@ -23,4 +23,3 @@ const BaseList = ({ items, onItemClick }: BaseListProps) => {
 };
 
 export default BaseList;
-
