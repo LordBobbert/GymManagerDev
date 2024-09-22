@@ -8,7 +8,7 @@ import PlaceholderCard from './components/PlaceholderCard';
 
 // Fetch current user info from the backend
 const fetchCurrentUser = async (accessToken: string) => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/current_user/`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/current_user/`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
@@ -28,7 +28,7 @@ const AdminDashboardPage = async () => {
   const accessToken = cookieStore.get('access_token')?.value;
 
   if (!accessToken) {
-    return redirect('/auth/login');  // Redirect to login if no access token is found
+    return redirect('/api/auth/login');  // Redirect to login if no access token is found
   }
 
   try {
