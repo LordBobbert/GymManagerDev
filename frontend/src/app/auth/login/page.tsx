@@ -14,7 +14,7 @@ const LoginPage = () => {
 
     try {
       // Send a login request to your backend
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login/`, { // Updated to correct path
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/auth/login/`, { // Updated to correct path
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
