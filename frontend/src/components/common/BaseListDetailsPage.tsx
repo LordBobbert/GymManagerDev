@@ -1,5 +1,5 @@
 // File: components/common/BaseListDetailsPage.tsx
-"use client";
+"use client";  // Mark this as a Client Component
 
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
@@ -8,7 +8,7 @@ import BaseListDetails from './BaseListDetails';
 import { Client } from '../../interfaces/client'; // Import the Client interface
 
 interface BaseListDetailsPageProps {
-  data: Client[];  // Array of clients, properly typed
+  data: Client[];  // Pass the array of clients as props
 }
 
 const BaseListDetailsPage = ({ data }: BaseListDetailsPageProps) => {
@@ -18,20 +18,15 @@ const BaseListDetailsPage = ({ data }: BaseListDetailsPageProps) => {
     setSelectedItem(item);
   };
 
-  // These functions are defined inside the Client Component
-  const getItemText = (client: Client) => `${client.user.first_name} ${client.user.last_name}`;
-  const getItemDetails = (client: Client) =>
-    `Training Status: ${client.training_status}, Rate Type: ${client.rate_type}`;
-
   return (
     <Box display="flex" height="100%">
       <Box width="25%">
-        <BaseList items={data} onItemClick={handleItemClick} getItemText={getItemText} />
+        {/* No more passing functions; handle rendering inside BaseList */}
+        <BaseList items={data} onItemClick={handleItemClick} />
       </Box>
       <Box width="75%" pl={2}>
-        {selectedItem && (
-          <BaseListDetails selectedItem={selectedItem} getItemDetails={getItemDetails} />
-        )}
+        {/* Render details of the selected item directly in BaseListDetails */}
+        {selectedItem && <BaseListDetails selectedItem={selectedItem} />}
       </Box>
     </Box>
   );

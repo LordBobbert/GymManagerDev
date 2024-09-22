@@ -3,23 +3,20 @@
 
 import React from 'react';
 import { List, ListItemButton, ListItemText } from '@mui/material';
+import { Client } from '../../interfaces/client';  // Import the Client interface
 
-interface BaseListProps<T> {
-  items: T[];
-  onItemClick: (item: T) => void;
-  getItemText: (item: T) => string;
+interface BaseListProps {
+  items: Client[];  // Array of clients
+  onItemClick: (item: Client) => void;  // Handle client selection
 }
 
-const BaseList = <T extends { id: number }>({
-  items,
-  onItemClick,
-  getItemText,
-}: BaseListProps<T>) => {
+const BaseList = ({ items, onItemClick }: BaseListProps) => {
   return (
     <List>
-      {items.map((item) => (
-        <ListItemButton key={item.id} onClick={() => onItemClick(item)}>
-          <ListItemText primary={getItemText(item)} />
+      {items.map((client) => (
+        <ListItemButton key={client.id} onClick={() => onItemClick(client)}>
+          {/* Render client name directly */}
+          <ListItemText primary={`${client.user.first_name} ${client.user.last_name}`} />
         </ListItemButton>
       ))}
     </List>

@@ -3,22 +3,24 @@
 
 import React from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
-import { Client } from '../../interfaces/client'; // Import the Client interface
+import { Client } from '../../interfaces/client';  // Import the Client interface
 
 interface BaseListDetailsProps {
-  selectedItem: Client;
-  getItemDetails: (item: Client) => string;
+  selectedItem: Client;  // The selected client object
 }
 
-const BaseListDetails = ({ selectedItem, getItemDetails }: BaseListDetailsProps) => {
+const BaseListDetails = ({ selectedItem }: BaseListDetailsProps) => {
   return (
     <Card>
       <CardContent>
-        {/* Display selected client details */}
+        {/* Render the selected client's name */}
         <Typography variant="h5">
           {selectedItem.user.first_name} {selectedItem.user.last_name}
         </Typography>
-        <Typography>{getItemDetails(selectedItem)}</Typography>
+        {/* Render the selected client's training status and rate type */}
+        <Typography>
+          Training Status: {selectedItem.training_status}, Rate Type: {selectedItem.rate_type}
+        </Typography>
       </CardContent>
     </Card>
   );
