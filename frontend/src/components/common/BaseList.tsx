@@ -1,4 +1,5 @@
 // File: components/BaseList.tsx
+"use client";
 
 import React from 'react';
 import { List, ListItemButton, ListItemText } from '@mui/material';

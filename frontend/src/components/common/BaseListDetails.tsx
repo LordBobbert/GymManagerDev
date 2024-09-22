@@ -1,4 +1,6 @@
 // File: components/BaseListDetails.tsx
+"use client";
+
 import React from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
 import { Client } from '../../interfaces/client';  // Import your Client interface
