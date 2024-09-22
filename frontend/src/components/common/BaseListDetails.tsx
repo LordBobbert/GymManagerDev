@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
-import { Client } from '../../interfaces/client';  // Import the Client interface
+import { Client } from '../../interfaces/client';  // Ensure Client interface is imported
 
 interface BaseListDetailsProps {
   selectedItem: Client;  // The selected client object
@@ -17,7 +17,7 @@ const BaseListDetails = ({ selectedItem }: BaseListDetailsProps) => {
         <Typography variant="h5">
           {selectedItem.user.first_name} {selectedItem.user.last_name}
         </Typography>
-        {/* Render the selected client's training status and rate type */}
+        {/* Render additional details like training status and rate type */}
         <Typography>
           Training Status: {selectedItem.training_status}, Rate Type: {selectedItem.rate_type}
         </Typography>
@@ -27,3 +27,4 @@ const BaseListDetails = ({ selectedItem }: BaseListDetailsProps) => {
 };
 
 export default BaseListDetails;
+

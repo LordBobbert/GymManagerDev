@@ -2,7 +2,7 @@
 import { cookies } from 'next/headers';
 import React from 'react';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
-import { Client } from '../../../interfaces/client'; // Import the Client interface
+import { Client } from '../../../interfaces/client';  // Import the Client interface
 
 const ClientsPage = async () => {
   const cookieStore = cookies();

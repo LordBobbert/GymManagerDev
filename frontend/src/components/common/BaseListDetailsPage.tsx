@@ -1,14 +1,17 @@
 // File: components/common/BaseListDetailsPage.tsx
+"use client";
 
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
-import { Client } from '../../interfaces/client';  // Import Client interface
+import BaseList from './BaseList';
+import BaseListDetails from './BaseListDetails';
+import { Client } from '../../interfaces/client';  // Ensure Client interface is imported
 
 interface BaseListDetailsPageProps {
-  data: Client[];
+  data: Client[];  // Array of clients (or other items)
 }
 
-// Define the getClientDetails function here
+// Define the getClientDetails function
 async function getClientDetails(clientId: number): Promise<Client> {
   const res = await fetch(`/api/clients/${clientId}`);
   if (!res.ok) {
@@ -20,7 +23,7 @@ async function getClientDetails(clientId: number): Promise<Client> {
 
 const BaseListDetailsPage = ({ data }: BaseListDetailsPageProps) => {
   const [selectedItem, setSelectedItem] = useState<Client | null>(null);
-  const [clientDetails, setClientDetails] = useState<Client | null>(null);
+  const [clientDetails, setClientDetails] = useState<Client | null>(null);  // Store client details
 
   const handleItemClick = async (item: Client) => {
     setSelectedItem(item);  // Set the selected client
@@ -37,20 +40,13 @@ const BaseListDetailsPage = ({ data }: BaseListDetailsPageProps) => {
   return (
     <Box display="flex" height="100%">
       <Box width="25%">
-        {/* Render the client list and handle clicks */}
-        {data.map(client => (
-          <div key={client.id} onClick={() => handleItemClick(client)}>
-            {client.user.first_name} {client.user.last_name}
-          </div>
-        ))}
+        {/* Render the client list */}
+        <BaseList items={data} onItemClick={handleItemClick} />
       </Box>
       <Box width="75%" pl={2}>
-        {selectedItem && (
-          <>
-            <h2>{selectedItem.user.first_name} {selectedItem.user.last_name}</h2>
-            {/* Display additional details from clientDetails */}
-            <p>{clientDetails ? clientDetails.training_status : 'Loading details...'}</p>
-          </>
+        {/* Render the details of the selected client */}
+        {clientDetails && (
+          <BaseListDetails selectedItem={clientDetails} />
         )}
       </Box>
     </Box>
