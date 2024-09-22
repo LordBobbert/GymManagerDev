@@ -8,7 +8,7 @@ import BaseListDetails from './BaseListDetails';
 import { Client } from '../../interfaces/client';  // Ensure Client interface is imported
 
 interface BaseListDetailsPageProps {
-  data: Client[];  // Array of clients (or other items)
+  data: Client[];
 }
 
 // Define the getClientDetails function
@@ -22,12 +22,9 @@ async function getClientDetails(clientId: number): Promise<Client> {
 }
 
 const BaseListDetailsPage = ({ data }: BaseListDetailsPageProps) => {
-  const [selectedItem, setSelectedItem] = useState<Client | null>(null);
   const [clientDetails, setClientDetails] = useState<Client | null>(null);  // Store client details
 
   const handleItemClick = async (item: Client) => {
-    setSelectedItem(item);  // Set the selected client
-    
     try {
       const details = await getClientDetails(item.id);  // Fetch detailed client info
       setClientDetails(details);  // Store the detailed client info in state
