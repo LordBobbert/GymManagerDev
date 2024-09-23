@@ -1,13 +1,10 @@
+// middleware.ts
+
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get('access_token')?.value;
-
-  // Log additional information for debugging
-  console.log('Middleware triggered for URL:', request.url);
-  console.log('Request Headers:', request.headers);
-  console.log('Access Token:', accessToken);
 
   // If no access token, redirect to login
   if (!accessToken) {
@@ -18,9 +15,7 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-
-
-// Apply middleware to admin routes
+// Apply middleware to protected routes
 export const config = {
-  matcher: ['/admin/:path*', '/protected/:path*'],
+  matcher: ['/admin/:path*', '/protected/:path*'],  // Protect these routes
 };

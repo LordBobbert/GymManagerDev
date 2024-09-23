@@ -1,20 +1,15 @@
-# File: authentication_views.py
+# authentication_views.py
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+from user_management.utils import set_jwt_cookies  # Ensure set_jwt_cookies is imported correctly
 from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken, TokenError
-from user_management.utils import set_jwt_cookies
 from user_management.serializers import UserSerializer
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.views import TokenRefreshView
 
 class LoginView(APIView):
-    """
-    View for handling user login and setting JWT tokens in cookies.
-    """
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -22,11 +17,6 @@ class LoginView(APIView):
         # Authenticate the user
         user = authenticate(username=username, password=password)
         if user is not None:
-            if not user.is_active:
-                # Log inactive user attempts
-                print(f"User {username} is inactive.")
-                return Response({'error': 'User is inactive'}, status=status.HTTP_401_UNAUTHORIZED)
-
             try:
                 # Create refresh token for the user
                 refresh = RefreshToken.for_user(user)
@@ -40,57 +30,40 @@ class LoginView(APIView):
                     },
                 })
 
-                # Set JWT cookies for access and refresh tokens
+                # Set JWT cookies
                 response = set_jwt_cookies(response, refresh)
 
                 return response
             except Exception as e:
-                # Log errors during token generation
                 print(f"Error during token generation or response: {e}")
-                return Response({'error': 'Token generation failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({'error': 'Token generation failed'}, status=500)
 
-        # Log failed login attempts
         print(f"Invalid login attempt for user: {username}")
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'error': 'Invalid credentials'}, status=401)
 
 
-class CookieTokenRefreshView(TokenRefreshView):
-    """
-    View for handling refresh token and setting new access and refresh tokens in cookies.
-    """
+class CookieTokenRefreshView(APIView):
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get('refresh_token')
         if refresh_token:
             try:
                 refresh = RefreshToken(refresh_token)
                 response = Response()
-                set_jwt_cookies(response, refresh)  # Re-set cookies with the new tokens
+                set_jwt_cookies(response, refresh)
                 return response
             except TokenError:
-                # Delete cookies if refresh token is expired or invalid
-                response = Response({'error': 'Refresh token expired or invalid'}, status=status.HTTP_401_UNAUTHORIZED)
-                response.delete_cookie('access_token')
-                response.delete_cookie('refresh_token')
-                return response
-        return Response({'error': 'No refresh token found'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'Refresh token expired or invalid'}, status=401)
+        return Response({'error': 'No refresh token found'}, status=400)
 
 
 class LogoutView(APIView):
-    """
-    View to handle user logout and clearing of JWT tokens from cookies.
-    """
     def post(self, request):
         try:
             refresh_token = request.COOKIES.get('refresh_token')
-            if refresh_token:
-                token = RefreshToken(refresh_token)
-                token.blacklist()  # Blacklist the refresh token
-            else:
-                print("No refresh token found in cookies.")
+            token = RefreshToken(refresh_token)
+            token.blacklist()
         except Exception as e:
-            print(f"Error during logout: {e}")
-
-        # Clear the access and refresh token cookies
+            pass
         response = Response({'message': 'Logged out successfully'})
         response.delete_cookie('access_token')
         response.delete_cookie('refresh_token')
@@ -98,33 +71,8 @@ class LogoutView(APIView):
 
 
 class CurrentUserView(APIView):
-    """
-    View for fetching the current authenticated user's data.
-    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user_serializer = UserSerializer(request.user)
         return Response(user_serializer.data)
-
-
-# Custom JWT Authentication class that retrieves tokens from cookies or the Authorization header
-class CustomJWTAuthentication(JWTAuthentication):
-    def authenticate(self, request):
-        # Try to get the token from the 'access_token' cookie
-        raw_token = request.COOKIES.get('access_token')
-
-        if raw_token is None:
-            # Fallback to the Authorization header (Bearer token)
-            header = self.get_header(request)
-            raw_token = self.get_raw_token(header)
-
-        if raw_token is None:
-            print("No JWT token found in request")
-            return None
-
-        try:
-            return self.get_user_and_token(raw_token)
-        except TokenError as e:
-            print(f"Invalid token: {e}")
-            return None

@@ -131,7 +131,7 @@ SIMPLE_JWT = {
     # Cookie-related settings (you are already using JWT in cookies)
     'COOKIE_SECURE': True,                           # Use secure cookies (only for HTTPS)
     'COOKIE_HTTPONLY': True,                         # Prevent JavaScript access to the cookies
-    'COOKIE_SAMESITE': 'Lax',                        # For CSRF protection in the cookies
+    'COOKIE_SAMESITE': 'None',                        # For CSRF protection in the cookies
 }
 SECURE_COOKIES=True
 
