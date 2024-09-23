@@ -5,13 +5,15 @@ from django.shortcuts import get_object_or_404
 from user_management.models import TrainerProfile, ClientProfile
 from user_management.serializers import ClientProfileSerializer
 
-
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsAdmin])
+@permission_classes([IsAuthenticated, IsAdmin])  # Ensure user is authenticated and has the admin role
 def admin_dashboard(request):
-    if request.user.role != 'admin':
+    # Check if the user has the 'admin' role
+    if not request.user.roles.filter(name='admin').exists():
         return Response({'detail': 'Access denied'}, status=403)
+
     return Response({'message': 'Welcome to the admin dashboard!'})
+
 
 
 @api_view(['GET'])
