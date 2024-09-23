@@ -33,7 +33,7 @@ const LoginPage = () => {
 
         // Check roles and redirect to the appropriate dashboard
         if (roles.includes('admin')) {
-          router.push('/api/user-management/admin/dashboard');  // Redirect to admin dashboard if user is an admin
+          router.push('/admin/dashboard');  // Redirect to admin dashboard if user is an admin
         } else if (roles.includes('trainer')) {
           router.push('/trainer/dashboard');  // Redirect to trainer dashboard if user is a trainer
         } else {

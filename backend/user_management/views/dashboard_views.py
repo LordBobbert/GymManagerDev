@@ -1,5 +1,5 @@
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdmin
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from user_management.models import TrainerProfile, ClientProfile
@@ -7,7 +7,7 @@ from user_management.serializers import ClientProfileSerializer
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdmin])
 def admin_dashboard(request):
     if request.user.role != 'admin':
         return Response({'detail': 'Access denied'}, status=403)
