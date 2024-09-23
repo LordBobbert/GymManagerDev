@@ -31,6 +31,11 @@ urlpatterns = [
     path('trainer/dashboard/', dashboard_views.trainer_dashboard, name='trainer_dashboard'),
     path('client/dashboard/', dashboard_views.client_dashboard, name='client_dashboard'),
 
+    # user_management/urls.py or admin URLs
+    path('admin/clients/', client_views.ClientProfileViewSet.as_view(), name='admin_clients'),
+
+
     # Include the router URLs for users, clients, and trainers
     path('', include(router.urls)),  # This will include /admin/clients/, /admin/trainers/, and /admin/users/ endpoints
 ]
+
