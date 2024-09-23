@@ -28,7 +28,10 @@ SECRET_KEY=os.getenv('DJANGO_SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['unifiedgymmanager-auc4gramc0b4fcgb.canadacentral-01.azurewebsites.net',
-                 'calm-tree-0e675c90f.5.azurestaticapps.net']
+                 'calm-tree-0e675c90f.5.azurestaticapps.net',
+                 '169.254.129.3',  # The IP you saw in the error
+                 '169.254.129.4'   # You can keep adding more IPs
+]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
