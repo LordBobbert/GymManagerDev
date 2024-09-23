@@ -1,9 +1,10 @@
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, IsAdmin
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from user_management.models import TrainerProfile, ClientProfile
 from user_management.serializers import ClientProfileSerializer
+from user_management.permissions import IsAdmin
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdmin])  # Ensure user is authenticated and has the admin role
