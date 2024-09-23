@@ -1,7 +1,9 @@
+// File: src/app/auth/login/page.tsx
+
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";  // For client-side navigation
+import { useRouter } from "next/navigation";
 import LoginForm from "../../../components/auth/LoginForm";
 import { Container, Typography, Box } from '@mui/material';
 
@@ -13,8 +15,7 @@ const LoginPage = () => {
     setError(null);
 
     try {
-      // Send a login request to your backend
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/auth/login/`, {  // Ensure this path matches Django URL
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/auth/login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -23,7 +24,7 @@ const LoginPage = () => {
           username: data.username,
           password: data.password,
         }),
-        credentials: 'include',  // Ensure cookies are included for cross-origin requests
+        credentials: 'include',
       });
 
       const result = await response.json();
@@ -31,11 +32,10 @@ const LoginPage = () => {
       if (response.ok) {
         const roles = result.user.roles;
 
-        // Check roles and redirect to the appropriate dashboard
         if (roles.includes('admin')) {
-          router.push('/admin/dashboard');  // Redirect to admin dashboard if user is an admin
+          router.push('/admin/dashboard');
         } else if (roles.includes('trainer')) {
-          router.push('/trainer/dashboard');  // Redirect to trainer dashboard if user is a trainer
+          router.push('/trainer/dashboard');
         } else {
           setError("You don't have the required permissions.");
         }
@@ -50,9 +50,7 @@ const LoginPage = () => {
   return (
     <Container component="main" maxWidth="xs">
       <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography component="h1" variant="h5">
-          Login
-        </Typography>
+        <Typography component="h1" variant="h5">Login</Typography>
         <Typography component="p" variant="body1" sx={{ mt: 1, textAlign: 'center' }}>
           Enter your credentials below to access your account.
         </Typography>

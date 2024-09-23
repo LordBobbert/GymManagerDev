@@ -4,10 +4,8 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { User } from '../../../../interfaces/User'; // Adjust the import path as needed
 
-// Access your API base URL from the environment variable
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-// Function to authenticate against your Django backend
 async function authenticateWithDjango(username: string, password: string) {
   const res = await fetch(`${API_BASE_URL}/api/user-management/auth/login/`, {
     method: 'POST',
@@ -21,11 +19,11 @@ async function authenticateWithDjango(username: string, password: string) {
   });
 
   if (!res.ok) {
-    return null;  // Authentication failed
+    return null;
   }
 
   const userData = await res.json();
-  return userData;  // The user data returned from Django on successful authentication
+  return userData;
 }
 
 export const authOptions: NextAuthOptions = {
@@ -37,35 +35,25 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials: { username: string, password: string } | undefined): Promise<User | null> {
-        if (!credentials) {
-          return null;
-        }
+        if (!credentials) return null;
 
-        // Delegate authentication to Django backend using the environment variable
         const user = await authenticateWithDjango(credentials.username, credentials.password);
 
-        if (!user) {
-          return null;  // Authentication failed
-        }
+        if (!user) return null;
 
-        // Return the user object (you can adjust the fields as per your User interface)
         return {
-          id: String(user.id),  // Ensure id is a string as per next-auth expectations
+          id: String(user.id),
           username: user.username,
           email: user.email,
           first_name: user.first_name,
           last_name: user.last_name,
-          roles: user.roles  // Adjust according to your backend's response
+          roles: user.roles
         };
       }
     })
   ],
-  session: {
-    strategy: 'jwt',  // Use JWT for session tokens
-  },
-  pages: {
-    signIn: '/auth/login',  // Redirect to login page on failure
-  }
+  session: { strategy: 'jwt' },
+  pages: { signIn: '/auth/login' }
 };
 
 export default NextAuth(authOptions);
