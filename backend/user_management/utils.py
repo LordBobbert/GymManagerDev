@@ -21,7 +21,7 @@ def set_jwt_cookies(response, refresh):
         secure=True,  # Set to True if using HTTPS
         samesite='None',
         max_age=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'].total_seconds(),  # Set expiration time
-        path='/api/auth/refresh/',  # Restrict to refresh endpoint (optional)
+        path='/',  # Restrict to refresh endpoint (optional)
     )
 
     return response
