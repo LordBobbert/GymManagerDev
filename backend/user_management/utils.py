@@ -10,7 +10,7 @@ def set_jwt_cookies(response, refresh):
         secure=True,  # Set to True if using HTTPS
         samesite='None',
         max_age=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'].total_seconds(),  # Set expiration time
-        path='/api/',  # Restrict the cookie to your API paths (optional)
+        path='/',  # Restrict the cookie to your API paths (optional)
     )
 
     # Refresh token settings
