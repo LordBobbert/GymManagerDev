@@ -8,7 +8,7 @@ import PlaceholderCard from './components/PlaceholderCard';
 
 // Fetch current user info from the backend
 const fetchCurrentUser = async (accessToken: string) => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/auth/current_user/`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/current_user/`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
