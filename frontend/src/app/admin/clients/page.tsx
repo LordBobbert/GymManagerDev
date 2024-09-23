@@ -1,32 +1,29 @@
 // File: src/app/admin/clients/page.tsx
-import { cookies } from 'next/headers';
 import React from 'react';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
-import { Client } from '../../../interfaces/client';  // Import the Client interface
+import { Client } from '../../../interfaces/client';
 
+// Fetch the client data server-side using cookies
 const ClientsPage = async () => {
-  const cookieStore = cookies();
-  const accessToken = cookieStore.get('access_token')?.value;
+  try {
+    // Fetch clients data from the server
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/clients/`, {
+      credentials: 'include',  // Ensure cookies are included in cross-origin requests
+    });
 
-  if (!accessToken) {
-    return <div>You must be logged in to view clients.</div>;
-  }
+    if (!res.ok) {
+      throw new Error('Failed to fetch clients');
+    }
 
-  // Fetch clients data from the server
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/clients/`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+    const clients: Client[] = await res.json();  // Parse response as an array of clients
 
-  if (!res.ok) {
+    // Pass the clients array as 'data' to the Client Component
+    return <BaseListDetailsPage data={clients} />;
+  } catch (error) {
+    // Display an error if something goes wrong
+    console.error('Error fetching clients:', error);
     return <div>Error loading clients.</div>;
   }
-
-  const clients: Client[] = await res.json();  // Ensure clients are properly typed
-
-  // Pass the clients array as 'data' to the Client Component
-  return <BaseListDetailsPage data={clients} />;
 };
 
 export default ClientsPage;

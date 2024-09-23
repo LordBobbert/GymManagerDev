@@ -9,16 +9,15 @@ from .views import (
     user_management_views,
     client_views,
     trainer_views
-    
 )
 
 app_name = 'user_management'
 
 # Set up the router for ViewSets
 router = DefaultRouter()
-router.register(r'clients', client_views.ClientProfileViewSet, basename='clientprofile')
-router.register(r'trainers', trainer_views.TrainerProfileViewSet, basename='trainerprofile')
-router.register(r'users', user_management_views.UserViewSet, basename='user')
+router.register(r'admin/clients', client_views.ClientProfileViewSet, basename='clientprofile')
+router.register(r'admin/trainers', trainer_views.TrainerProfileViewSet, basename='trainerprofile')
+router.register(r'admin/users', user_management_views.UserViewSet, basename='user')
 
 urlpatterns = [
     # Authentication routes
@@ -26,8 +25,6 @@ urlpatterns = [
     path('auth/logout/', authentication_views.LogoutView.as_view(), name='logout'),
     path('auth/refresh/', authentication_views.CookieTokenRefreshView.as_view(), name='token_refresh'),
     path('auth/current_user/', CurrentUserView.as_view(), name='current_user'),
-    
-
 
     # Dashboard routes
     path('admin/dashboard/', dashboard_views.admin_dashboard, name='admin_dashboard'),
@@ -35,5 +32,5 @@ urlpatterns = [
     path('client/dashboard/', dashboard_views.client_dashboard, name='client_dashboard'),
 
     # Include the router URLs for users, clients, and trainers
-    path('', include(router.urls)),  # This will include /api/clients/, /api/trainers/, and /api/users/ endpoints
+    path('', include(router.urls)),  # This will include /admin/clients/, /admin/trainers/, and /admin/users/ endpoints
 ]
