@@ -10,9 +10,6 @@ import PlaceholderCard from './components/PlaceholderCard';
 const fetchCurrentUser = async (accessToken: string) => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/current_user/`, {
     method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-    },
     credentials: 'include',  // Ensure the access token cookie is included
   });
 
