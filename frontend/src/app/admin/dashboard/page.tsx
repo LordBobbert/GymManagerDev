@@ -6,11 +6,11 @@ import React from 'react';
 import AdminDashboardLayout from './layout';
 import PlaceholderCard from './components/PlaceholderCard';
 
-// Fetch current user info from the backend
-const fetchCurrentUser = async (accessToken: string) => {
+// Function to fetch current user info from the backend using cookies for authentication
+const fetchCurrentUser = async () => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/current_user/`, {
     method: 'GET',
-    credentials: 'include',  // Ensure the access token cookie is included
+    credentials: 'include',  // Automatically include the cookies (access_token) in the request
   });
 
   if (!response.ok) {
@@ -22,14 +22,14 @@ const fetchCurrentUser = async (accessToken: string) => {
 
 const AdminDashboardPage = async () => {
   const cookieStore = cookies();  // Access cookies on the server side
-  const accessToken = cookieStore.get('access_token')?.value;
+  const accessToken = cookieStore.get('access_token')?.value;  // Check if access_token is present
 
   if (!accessToken) {
-    return redirect('/auth/login');  // Corrected redirection path
+    return redirect('/auth/login');  // Redirect to login if no access token is found
   }
 
   try {
-    const userData = await fetchCurrentUser(accessToken);
+    const userData = await fetchCurrentUser();  // Fetch user data using the access token stored in cookies
 
     // Check if the user is not an admin, redirect or show a restricted message
     if (!userData.roles.includes('admin')) {

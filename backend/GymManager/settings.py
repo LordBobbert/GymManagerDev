@@ -102,9 +102,10 @@ AUTH_USER_MODEL = 'user_management.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'user_management.authentication.CustomJWTAuthentication',  # Use the custom authentication class
     ),
 }
+
 
 # Simple JWT Configuration
 SIMPLE_JWT = {
