@@ -4,8 +4,8 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get('access_token')?.value;
 
-  console.log('Access Token:', accessToken);
-
+  // Log the access token for debugging
+  console.log('Middleware Access Token:', accessToken);
 
   // If no access token, redirect to login
   if (!accessToken) {
@@ -15,6 +15,7 @@ export function middleware(request: NextRequest) {
   // Allow the request to continue if access token exists
   return NextResponse.next();
 }
+
 
 // Apply middleware to admin routes
 export const config = {
