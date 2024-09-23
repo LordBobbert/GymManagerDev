@@ -10,17 +10,23 @@ const ClientsPage = async () => {
       credentials: 'include',  // Cookies will be included automatically
     });
 
+    // Log status and content-type for debugging
+    console.log("Response status:", res.status);
+    console.log("Response content-type:", res.headers.get('content-type'));
+
     // Check if response is not OK (e.g., 4xx or 5xx status codes)
     if (!res.ok) {
-      console.error("Error loading clients:", await res.text());
-      return <div>Error loading clients.</div>;
+      const errorText = await res.text();  // Read the full response body
+      console.error("Error loading clients:", errorText);
+      return <div>Error loading clients: {errorText}</div>;
     }
 
     // Check if the response is in JSON format before attempting to parse
     const contentType = res.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
-      console.error("Non-JSON response:", await res.text());
-      return <div>Error loading clients: Non-JSON response received.</div>;
+      const errorText = await res.text();
+      console.error("Non-JSON response:", errorText);
+      return <div>Error loading clients: Non-JSON response received. {errorText}</div>;
     }
 
     // Parse the JSON response
@@ -35,5 +41,6 @@ const ClientsPage = async () => {
     return <div>Error loading clients: {String(error)}.</div>;
   }
 };
+
 
 export default ClientsPage;
