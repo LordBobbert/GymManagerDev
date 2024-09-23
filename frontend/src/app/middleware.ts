@@ -4,6 +4,9 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get('access_token')?.value;
 
+  console.log('Access Token:', accessToken);
+
+
   // If no access token, redirect to login
   if (!accessToken) {
     return NextResponse.redirect(new URL('/auth/login', request.url));
