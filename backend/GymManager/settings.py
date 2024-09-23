@@ -28,7 +28,7 @@ SECRET_KEY=os.getenv('DJANGO_SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['unifiedgymmanager-auc4gramc0b4fcgb.canadacentral-01.azurewebsites.net',
-                 '169.254.129.3']
+                 'calm-tree-0e675c90f.5.azurestaticapps.net']
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
