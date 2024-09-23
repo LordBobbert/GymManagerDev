@@ -135,15 +135,22 @@ SIMPLE_JWT = {
 }
 SECURE_COOKIES=True
 
+
 # CORS configuration
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     'https://calm-tree-0e675c90f.5.azurestaticapps.net',  # Frontend
     'https://unifiedgymmanager-auc4gramc0b4fcgb.canadacentral-01.azurewebsites.net'  # Backend
 ]
-
 CORS_ORIGIN_WHITELIST = [
     'https://calm-tree-0e675c90f.5.azurestaticapps.net',  # Add your frontend URL
+]
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'Access-Control-Allow-Credentials',
+    'X-CSRFToken',
+    # Add any additional headers your app may need
 ]
 
 CSRF_COOKIE_SECURE = True
