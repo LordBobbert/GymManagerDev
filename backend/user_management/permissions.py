@@ -11,5 +11,9 @@ class IsAdminOrTrainer(BasePermission):
     
 class IsAdmin(BasePermission):
     def has_permission(self, request, view):
+        # Check if the user is authenticated and if the user has any roles
+        if not request.user.is_authenticated or not request.user.roles.exists():
+            return False
         # Check if the user has the 'admin' role
         return request.user.roles.filter(name='admin').exists()
+
