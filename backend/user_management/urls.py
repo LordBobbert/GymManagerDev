@@ -13,9 +13,9 @@ app_name = 'user_management'
 
 # Set up the router for ViewSets
 router = DefaultRouter()
-router.register(r'admin/clients', client_views.ClientProfileViewSet, basename='clientprofile')
-router.register(r'admin/trainers', trainer_views.TrainerProfileViewSet, basename='trainerprofile')
-router.register(r'admin/users', user_management_views.UserViewSet, basename='user')
+router.register(r'api/admin/clients', client_views.ClientProfileViewSet, basename='clientprofile')
+router.register(r'api/admin/trainers', trainer_views.TrainerProfileViewSet, basename='trainerprofile')
+router.register(r'api/admin/users', user_management_views.UserViewSet, basename='user')
 
 urlpatterns = [
     # Authentication routes
@@ -26,9 +26,7 @@ urlpatterns = [
 
     # Dashboard routes
     path('admin/dashboard/', dashboard_views.admin_dashboard, name='admin_dashboard'),
-    path('trainer/dashboard/', dashboard_views.trainer_dashboard, name='trainer_dashboard'),
-    path('client/dashboard/', dashboard_views.client_dashboard, name='client_dashboard'),
 
-    # Include the router URLs for users, clients, and trainers
-    path('', include(router.urls)),  # This will include /admin/clients/, /admin/trainers/, and /admin/users/ endpoints
+    # API routes
+    path('', include(router.urls)),  # This will include /api/admin/clients/, /api/admin/trainers/, and /api/admin/users/ endpoints
 ]
