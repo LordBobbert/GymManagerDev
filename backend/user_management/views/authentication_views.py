@@ -25,6 +25,12 @@ from django.middleware.csrf import get_token
 from user_management.utils import set_jwt_cookies
 from rest_framework import status
 
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
+from django.contrib.auth import authenticate
+
 class LoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
@@ -33,25 +39,32 @@ class LoginView(APIView):
         # Authenticate the user
         user = authenticate(username=username, password=password)
         if user is not None:
-            # Create a refresh token for the user
-            refresh = RefreshToken.for_user(user)
+            try:
+                # Create refresh token for the user
+                refresh = RefreshToken.for_user(user)
 
-            # Create the response
-            response = Response({
-                'message': 'Login successful',
-                'user': {
-                    'username': user.username,
-                    'roles': [role.name for role in user.roles.all()],
-                },
-            })
+                # Create a response with tokens and set cookies
+                response = Response({
+                    'message': 'Login successful',
+                    'user': {
+                        'username': user.username,
+                        'roles': [role.name for role in user.roles.all()],
+                    },
+                })
 
-            # Set JWT cookies in the response (httpOnly)
-            set_jwt_cookies(response, refresh)
+                # Set JWT cookies
+                response = set_jwt_cookies(response, refresh)
 
-            return response
+                return response
+            except Exception as e:
+                # Log error in the case of failure
+                print(f"Error during token generation or response: {e}")
+                return Response({'error': 'Token generation failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # If authentication fails, return an error response
+        # Log failed login attempts
+        print(f"Invalid login attempt for user: {username}")
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 

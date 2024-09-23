@@ -115,8 +115,8 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,                       # Use the Django SECRET_KEY for signing tokens
     'VERIFYING_KEY': None,                           # Only needed if you're using asymmetric algorithms (RS256)
     
-    # 'AUTH_HEADER_TYPES': ('Bearer',),                # Specifies the type of token in the Authorization header (typically Bearer)
-    # 'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'AUTH_HEADER_TYPES': ('Bearer',),                # Specifies the type of token in the Authorization header (typically Bearer)
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     
     'TOKEN_USER_CLASS': 'user_management.models.User',  # If you're using a custom user model
     'TOKEN_TYPE_CLAIM': 'token_type',
