@@ -5,7 +5,7 @@ import { Client } from '../../../interfaces/client';  // Import the Client inter
 
 const ClientsPage = async () => {
   // Fetch clients data from the server
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/clients/`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/clients/`, {
     credentials: 'include',  // Cookies will be included automatically
   });
 
