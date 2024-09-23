@@ -1,29 +1,22 @@
 // File: src/app/admin/clients/page.tsx
 import React from 'react';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
-import { Client } from '../../../interfaces/client';
+import { Client } from '../../../interfaces/client';  // Import the Client interface
 
-// Fetch the client data server-side using cookies
 const ClientsPage = async () => {
-  try {
-    // Fetch clients data from the server
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/clients/`, {
-      credentials: 'include',  // Ensure cookies are included in cross-origin requests
-    });
+  // Fetch clients data from the server
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/clients/`, {
+    credentials: 'include',  // Cookies will be included automatically
+  });
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch clients');
-    }
-
-    const clients: Client[] = await res.json();  // Parse response as an array of clients
-
-    // Pass the clients array as 'data' to the Client Component
-    return <BaseListDetailsPage data={clients} />;
-  } catch (error) {
-    // Display an error if something goes wrong
-    console.error('Error fetching clients:', error);
+  if (!res.ok) {
     return <div>Error loading clients.</div>;
   }
+
+  const clients: Client[] = await res.json();  // Ensure clients are properly typed
+
+  // Pass the clients array as 'data' to the Client Component
+  return <BaseListDetailsPage data={clients} />;
 };
 
 export default ClientsPage;

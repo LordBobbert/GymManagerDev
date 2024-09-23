@@ -10,31 +10,36 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 
-  // Verify if the user is an admin by fetching the current user's data
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/current_user/`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-    },
-    credentials: 'include',
-  });
+  try {
+    // Fetch the current user's data, relying on the cookie for authentication
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/current_user/`, {
+      method: 'GET',
+      credentials: 'include',  // Ensures the cookies are included in the request
+    });
 
-  if (!response.ok) {
-    return NextResponse.redirect(new URL('/auth/login', request.url));  // Redirect if the user fetch fails
+    // Handle case where user fetch fails (e.g., invalid token, unauthorized, etc.)
+    if (!response.ok) {
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
+
+    const userData = await response.json();
+
+    // If the user does not have the 'admin' role, redirect to 403 page
+    if (!userData.roles.includes('admin')) {
+      return NextResponse.redirect(new URL('/403', request.url));
+    }
+
+    // Allow the request to proceed
+    return NextResponse.next();
+
+  } catch (error) {
+    // Log or handle error (optional)
+    console.error('Error fetching current user:', error);
+    return NextResponse.redirect(new URL('/auth/login', request.url));
   }
-
-  const userData = await response.json();
-
-  // If the user does not have the 'admin' role, redirect to 403 page
-  if (!userData.roles.includes('admin')) {
-    return NextResponse.redirect(new URL('/403', request.url));
-  }
-
-  // Allow the request if the user is authenticated and is an admin
-  return NextResponse.next();
 }
 
-// Protect the /admin routes
+// Apply middleware to protect the /admin routes
 export const config = {
   matcher: ['/admin/:path*'],  // Middleware applies to admin routes
 };
