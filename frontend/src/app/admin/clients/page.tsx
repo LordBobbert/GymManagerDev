@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
 import { Client } from '../../../interfaces/client';
-import { fetchClients } from '../../../services/clientService';  // Service now includes Bearer token
+import { fetchClients } from '../../../services/clientService';  // Updated service
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
