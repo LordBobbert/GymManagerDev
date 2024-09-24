@@ -10,15 +10,15 @@ import PeopleIcon from '@mui/icons-material/People';
 import EventIcon from '@mui/icons-material/Event';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ChatIcon from '@mui/icons-material/Chat';
-import { Role } from '../../../../interfaces/user'; // Ensure to use proper typing
 
 interface AppBarMenuProps {
-  roles: Role[]; // An array of roles is passed down to the AppBarMenu
+  role: 'admin' | 'trainer' | 'client'; // Role prop definition
 }
 
-const AppBarMenu = ({ roles }: AppBarMenuProps) => {
+const AppBarMenu = ({ role }: AppBarMenuProps) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
+  // Define role-specific menu items based on the role
   const adminMenuItems = [
     { text: 'Home', href: '/admin/dashboard', icon: <HomeIcon /> },
     { text: 'Clients', href: '/admin/clients', icon: <PeopleIcon /> },
@@ -40,14 +40,10 @@ const AppBarMenu = ({ roles }: AppBarMenuProps) => {
     { text: 'Chat', href: '/client/chat', icon: <ChatIcon /> },
   ];
 
-  // Determine which menu items to display based on the role
-  const getMenuItems = () => {
-    if (roles.some((role) => role.name === 'admin')) return adminMenuItems;
-    if (roles.some((role) => role.name === 'trainer')) return trainerMenuItems;
-    return clientMenuItems;
-  };
-
-  const menuItems = getMenuItems();
+  // Conditionally render menu items based on the role
+  const menuItems = role === 'admin' ? adminMenuItems :
+                    role === 'trainer' ? trainerMenuItems :
+                    clientMenuItems;  // Defaults to client if no match
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -61,7 +57,7 @@ const AppBarMenu = ({ roles }: AppBarMenuProps) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Dashboard
+            {role.charAt(0).toUpperCase() + role.slice(1)} Dashboard {/* Capitalizes the role */}
           </Typography>
         </Toolbar>
       </AppBar>
