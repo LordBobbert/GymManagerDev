@@ -1,9 +1,9 @@
 // File: components/common/BaseListDetailsPage.tsx
+"use client";
+
 import React, { useState } from 'react';
 import BaseList from './BaseList';
 import BaseListDetails from './BaseListDetails';
-
-"use client";
 
 interface Identifiable {
   id: string | number;
