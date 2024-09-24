@@ -1,18 +1,28 @@
-// File: services/clientService.ts
+// File: src/services/clientService.ts
 import { Client } from '../interfaces/client';
+import { cookies } from 'next/headers';
 
-export async function getClientsList(): Promise<Client[]> {
-  const res = await fetch('/api/clients');
-  if (!res.ok) {
-    throw new Error("Failed to fetch clients");
-  }
-  return res.json();
-}
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export async function getClientDetails(clientId: number): Promise<Client> {
-  const res = await fetch(`/api/clients/${clientId}`);
-  if (!res.ok) {
-    throw new Error("Failed to fetch client details");
+export const fetchClients = async (): Promise<Client[]> => {
+  const cookieStore = cookies();  // Fetch cookies on the server side
+  const accessToken = cookieStore.get('access_token')?.value;  // Get the access token
+
+  if (!accessToken) {
+    throw new Error('No access token available');
   }
-  return res.json();
-}
+
+  const res = await fetch(`${API_BASE_URL}/admin/clients/`, {
+    credentials: 'include',  // Include credentials for cookies
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,  // Attach Bearer token
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error('Error fetching clients');
+  }
+
+  return res.json();  // Return the parsed client data
+};

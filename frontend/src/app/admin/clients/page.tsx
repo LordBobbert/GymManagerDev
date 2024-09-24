@@ -1,48 +1,33 @@
 // File: src/app/admin/clients/page.tsx
-"use client";  // Ensure it's a client component
+"use client";
 
 import React, { useEffect, useState } from 'react';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
-import { Client } from '../../../interfaces/client';  // Import the Client interface
+import { Client } from '../../../interfaces/client';
+import { fetchClients } from '../../../services/clientService';  // Service now includes Bearer token
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Function to fetch clients data
-    const fetchClients = async () => {
+    const loadClients = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/clients/`, {
-          credentials: 'include',  // Ensures cookies are included
-        });
-
-        if (!res.ok) {
-          // If response is not OK, handle the error
-          const errorText = await res.text();
-          setError(`Error loading clients: ${errorText}`);
-          return;
-        }
-
-        // Parse the response JSON
-        const clientsData: Client[] = await res.json();
-        setClients(clientsData);
+        const clientData = await fetchClients();
+        setClients(clientData);
       } catch (err) {
-        // If an error occurs during the fetch
         setError('Failed to load clients.');
-        console.error('Fetch error:', err);
       }
     };
 
-    fetchClients();
-  }, []); // Empty dependency array ensures it runs once when the component mounts
+    loadClients();
+  }, []);
 
   if (error) {
     return <div>{error}</div>;
   }
 
   if (!clients) {
-    // Show a loading indicator while data is being fetched
     return <div>Loading clients...</div>;
   }
 
@@ -58,7 +43,6 @@ const ClientsPage = () => {
           <p>Email: {client.user.email}</p>
           <p>Phone: {client.user.phone_number}</p>
           <p>Training Status: {client.training_status}</p>
-          {/* More client details here */}
         </div>
       )}
     />
