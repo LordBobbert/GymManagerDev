@@ -1,24 +1,27 @@
 // File: components/common/BaseList.tsx
-"use client";
-
 import React from 'react';
-import { List, ListItemButton, ListItemText } from '@mui/material';
-import { Client } from '../../interfaces/client';  // Ensure Client interface is imported
 
-interface BaseListProps {
-  items: Client[];  // Array of clients (or other items)
-  onItemClick: (item: Client) => void;  // Callback for handling item clicks
+interface Identifiable {
+  id: string | number; // Ensure items have an 'id' of type string or number
 }
 
-const BaseList = ({ items, onItemClick }: BaseListProps) => {
+interface BaseListProps<T extends Identifiable> {
+  data: T[]; // Generic data type with 'id'
+  onSelect: (item: T) => void; // Item selection handler
+  renderItem: (item: T) => React.ReactNode; // Custom render function for list items
+}
+
+const BaseList = <T extends Identifiable>({ data, onSelect, renderItem }: BaseListProps<T>) => {
   return (
-    <List>
-      {items.map((client) => (
-        <ListItemButton key={client.id} onClick={() => onItemClick(client)}>
-          <ListItemText primary={`${client.user.first_name} ${client.user.last_name}`} />
-        </ListItemButton>
-      ))}
-    </List>
+    <div style={{ flex: 1 }}>
+      <ul>
+        {data.map((item) => (
+          <li key={item.id} onClick={() => onSelect(item)}>
+            {renderItem(item)} {/* Render each item based on the provided function */}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

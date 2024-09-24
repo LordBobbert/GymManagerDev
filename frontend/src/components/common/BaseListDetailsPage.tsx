@@ -1,52 +1,33 @@
 // File: components/common/BaseListDetailsPage.tsx
-"use client";
-
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
 import BaseList from './BaseList';
 import BaseListDetails from './BaseListDetails';
-import { Client } from '../../interfaces/client';  // Ensure Client interface is imported
 
-interface BaseListDetailsPageProps {
-  data: Client[];
+interface Identifiable {
+  id: string | number;
 }
 
-// Define the getClientDetails function
-async function getClientDetails(clientId: number): Promise<Client> {
-  const res = await fetch(`/admin/clients/${clientId}`);
-  if (!res.ok) {
-    throw new Error("Failed to fetch client details");
-  }
-  const data: Client = await res.json();
-  return data;
+interface BaseListDetailsPageProps<T extends Identifiable> {
+  data: T[]; // Ensure the data array contains items with an 'id'
+  renderItem: (item: T) => React.ReactNode; // Custom render function for list items
+  renderDetails: (item: T) => React.ReactNode; // Custom render function for item details
 }
 
-const BaseListDetailsPage = ({ data }: BaseListDetailsPageProps) => {
-  const [clientDetails, setClientDetails] = useState<Client | null>(null);  // Store client details
+const BaseListDetailsPage = <T extends Identifiable>({ data, renderItem, renderDetails }: BaseListDetailsPageProps<T>) => {
+  const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
-  const handleItemClick = async (item: Client) => {
-    try {
-      const details = await getClientDetails(item.id);  // Fetch detailed client info
-      setClientDetails(details);  // Store the detailed client info in state
-    } catch (error) {
-      console.error("Error fetching client details", error);
-      setClientDetails(null);
-    }
+  const handleSelect = (item: T) => {
+    setSelectedItem(item);
   };
 
   return (
-    <Box display="flex" height="100%">
-      <Box width="25%">
-        {/* Render the client list */}
-        <BaseList items={data} onItemClick={handleItemClick} />
-      </Box>
-      <Box width="75%" pl={2}>
-        {/* Render the details of the selected client */}
-        {clientDetails && (
-          <BaseListDetails selectedItem={clientDetails} />
-        )}
-      </Box>
-    </Box>
+    <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
+      {/* Render the list of items */}
+      <BaseList data={data} onSelect={handleSelect} renderItem={renderItem} />
+
+      {/* Render details of the selected item */}
+      {selectedItem && <BaseListDetails item={selectedItem} renderDetails={renderDetails} />}
+    </div>
   );
 };
 

@@ -1,28 +1,16 @@
 // File: components/common/BaseListDetails.tsx
-"use client";
-
 import React from 'react';
-import { Card, CardContent, Typography } from '@mui/material';
-import { Client } from '../../interfaces/client';  // Ensure Client interface is imported
 
-interface BaseListDetailsProps {
-  selectedItem: Client;  // The selected client object
+interface BaseListDetailsProps<T> {
+  item: T; // Generic item type
+  renderDetails: (item: T) => React.ReactNode; // Custom render function for item details
 }
 
-const BaseListDetails = ({ selectedItem }: BaseListDetailsProps) => {
+const BaseListDetails = <T,>({ item, renderDetails }: BaseListDetailsProps<T>) => {
   return (
-    <Card>
-      <CardContent>
-        {/* Render the selected client's name */}
-        <Typography variant="h5">
-          {selectedItem.user.first_name} {selectedItem.user.last_name}
-        </Typography>
-        {/* Render additional details like training status and rate type */}
-        <Typography>
-          Training Status: {selectedItem.training_status}, Rate Type: {selectedItem.rate_type}
-        </Typography>
-      </CardContent>
-    </Card>
+    <div style={{ flex: 2, padding: '20px' }}>
+      {renderDetails(item)} {/* Render the details using the provided function */}
+    </div>
   );
 };
 
