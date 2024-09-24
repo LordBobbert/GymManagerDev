@@ -13,7 +13,7 @@ interface BaseListDetailsPageProps {
 
 // Define the getClientDetails function
 async function getClientDetails(clientId: number): Promise<Client> {
-  const res = await fetch(`/api/clients/${clientId}`);
+  const res = await fetch(`/admin/clients/${clientId}`);
   if (!res.ok) {
     throw new Error("Failed to fetch client details");
   }
