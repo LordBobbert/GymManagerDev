@@ -11,10 +11,13 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    // Fetch the current user's data, relying on the cookie for authentication
+    // Fetch the current user's data with the access token included in the headers
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/current_user/`, {
       method: 'GET',
-      credentials: 'include',  // Ensures the cookies are included in the request
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,  // Include access token in the Authorization header
+      },
+      credentials: 'include',  // Keep this for good measure to send cookies if necessary
     });
 
     // Handle case where user fetch fails (e.g., invalid token, unauthorized, etc.)
@@ -38,6 +41,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 }
+
 
 // Apply middleware to protect the /admin routes
 export const config = {
