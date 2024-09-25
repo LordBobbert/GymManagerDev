@@ -15,6 +15,11 @@ export const clientFieldConfig: FieldConfig<Client>[] = [
     type: 'text',
   },
   {
+    label: 'Username',
+    key: 'user.username', // Correct path to the username field
+    type: 'text',
+  },
+  {
     label: 'Email',
     key: 'user.email',
     type: 'email',
