@@ -22,21 +22,21 @@ const BaseListDetailsPage = <T,>({ data, fieldConfig, onSave }: BaseListDetailsP
 
   const handleNestedChange = (key: string, value: string | number | boolean) => {
     const keys = key.split('.');
-    let updatedData: Partial<T> = { ...formData };
-    let current: Partial<T> | any = updatedData;
+    const updatedData = { ...formData }; // Change from let to const
+    let current: any = updatedData; // We'll only type `current` as `any` for intermediate traversals
 
     keys.forEach((part, index) => {
       if (index === keys.length - 1) {
-        current[part] = value;
+        current[part] = value; // Assign value when the last part is reached
       } else {
         if (!current[part]) {
-          current[part] = {};
+          current[part] = {}; // Initialize the nested part if it doesn't exist
         }
-        current = current[part];
+        current = current[part]; // Traverse into the nested part
       }
     });
 
-    setFormData(updatedData as T);
+    setFormData(updatedData as T); // Finally update the state with the modified data
   };
 
   const handleSave = () => {
