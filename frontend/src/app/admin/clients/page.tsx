@@ -1,7 +1,6 @@
 // File: src/app/admin/clients/page.tsx
-"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
 import { Client } from '../../../interfaces/client';
 import { fetchClients } from '../../../services/clientService';
@@ -11,7 +10,6 @@ const ClientsPage = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Automatically include credentials (cookies) in the request
     fetchClients()
       .then((data) => setClients(data))
       .catch(() => setError('Failed to load clients.'));
@@ -28,15 +26,22 @@ const ClientsPage = () => {
   return (
     <BaseListDetailsPage
       data={clients}
-      renderItem={(client) => <span>{client.user.first_name} {client.user.last_name}</span>}
+      renderItem={(client) => (
+        <span>
+          {client.user.first_name} {client.user.last_name}
+        </span>
+      )}
       renderDetails={(client) => (
         <div>
-          <h2>{client.user.first_name} {client.user.last_name}</h2>
+          <h2>
+            {client.user.first_name} {client.user.last_name}
+          </h2>
           <p>Email: {client.user.email}</p>
           <p>Phone: {client.user.phone_number}</p>
           <p>Training Status: {client.training_status}</p>
         </div>
       )}
+      section="clients" // Pass the section as 'clients' to show 'Add Client' button
     />
   );
 };

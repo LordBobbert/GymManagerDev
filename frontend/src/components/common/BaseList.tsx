@@ -1,23 +1,20 @@
-// File: components/common/BaseList.tsx
+// File: src/components/common/BaseList.tsx
+
 import React from 'react';
 
-interface Identifiable {
-  id: string | number; // Ensure items have an 'id' of type string or number
-}
-
-interface BaseListProps<T extends Identifiable> {
-  data: T[]; // Generic data type with 'id'
+interface BaseListProps<T> {
+  data: T[]; // Generic data array
   onSelect: (item: T) => void; // Item selection handler
-  renderItem: (item: T) => React.ReactNode; // Custom render function for list items
+  renderItem: (item: T) => React.ReactNode; // Render function for list items
 }
 
-const BaseList = <T extends Identifiable>({ data, onSelect, renderItem }: BaseListProps<T>) => {
+const BaseList = <T,>({ data, onSelect, renderItem }: BaseListProps<T>) => {
   return (
     <div style={{ flex: 1 }}>
       <ul>
-        {data.map((item) => (
-          <li key={item.id} onClick={() => onSelect(item)}>
-            {renderItem(item)} {/* Render each item based on the provided function */}
+        {data.map((item, index) => (
+          <li key={index} onClick={() => onSelect(item)}>
+            {renderItem(item)} {/* Render each item based on provided function */}
           </li>
         ))}
       </ul>

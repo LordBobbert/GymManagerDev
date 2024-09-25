@@ -1,36 +1,39 @@
-"use client"; // Ensure this is a client component
+// File: src/components/common/BaseListDetailsPage.tsx
+
 import React, { useState } from 'react';
 import BaseList from './BaseList';
 import BaseListDetails from './BaseListDetails';
+import ActionButton from './ActionButton'; // Import the new ActionButton
 
-interface Identifiable {
-  id: string | number;
+interface BaseListDetailsPageProps<T> {
+  data: T[]; // Generic data type for flexibility
+  renderItem: (item: T) => React.ReactNode; // Function to render each list item
+  renderDetails: (item: T) => React.ReactNode; // Function to render item details
+  section: 'clients' | 'trainers' | 'sessions'; // Section type for button text
 }
 
-interface BaseListDetailsPageProps<T extends Identifiable> {
-  data: T[];
-  renderItem: (item: T) => React.ReactNode;
-  renderDetails: (item: T) => React.ReactNode;
-}
-
-const BaseListDetailsPage = <T extends Identifiable>({
-  data,
-  renderItem,
-  renderDetails
-}: BaseListDetailsPageProps<T>) => {
+const BaseListDetailsPage = <T,>({ data, renderItem, renderDetails, section }: BaseListDetailsPageProps<T>) => {
   const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
   const handleSelect = (item: T) => {
     setSelectedItem(item);
   };
 
+  const handleAddItemClick = () => {
+    // Handle the "Add" button click here (this could open a modal, redirect to a form, etc.)
+    console.log(`Add new ${section}`);
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
-      {/* Render list of items */}
+    <div style={{ display: 'flex' }}>
       <BaseList data={data} onSelect={handleSelect} renderItem={renderItem} />
-      
-      {/* Render details of the selected item */}
-      {selectedItem && <BaseListDetails item={selectedItem} renderDetails={renderDetails} />}
+      {selectedItem && (
+        <BaseListDetails item={selectedItem} renderDetails={renderDetails} />
+      )}
+      <div style={{ marginLeft: '20px' }}>
+        {/* Dynamic button text based on the section */}
+        <ActionButton section={section} onClick={handleAddItemClick} />
+      </div>
     </div>
   );
 };

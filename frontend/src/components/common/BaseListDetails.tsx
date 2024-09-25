@@ -1,17 +1,14 @@
-// File: components/common/BaseListDetails.tsx
+// File: src/components/common/BaseListDetails.tsx
+
 import React from 'react';
 
 interface BaseListDetailsProps<T> {
-  item: T; // Generic item type
-  renderDetails: (item: T) => React.ReactNode; // Custom render function for item details
+  item: T; // The selected item
+  renderDetails: (item: T) => React.ReactNode; // Function to render details of the item
 }
 
 const BaseListDetails = <T,>({ item, renderDetails }: BaseListDetailsProps<T>) => {
-  return (
-    <div style={{ flex: 2, padding: '20px' }}>
-      {renderDetails(item)} {/* Render the details using the provided function */}
-    </div>
-  );
+  return <div style={{ flex: 2 }}>{renderDetails(item)}</div>;
 };
 
 export default BaseListDetails;
