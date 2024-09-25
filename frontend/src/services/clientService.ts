@@ -19,6 +19,9 @@ export const addClient = async (newClient: Omit<Client, 'id'>): Promise<Client> 
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/clients/`, {
     method: 'POST',
     credentials: 'include',  // Automatically include cookies
+    headers: {
+      'Content-Type': 'application/json',  // Ensure this is set to 'application/json'
+    },
     body: JSON.stringify(newClient),
   });
 
