@@ -1,78 +1,72 @@
 // File: src/components/common/BaseListDetailsPage.tsx
 
 import React, { useState } from 'react';
-import { Box, TextField, Typography, Button, Grid } from '@mui/material';
+import { Box, TextField, MenuItem } from '@mui/material';
 import { FieldConfig } from '../../interfaces/FieldConfig';
 
 interface BaseListDetailsPageProps<T> {
-  data: T[]; // Array of data (Client, Trainer, or Session)
-  fieldConfig: FieldConfig<T>[]; // Field configuration for generating form inputs dynamically
-  section: 'clients' | 'trainers' | 'sessions'; // Section to determine heading and form behavior
-  onSave: (updatedItem: T) => void; // Function to handle saving updates
-  renderList: () => React.ReactNode; // Custom list renderer
+  data: T;
+  fieldConfig: FieldConfig<T>[];
+  onSave: (updatedData: T) => void;
 }
 
-const BaseListDetailsPage = <T,>({
-  data,
-  fieldConfig,
-  section,
-  onSave,
-  renderList,
-}: BaseListDetailsPageProps<T>) => {
-  const [selectedItem, setSelectedItem] = useState<T | null>(null);
-  const [formValues, setFormValues] = useState<Partial<T>>({});
+function getNestedValue(obj: any, path: string) {
+  return path.split('.').reduce((o, i) => (o ? o[i] : ''), obj);
+}
 
-  const handleFieldChange = (key: keyof T | string, value: any) => {
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      [key]: value as T[keyof T], // Adjusted type
-    }));
+function setNestedValue(obj: any, path: string, value: any) {
+  const keys = path.split('.');
+  const lastKey = keys.pop();
+  const deep = keys.reduce((o, key) => o[key] = o[key] || {}, obj);
+  deep[lastKey!] = value;
+}
+
+const BaseListDetailsPage = <T,>({ data, fieldConfig, onSave }: BaseListDetailsPageProps<T>) => {
+  const [formData, setFormData] = useState<T>({ ...data });
+
+  const handleChange = (key: string, value: any) => {
+    const updatedData = { ...formData };
+    setNestedValue(updatedData, key, value);
+    setFormData(updatedData);
   };
 
   const handleSave = () => {
-    if (selectedItem) {
-      onSave({ ...selectedItem, ...formValues });
-    }
+    onSave(formData);
   };
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={3}>
-        {/* Render the list of items */}
-        {renderList()}
-      </Grid>
-      <Grid item xs={9}>
-        {selectedItem ? (
-          <Box>
-            <Typography variant="h6">
-              {section.charAt(0).toUpperCase() + section.slice(1)} Details
-            </Typography>
+    <Box>
+      {/* Render form fields based on fieldConfig */}
+      {fieldConfig.map(({ label, key, type, options }) => (
+        <Box key={key.toString()} sx={{ mb: 2 }}>
+          {type === 'select' && options ? (
+            <TextField
+              select
+              label={label}
+              value={getNestedValue(formData, key.toString())}
+              onChange={(e) => handleChange(key.toString(), e.target.value)}
+              fullWidth
+            >
+              {options.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          ) : (
+            <TextField
+              label={label}
+              value={getNestedValue(formData, key.toString())}
+              onChange={(e) => handleChange(key.toString(), e.target.value)}
+              type={type}
+              fullWidth
+            />
+          )}
+        </Box>
+      ))}
 
-            {/* Render form fields based on the fieldConfig */}
-            {fieldConfig.map((field) => (
-              <TextField
-                key={field.key as string}
-                label={field.label}
-                value={(selectedItem as any)[field.key] || ''}
-                onChange={(e) => handleFieldChange(field.key, e.target.value)}
-                type={field.type}
-                fullWidth
-                margin="normal"
-                disabled={!field.editable} // Disable the field if not editable
-              />
-            ))}
-
-            <Box mt={2}>
-              <Button variant="contained" color="primary" onClick={handleSave}>
-                Save
-              </Button>
-            </Box>
-          </Box>
-        ) : (
-          <Typography variant="body1">Select an item to view details.</Typography>
-        )}
-      </Grid>
-    </Grid>
+      <button onClick={handleSave}>Save</button>
+    </Box>
   );
 };
 

@@ -1,7 +1,7 @@
 // File: src/components/common/BaseList.tsx
 
 import React from 'react';
-import { Box, Typography, List, ListItemButton, Divider, ListItemText } from '@mui/material';
+import { Box, Typography, ListItemButton } from '@mui/material';
 import ActionButton from './ActionButton'; // Import the ActionButton component
 
 interface BaseListProps<T> {
@@ -38,14 +38,15 @@ const BaseList = <T,>({
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
+    <div style={{ flex: 1 }}>
       {/* Heading and Action Button container */}
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          mb: 2, // Margin-bottom for spacing
+          mb: 2, // Margin-bottom for some spacing
+          padding: '0 16px', // Add equal left and right padding for spacing
         }}
       >
         {/* Heading aligned to the left */}
@@ -57,27 +58,25 @@ const BaseList = <T,>({
         <ActionButton section={section} onClick={handleAddItemClick} />
       </Box>
 
-      {/* Divider for separation */}
-      <Divider sx={{ mb: 2 }} />
-
-      {/* Render the list items using Material-UI List component */}
-      <List sx={{ flexGrow: 1, overflow: 'auto' }}>
+      {/* Render the list items */}
+      <ul>
         {data.map((item) => (
           <ListItemButton
-            key={getKey(item)}
+            key={getKey(item)} // Use the item's id or unique key
             onClick={() => onSelect(item)}
             sx={{
               mb: 1,
               borderRadius: 1,
               border: '1px solid #ccc',
               '&:hover': { backgroundColor: '#f0f0f0' },
+              padding: '8px 16px', // Add padding to the list item for better appearance
             }}
           >
-            <ListItemText primary={renderItem(item)} />
+            {renderItem(item)} {/* Render each item based on provided function */}
           </ListItemButton>
         ))}
-      </List>
-    </Box>
+      </ul>
+    </div>
   );
 };
 
