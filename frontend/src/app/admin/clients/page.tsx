@@ -3,14 +3,15 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import BaseList from '../../../components/common/BaseList';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
 import { Client } from '../../../interfaces/client';
-import { clientFieldConfig } from '../../../config/fieldConfigs';
 import { fetchClients } from '../../../services/clientService';
+import { clientFieldConfig } from '../../../config/fieldConfigs';
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null); // Allow null for selectedClient
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,26 +37,29 @@ const ClientsPage = () => {
   }
 
   return (
-    <div>
-      <h2>Client List</h2>
-      {/* Render the client list */}
-      <ul>
-        {clients.map((client) => (
-          <li key={client.user.id} onClick={() => handleClientSelect(client)}>
-            {client.user.first_name} {client.user.last_name}
-          </li>
-        ))}
-      </ul>
-
-      {/* Conditionally render the BaseListDetailsPage if a client is selected */}
-      {selectedClient ? (
-        <BaseListDetailsPage
-          data={selectedClient}
-          fieldConfig={clientFieldConfig}
-          onSave={handleClientSave}
+    <div style={{ display: 'flex', gap: '2rem' }}>
+      {/* Left panel: BaseList */}
+      <div style={{ flex: 1 }}>
+        <BaseList
+          data={clients}
+          section="clients"
+          getKey={(client) => client.id}
+          onSelect={handleClientSelect}
+          renderItem={(client) => (
+            <span>{client.user.first_name} {client.user.last_name}</span>
+          )}
         />
-      ) : (
-        <div>Please select a client to view details.</div>
+      </div>
+
+      {/* Right panel: BaseListDetailsPage */}
+      {selectedClient && (
+        <div style={{ flex: 3 }}>
+          <BaseListDetailsPage
+            data={selectedClient}
+            fieldConfig={clientFieldConfig}
+            onSave={handleClientSave}
+          />
+        </div>
       )}
     </div>
   );

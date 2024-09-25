@@ -4,12 +4,12 @@ import React from 'react';
 import { Button } from '@mui/material';
 
 interface ActionButtonProps {
-  section: 'clients' | 'trainers' | 'sessions'; // Determine which section is active
-  onClick: () => void; // Action handler for the button
+  section: 'clients' | 'trainers' | 'sessions';
+  onClick: () => void;
 }
 
 const ActionButton: React.FC<ActionButtonProps> = ({ section, onClick }) => {
-  const getButtonLabel = () => {
+  const getLabel = () => {
     switch (section) {
       case 'clients':
         return 'Add Client';
@@ -23,8 +23,8 @@ const ActionButton: React.FC<ActionButtonProps> = ({ section, onClick }) => {
   };
 
   return (
-    <Button variant="contained" color="primary" onClick={onClick}>
-      {getButtonLabel()}
+    <Button variant="contained" onClick={onClick}>
+      {getLabel()}
     </Button>
   );
 };
