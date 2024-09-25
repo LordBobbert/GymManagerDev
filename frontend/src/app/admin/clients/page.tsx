@@ -5,41 +5,23 @@
 import React, { useEffect, useState } from 'react';
 import BaseList from '../../../components/common/BaseList';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
-import AddClientForm from '../../../components/admin/AddClientForm';
 import { Client } from '../../../interfaces/client';
-import { Trainer } from '../../../interfaces/trainer'; // Import Trainer interface
-import { fetchClients } from '../../../services/clientService';
+import { fetchClients, addClient } from '../../../services/clientService';
 import { clientFieldConfig } from '../../../config/fieldConfigs';
+import AddClientForm from '../../../components/admin/AddClientForm';
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [isAddClientOpen, setIsAddClientOpen] = useState<boolean>(false); // State for modal
-  const [trainers, setTrainers] = useState<Trainer[]>([]); // State for trainers
-  const [loadingTrainers, setLoadingTrainers] = useState<boolean>(true); // Loading state for trainers
   const [error, setError] = useState<string | null>(null);
+  const [isAddClientOpen, setIsAddClientOpen] = useState(false);
+  const [trainers, setTrainers] = useState([]); // Assuming this will be fetched elsewhere
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchClients()
       .then((data) => setClients(data))
       .catch(() => setError('Failed to load clients.'));
-  }, []);
-
-  // Fetch trainers for the dropdown in the form
-  useEffect(() => {
-    const fetchTrainers = async () => {
-      try {
-        const response = await fetch('/api/user-management/trainers/');
-        const data = await response.json();
-        setTrainers(data);
-      } catch (error) {
-        console.error('Failed to load trainers:', error);
-      } finally {
-        setLoadingTrainers(false);
-      }
-    };
-
-    fetchTrainers();
   }, []);
 
   const handleClientSelect = (client: Client) => {
@@ -51,8 +33,13 @@ const ClientsPage = () => {
   };
 
   const handleAddClientSubmit = async (newClient: Omit<Client, 'id'>) => {
-    // Handle adding new client logic here
-    console.log('New Client:', newClient);
+    try {
+      const addedClient = await addClient(newClient);
+      setClients((prev) => (prev ? [...prev, addedClient] : [addedClient]));
+      setIsAddClientOpen(false);
+    } catch (error) {
+      console.error('Failed to add client:', error);
+    }
   };
 
   if (error) {
@@ -72,6 +59,7 @@ const ClientsPage = () => {
           section="clients"
           getKey={(client) => client.id}
           onSelect={handleClientSelect}
+          onAddClient={() => setIsAddClientOpen(true)} // Trigger the AddClientForm
           renderItem={(client) => (
             <span>{client.user.first_name} {client.user.last_name}</span>
           )}
@@ -95,7 +83,7 @@ const ClientsPage = () => {
         onClose={() => setIsAddClientOpen(false)}
         onSubmit={handleAddClientSubmit}
         trainers={trainers}
-        loading={loadingTrainers}
+        loading={loading}
       />
     </div>
   );
