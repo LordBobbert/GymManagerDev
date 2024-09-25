@@ -1,7 +1,7 @@
 // File: src/components/common/BaseList.tsx
 
 import React from 'react';
-import { Button, Box, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import ActionButton from './ActionButton'; // Import the ActionButton component
 
 interface BaseListProps<T> {
