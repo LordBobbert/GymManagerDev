@@ -22,9 +22,9 @@ import { setNestedValue, getNestedValue } from '../../utils/nestedUtils';
 interface AddClientFormProps {
     open: boolean;
     onClose: () => void;
-    onSubmit: (newClient: Omit<Client, 'id'>) => void;
-    trainers: Trainer[]; // Include trainers prop
-    loading: boolean; // Include loading state
+    onSubmit: (newClient: Omit<Client, 'id'>) => Promise<void>; // Ensure async onSubmit
+    trainers: Trainer[];
+    loading: boolean;
 }
 
 const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, trainers, loading }) => {
@@ -52,9 +52,8 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
         setFormData((prev) => setNestedValue(prev, key, value));
     };
 
-
-    const handleSave = () => {
-        onSubmit(formData); // Call onSubmit when saving the form
+    const handleSave = async () => {
+        await onSubmit(formData);  // Ensure the form waits for the client to be added
     };
 
     return (
@@ -95,17 +94,18 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
                                     </MenuItem>
                                 ))}
                             </Select>
-
-
-
                         </div>
                     )}
                 </Box>
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose}>Cancel</Button>
-                <Button variant="contained" onClick={handleSave}>
-                    Save
+                <Button
+                    variant="contained"
+                    onClick={handleSave}
+                    disabled={loading}  // Disable button while loading
+                >
+                    {loading ? 'Saving...' : 'Save'}  {/* Show loading text */}
                 </Button>
             </DialogActions>
         </Dialog>
