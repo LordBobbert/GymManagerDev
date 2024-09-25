@@ -21,7 +21,7 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
   // Define role-specific menu items based on the role
   const adminMenuItems = [
     { text: 'Home', href: '/admin/dashboard', icon: <HomeIcon /> },
-    { text: 'Clients', href: '/admin/clients', icon: <PeopleIcon /> },
+    { text: 'Clients', href: '/api/user-management/clients', icon: <PeopleIcon /> },
     { text: 'Trainers', href: '/admin/trainers', icon: <PeopleIcon /> },
     { text: 'Sessions', href: '/admin/sessions', icon: <EventIcon /> },
     { text: 'Financials', href: '/admin/financials', icon: <AttachMoneyIcon /> },
