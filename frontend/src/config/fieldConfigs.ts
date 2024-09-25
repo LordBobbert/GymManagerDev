@@ -16,7 +16,7 @@ export const clientFieldConfig: FieldConfig<Client>[] = [
   },
   {
     label: 'Username',
-    key: 'user.username', // Correct path to the username field
+    key: 'user.username',
     type: 'text',
   },
   {
@@ -30,9 +30,29 @@ export const clientFieldConfig: FieldConfig<Client>[] = [
     type: 'text',
   },
   {
+    label: 'Birthday',
+    key: 'user.birthday',
+    type: 'date',
+  },
+  {
+    label: 'Gender',
+    key: 'user.gender',
+    type: 'select',
+    options: [
+      { label: 'Male', value: 'male' },
+      { label: 'Female', value: 'female' },
+      { label: 'Other', value: 'other' },
+    ],
+  },
+  {
+    label: 'Roles',
+    key: 'user.roles',  // Assuming roles is an array of objects with a "name" field
+    type: 'text',  // You may need to customize this if it's a multi-select or display logic for roles
+  },
+  {
     label: 'Training Status',
     key: 'training_status',
-    type: 'select', // Could be a dropdown with ENUM values
+    type: 'select',
     options: [
       { label: 'Active', value: 'active' },
       { label: 'Inactive', value: 'inactive' },
@@ -42,7 +62,7 @@ export const clientFieldConfig: FieldConfig<Client>[] = [
   {
     label: 'Personal Training Rate',
     key: 'personal_training_rate',
-    type: 'number', // Can be a number input
+    type: 'number',
   },
   {
     label: 'Rate Type',
@@ -52,6 +72,11 @@ export const clientFieldConfig: FieldConfig<Client>[] = [
       { label: 'One on One', value: 'one_on_one' },
       { label: 'Partner', value: 'partner' },
     ],
+  },
+  {
+    label: 'Trainer',
+    key: 'trainer.user.first_name', // Assuming you want to display the trainer's first name
+    type: 'text',
   },
   {
     label: 'Emergency Contact Name',
@@ -64,4 +89,3 @@ export const clientFieldConfig: FieldConfig<Client>[] = [
     type: 'text',
   },
 ];
-
