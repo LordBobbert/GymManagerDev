@@ -1,5 +1,5 @@
 "use client"; // Ensure this is a client component
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import BaseList from './BaseList';
 import BaseListDetails from './BaseListDetails';
 
