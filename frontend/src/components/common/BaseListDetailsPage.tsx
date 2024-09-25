@@ -26,15 +26,19 @@ const BaseListDetailsPage = <T,>({
   };
 
   return (
-    <div style={{ display: 'flex' }}>
-      <BaseList
-        data={data}
-        onSelect={handleSelect}
-        renderItem={renderItem}
-        section={section}
-        getKey={getKey} // Pass the getKey function to BaseList
-      />
-      {selectedItem && <BaseListDetails item={selectedItem} renderDetails={renderDetails} />}
+    <div style={{ display: 'flex', height: '100%', width: '100%' }}>
+      <div style={{ flex: '0 0 25%', borderRight: '1px solid #ccc' }}>
+        <BaseList
+          data={data}
+          onSelect={handleSelect}
+          renderItem={renderItem}
+          section={section}
+          getKey={getKey} // Pass the getKey function to BaseList
+        />
+      </div>
+      <div style={{ flex: '1', paddingLeft: '20px' }}>
+        {selectedItem && <BaseListDetails item={selectedItem} renderDetails={renderDetails} />}
+      </div>
     </div>
   );
 };
