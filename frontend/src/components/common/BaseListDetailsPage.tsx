@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { FieldConfig } from '../../interfaces/FieldConfig';
+import { getNestedValue, setNestedValue } from '../../utils/nestedUtils';
 
 interface BaseListDetailsPageProps<T> {
   data: T;
@@ -10,64 +11,32 @@ interface BaseListDetailsPageProps<T> {
   onSave: (updatedItem: T) => void;
 }
 
-const BaseListDetailsPage = <T,>({ data, fieldConfig, onSave }: BaseListDetailsPageProps<T>) => {
+const BaseListDetailsPage = <T,>({
+  data,
+  fieldConfig,
+  onSave,
+}: BaseListDetailsPageProps<T>) => {
   const [formData, setFormData] = useState<T>(data);
 
-  const handleChange = <K extends keyof T>(key: K, value: T[K]) => {
-    setFormData((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
-
-  const handleNestedChange = (key: string, value: string | number | boolean) => {
-    const keys = key.split('.');
-    const updatedData = { ...formData }; // Change from let to const
-    let current: any = updatedData; // We'll only type `current` as `any` for intermediate traversals
-
-    keys.forEach((part, index) => {
-      if (index === keys.length - 1) {
-        current[part] = value; // Assign value when the last part is reached
-      } else {
-        if (!current[part]) {
-          current[part] = {}; // Initialize the nested part if it doesn't exist
-        }
-        current = current[part]; // Traverse into the nested part
-      }
-    });
-
-    setFormData(updatedData as T); // Finally update the state with the modified data
+  const handleChange = (key: string, value: string | number | boolean) => {
+    setFormData((prev) => setNestedValue(prev, key, value));
   };
 
   const handleSave = () => {
-    onSave(formData);
+    onSave(formData); // Save the updated item
   };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {fieldConfig.map(({ label, key, type }) => {
-        if (typeof key === 'string' && key.includes('.')) {
-          // Handle nested fields like 'user.first_name'
-          const value = key.split('.').reduce((acc: any, curr: string) => acc?.[curr], formData);
-          return (
-            <TextField
-              key={key}
-              label={label}
-              type={type}
-              value={value || ''}
-              onChange={(e) => handleNestedChange(key, e.target.value)}
-            />
-          );
-        }
-
-        const keyAsK = key as keyof T;
+        const value = getNestedValue(formData, key as string) || ''; // Cast `key` to string
         return (
           <TextField
-            key={keyAsK as string}
+            key={String(key)} // Cast key to string for the 'key' prop
             label={label}
             type={type}
-            value={formData[keyAsK] as string | number | ''} // Ensure value matches the type
-            onChange={(e) => handleChange(keyAsK, e.target.value as T[keyof T])}
+            value={value}
+            onChange={(e) => handleChange(key as string, e.target.value)} // Ensure `key` is treated as string
           />
         );
       })}
