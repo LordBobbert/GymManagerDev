@@ -24,7 +24,7 @@ const BaseList = <T,>({
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', px: 2 }}>
       {/* Heading and Action Button container */}
       <Box
         sx={{
@@ -34,14 +34,20 @@ const BaseList = <T,>({
           mb: 2,
         }}
       >
-        <Typography variant="h5">{section.charAt(0).toUpperCase() + section.slice(1)} List</Typography>
+        <Typography variant="h5">
+          {section.charAt(0).toUpperCase() + section.slice(1)} List
+        </Typography>
         <ActionButton section={section} onClick={handleAddItemClick} />
       </Box>
 
       {/* List of items */}
       <List sx={{ flexGrow: 1 }}>
         {data.map((item) => (
-          <ListItemButton key={getKey(item)} onClick={() => onSelect(item)}>
+          <ListItemButton
+            key={getKey(item)}
+            onClick={() => onSelect(item)}
+            sx={{ mb: 1, borderRadius: 1, border: '1px solid #ccc', '&:hover': { backgroundColor: '#f0f0f0' } }}
+          >
             {renderItem(item)}
           </ListItemButton>
         ))}
