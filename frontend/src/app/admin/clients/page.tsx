@@ -15,8 +15,6 @@ const ClientsPage = () => {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isAddClientOpen, setIsAddClientOpen] = useState(false);
-  const [trainers, setTrainers] = useState([]); // Assuming this will be fetched elsewhere
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchClients()
@@ -82,8 +80,8 @@ const ClientsPage = () => {
         open={isAddClientOpen}
         onClose={() => setIsAddClientOpen(false)}
         onSubmit={handleAddClientSubmit}
-        trainers={trainers}
-        loading={loading}
+        trainers={[]}  // Passing an empty array for now, adjust as needed
+        loading={false}  // Defaulting to false, adjust as needed
       />
     </div>
   );
