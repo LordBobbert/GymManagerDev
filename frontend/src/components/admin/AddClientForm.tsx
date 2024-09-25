@@ -70,6 +70,7 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
     
     
     
+    
 
     return (
         <Dialog open={open} onClose={onClose}>
