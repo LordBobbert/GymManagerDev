@@ -5,14 +5,16 @@
 import React, { useEffect, useState } from 'react';
 import BaseList from '../../../components/common/BaseList';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
+import AddClientForm from '../../../components/admin/AddClientForm';
 import { Client } from '../../../interfaces/client';
-import { fetchClients } from '../../../services/clientService';
+import { fetchClients, addClient } from '../../../services/clientService';
 import { clientFieldConfig } from '../../../config/fieldConfigs';
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isAddClientOpen, setIsAddClientOpen] = useState<boolean>(false);
 
   useEffect(() => {
     fetchClients()
@@ -26,6 +28,14 @@ const ClientsPage = () => {
 
   const handleClientSave = (updatedClient: Client) => {
     console.log('Client saved:', updatedClient);
+  };
+
+  const handleAddClientSubmit = (newClient: Omit<Client, 'id'>) => {
+    // Call backend service to add client
+    addClient(newClient).then(() => {
+      // Refresh client list after adding
+      fetchClients().then((data) => setClients(data));
+    });
   };
 
   if (error) {
@@ -48,6 +58,7 @@ const ClientsPage = () => {
           renderItem={(client) => (
             <span>{client.user.first_name} {client.user.last_name}</span>
           )}
+          onAddClient={() => setIsAddClientOpen(true)} // Pass the add client handler
         />
       </div>
 
@@ -61,6 +72,13 @@ const ClientsPage = () => {
           />
         </div>
       )}
+
+      {/* Add Client Form Modal */}
+      <AddClientForm
+        open={isAddClientOpen}
+        onClose={() => setIsAddClientOpen(false)}
+        onSubmit={handleAddClientSubmit}
+      />
     </div>
   );
 };

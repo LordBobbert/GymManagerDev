@@ -1,5 +1,3 @@
-// File: src/components/common/BaseList.tsx
-
 import React from 'react';
 import { Box, List, ListItemButton, Typography } from '@mui/material';
 import ActionButton from './ActionButton';
@@ -10,6 +8,7 @@ interface BaseListProps<T> {
   renderItem: (item: T) => React.ReactNode;
   section: 'clients' | 'trainers' | 'sessions';
   getKey: (item: T) => string | number;
+  onAddClient?: () => void;  // New prop for adding a client
 }
 
 const BaseList = <T,>({
@@ -18,14 +17,10 @@ const BaseList = <T,>({
   renderItem,
   section,
   getKey,
+  onAddClient,  // New handler for the add button
 }: BaseListProps<T>) => {
-  const handleAddItemClick = () => {
-    console.log(`Add new ${section}`);
-  };
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', px: 2 }}>
-      {/* Heading and Action Button container */}
       <Box
         sx={{
           display: 'flex',
@@ -37,10 +32,9 @@ const BaseList = <T,>({
         <Typography variant="h5">
           {section.charAt(0).toUpperCase() + section.slice(1)} List
         </Typography>
-        <ActionButton section={section} onClick={handleAddItemClick} />
+        <ActionButton section={section} onClick={onAddClient || (() => {})} /> {/* Ensure action is passed */}
       </Box>
 
-      {/* List of items */}
       <List sx={{ flexGrow: 1 }}>
         {data.map((item) => (
           <ListItemButton
