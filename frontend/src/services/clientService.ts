@@ -16,13 +16,12 @@ export const fetchClients = async () => {
 };
 
 export const addClient = async (newClient: Omit<Client, 'id'>): Promise<Client> => {
-  const response = await fetch('/api/user-management/clients/', {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/clients/`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    credentials: 'include',  // Automatically include cookies
     body: JSON.stringify(newClient),
   });
+
   if (!response.ok) throw new Error('Failed to add client');
   return response.json();
 };
