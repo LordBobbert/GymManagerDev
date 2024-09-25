@@ -52,9 +52,22 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
         setFormData((prev) => setNestedValue(prev, key, value));
     };
 
-    const handleSave = async () => {
-        await onSubmit(formData);  // Ensure the form waits for the client to be added
+    const handleSave = () => {
+        const newClient = {
+            ...formData,
+            trainer_id: formData.trainer?.id || undefined,  // Ensure trainer_id is either a number or undefined
+            user: {
+                ...formData.user,
+                id: formData.user.id ?? '',  // Ensure id is either a string or an empty string
+                username: formData.user.username || ''  // Ensure username is always a string
+            }
+        };
+    
+        onSubmit(newClient);  // Call onSubmit with the new client data
     };
+    
+    
+    
 
     return (
         <Dialog open={open} onClose={onClose}>
