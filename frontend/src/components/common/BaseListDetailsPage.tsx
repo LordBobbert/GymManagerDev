@@ -1,45 +1,84 @@
+"use client";
+
 // File: src/components/common/BaseListDetailsPage.tsx
 
 import React, { useState } from 'react';
-import BaseList from './BaseList';
-import BaseListDetails from './BaseListDetails';
+import { Box, Button, Typography, TextField, Grid } from '@mui/material';
+
+interface FieldConfig {
+  label: string;
+  key: string;
+  type?: string; // Optional type for fields like 'number', 'text', etc.
+}
 
 interface BaseListDetailsPageProps<T> {
-  data: T[];
-  renderItem: (item: T) => React.ReactNode;
-  renderDetails: (item: T) => React.ReactNode;
-  section: 'clients' | 'trainers' | 'sessions'; // Section type for heading and button text
-  getKey: (item: T) => string | number; // Function to get a unique key for each item
+  data: T | null; // The selected item for details
+  fieldConfig: FieldConfig[]; // Dynamic field configuration
+  section: string; // Section to define whether it's clients, trainers, etc.
+  onSave: (updatedItem: T) => void; // Save handler
+  renderList: () => React.ReactNode; // Function to render the list
 }
 
 const BaseListDetailsPage = <T,>({
   data,
-  renderItem,
-  renderDetails,
+  fieldConfig,
   section,
-  getKey, // Include getKey in props
+  onSave,
+  renderList,
 }: BaseListDetailsPageProps<T>) => {
-  const [selectedItem, setSelectedItem] = useState<T | null>(null);
+  const [editedItem, setEditedItem] = useState<T | null>(data); // Local state for editing
 
-  const handleSelect = (item: T) => {
-    setSelectedItem(item);
+  const handleInputChange = (key: string, value: any) => {
+    if (editedItem) {
+      setEditedItem({ ...editedItem, [key]: value });
+    }
+  };
+
+  const handleSaveClick = () => {
+    if (editedItem) {
+      onSave(editedItem);
+    }
   };
 
   return (
-    <div style={{ display: 'flex', height: '100%', width: '100%' }}>
-      <div style={{ flex: '0 0 25%', borderRight: '1px solid #ccc' }}>
-        <BaseList
-          data={data}
-          onSelect={handleSelect}
-          renderItem={renderItem}
-          section={section}
-          getKey={getKey} // Pass the getKey function to BaseList
-        />
-      </div>
-      <div style={{ flex: '1', paddingLeft: '20px' }}>
-        {selectedItem && <BaseListDetails item={selectedItem} renderDetails={renderDetails} />}
-      </div>
-    </div>
+    <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
+      {/* List section */}
+      <Box sx={{ width: '25%', paddingRight: '20px', borderRight: '1px solid #ccc' }}>
+        {renderList()} {/* Render the list */}
+      </Box>
+
+      {/* Details section */}
+      <Box sx={{ width: '75%', paddingLeft: '20px' }}>
+        {data ? (
+          <>
+            <Typography variant="h6">{`Edit ${section.slice(0, -1)}`}</Typography>
+            <Grid container spacing={2}>
+              {fieldConfig.map((field) => (
+                <Grid item xs={6} key={field.key}>
+                  <TextField
+                    fullWidth
+                    label={field.label}
+                    value={(data as any)[field.key] || ''}
+                    onChange={(e) => handleInputChange(field.key, e.target.value)}
+                    type={field.type || 'text'}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSaveClick}
+              sx={{ marginTop: '20px' }}
+            >
+              Save Changes
+            </Button>
+          </>
+        ) : (
+          <Typography variant="h6">Select a {section.slice(0, -1)} to view details</Typography>
+        )}
+      </Box>
+    </Box>
   );
 };
 
