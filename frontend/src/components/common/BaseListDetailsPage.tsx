@@ -1,50 +1,59 @@
-// File: src/components/common/BaseListDetailsPage.tsx
+// File: src/components/common/BaseList.tsx
 
-import React, { useState } from 'react';
-import { Box, Button, TextField } from '@mui/material';
-import { FieldConfig } from '../../interfaces/FieldConfig';
-import { getNestedValue, setNestedValue } from '../../utils/nestedUtils';
+import React from 'react';
+import { Box, List, ListItemButton, Typography } from '@mui/material';
+import ActionButton from './ActionButton';
 
-interface BaseListDetailsPageProps<T> {
-  data: T;
-  fieldConfig: FieldConfig<T>[];
-  onSave: (updatedItem: T) => void;
+interface BaseListProps<T> {
+  data: T[];
+  onSelect: (item: T) => void;
+  renderItem: (item: T) => React.ReactNode;
+  section: 'clients' | 'trainers' | 'sessions';
+  getKey: (item: T) => string | number;
 }
 
-const BaseListDetailsPage = <T,>({
+const BaseList = <T,>({
   data,
-  fieldConfig,
-  onSave,
-}: BaseListDetailsPageProps<T>) => {
-  const [formData, setFormData] = useState<T>(data);
-
-  const handleChange = (key: string, value: string | number | boolean) => {
-    setFormData((prev) => setNestedValue(prev, key, value));
-  };
-
-  const handleSave = () => {
-    onSave(formData); // Save the updated item
+  onSelect,
+  renderItem,
+  section,
+  getKey,
+}: BaseListProps<T>) => {
+  const handleAddItemClick = () => {
+    console.log(`Add new ${section}`);
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {fieldConfig.map(({ label, key, type }) => {
-        const value = getNestedValue(formData, key as string) || ''; // Cast `key` to string
-        return (
-          <TextField
-            key={String(key)} // Cast key to string for the 'key' prop
-            label={label}
-            type={type}
-            value={value}
-            onChange={(e) => handleChange(key as string, e.target.value)} // Ensure `key` is treated as string
-          />
-        );
-      })}
-      <Button variant="contained" onClick={handleSave}>
-        Save
-      </Button>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', px: 2 }}>
+      {/* Heading and Action Button container */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 2,
+        }}
+      >
+        <Typography variant="h5">
+          {section.charAt(0).toUpperCase() + section.slice(1)} List
+        </Typography>
+        <ActionButton section={section} onClick={handleAddItemClick} />
+      </Box>
+
+      {/* List of items */}
+      <List sx={{ flexGrow: 1 }}>
+        {data.map((item) => (
+          <ListItemButton
+            key={getKey(item)}
+            onClick={() => onSelect(item)}
+            sx={{ mb: 1, borderRadius: 1, border: '1px solid #ccc', '&:hover': { backgroundColor: '#f0f0f0' } }}
+          >
+            {renderItem(item)}
+          </ListItemButton>
+        ))}
+      </List>
     </Box>
   );
 };
 
-export default BaseListDetailsPage;
+export default BaseList;
