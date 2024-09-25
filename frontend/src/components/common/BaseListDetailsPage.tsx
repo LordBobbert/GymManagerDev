@@ -1,22 +1,15 @@
-"use client";
-
 // File: src/components/common/BaseListDetailsPage.tsx
 
 import React, { useState } from 'react';
-import { Box, Button, Typography, TextField, Grid } from '@mui/material';
-
-interface FieldConfig<T> {
-  label: string;
-  key: keyof T; // Type-safe key based on the generic type T
-  type?: string; // Optional type for fields like 'number', 'text', etc.
-}
+import { Box, TextField, Typography, Button, Grid } from '@mui/material';
+import { FieldConfig } from '../../interfaces/FieldConfig';
 
 interface BaseListDetailsPageProps<T> {
-  data: T | null; // The selected item for details
-  fieldConfig: FieldConfig<T>[]; // Dynamic field configuration
-  section: string; // Section to define whether it's clients, trainers, etc.
-  onSave: (updatedItem: T) => void; // Save handler
-  renderList: () => React.ReactNode; // Function to render the list
+  data: T[]; // Array of data (Client, Trainer, or Session)
+  fieldConfig: FieldConfig<T>[]; // Field configuration for generating form inputs dynamically
+  section: 'clients' | 'trainers' | 'sessions'; // Section to determine heading and form behavior
+  onSave: (updatedItem: T) => void; // Function to handle saving updates
+  renderList: () => React.ReactNode; // Custom list renderer
 }
 
 const BaseListDetailsPage = <T,>({
@@ -26,59 +19,60 @@ const BaseListDetailsPage = <T,>({
   onSave,
   renderList,
 }: BaseListDetailsPageProps<T>) => {
-  const [editedItem, setEditedItem] = useState<T | null>(data); // Local state for editing
+  const [selectedItem, setSelectedItem] = useState<T | null>(null);
+  const [formValues, setFormValues] = useState<Partial<T>>({});
 
-  const handleInputChange = (key: keyof T, value: any) => {
-    if (editedItem) {
-      setEditedItem({ ...editedItem, [key]: value });
-    }
+  const handleFieldChange = (key: keyof T | string, value: any) => {
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [key]: value as T[keyof T], // Adjusted type
+    }));
   };
 
-  const handleSaveClick = () => {
-    if (editedItem) {
-      onSave(editedItem);
+  const handleSave = () => {
+    if (selectedItem) {
+      onSave({ ...selectedItem, ...formValues });
     }
   };
 
   return (
-    <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
-      {/* List section */}
-      <Box sx={{ width: '25%', paddingRight: '20px', borderRight: '1px solid #ccc' }}>
-        {renderList()} {/* Render the list */}
-      </Box>
+    <Grid container spacing={2}>
+      <Grid item xs={3}>
+        {/* Render the list of items */}
+        {renderList()}
+      </Grid>
+      <Grid item xs={9}>
+        {selectedItem ? (
+          <Box>
+            <Typography variant="h6">
+              {section.charAt(0).toUpperCase() + section.slice(1)} Details
+            </Typography>
 
-      {/* Details section */}
-      <Box sx={{ width: '75%', paddingLeft: '20px' }}>
-        {data ? (
-          <>
-            <Typography variant="h6">{`Edit ${section.slice(0, -1)}`}</Typography>
-            <Grid container spacing={2}>
-              {fieldConfig.map((field) => (
-                <Grid item xs={6} key={String(field.key)}>
-                  <TextField
-                    fullWidth
-                    label={field.label}
-                    value={data[field.key] as string | number | undefined}
-                    onChange={(e) => handleInputChange(field.key, e.target.value)}
-                    type={field.type || 'text'}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSaveClick}
-              sx={{ marginTop: '20px' }}
-            >
-              Save Changes
-            </Button>
-          </>
+            {/* Render form fields based on the fieldConfig */}
+            {fieldConfig.map((field) => (
+              <TextField
+                key={field.key as string}
+                label={field.label}
+                value={(selectedItem as any)[field.key] || ''}
+                onChange={(e) => handleFieldChange(field.key, e.target.value)}
+                type={field.type}
+                fullWidth
+                margin="normal"
+                disabled={!field.editable} // Disable the field if not editable
+              />
+            ))}
+
+            <Box mt={2}>
+              <Button variant="contained" color="primary" onClick={handleSave}>
+                Save
+              </Button>
+            </Box>
+          </Box>
         ) : (
-          <Typography variant="h6">Select a {section.slice(0, -1)} to view details</Typography>
+          <Typography variant="body1">Select an item to view details.</Typography>
         )}
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
   );
 };
 
