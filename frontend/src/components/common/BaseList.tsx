@@ -1,15 +1,15 @@
 // File: src/components/common/BaseList.tsx
 
 import React from 'react';
-import { Box, Typography, ListItemButton } from '@mui/material';
-import ActionButton from './ActionButton'; // Import the ActionButton component
+import { Box, List, ListItemButton, Typography } from '@mui/material';
+import ActionButton from './ActionButton';
 
 interface BaseListProps<T> {
-  data: T[]; // Generic data type
-  onSelect: (item: T) => void; // Item selection handler
-  renderItem: (item: T) => React.ReactNode; // Custom render function for list items
-  section: 'clients' | 'trainers' | 'sessions'; // Section type for heading and button text
-  getKey: (item: T) => string | number; // Function to get a unique key for each item
+  data: T[];
+  onSelect: (item: T) => void;
+  renderItem: (item: T) => React.ReactNode;
+  section: 'clients' | 'trainers' | 'sessions';
+  getKey: (item: T) => string | number;
 }
 
 const BaseList = <T,>({
@@ -20,63 +20,33 @@ const BaseList = <T,>({
   getKey,
 }: BaseListProps<T>) => {
   const handleAddItemClick = () => {
-    // Handle the "Add" button click here (e.g., open modal, navigate to form, etc.)
     console.log(`Add new ${section}`);
   };
 
-  const getHeading = () => {
-    switch (section) {
-      case 'clients':
-        return 'Clients';
-      case 'trainers':
-        return 'Trainers';
-      case 'sessions':
-        return 'Sessions';
-      default:
-        return 'Items';
-    }
-  };
-
   return (
-    <div style={{ flex: 1 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Heading and Action Button container */}
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          mb: 2, // Margin-bottom for some spacing
-          padding: '0 16px', // Add equal left and right padding for spacing
+          mb: 2,
         }}
       >
-        {/* Heading aligned to the left */}
-        <Typography variant="h5" component="h1">
-          {getHeading()}
-        </Typography>
-
-        {/* Action button aligned to the right */}
+        <Typography variant="h5">{section.charAt(0).toUpperCase() + section.slice(1)} List</Typography>
         <ActionButton section={section} onClick={handleAddItemClick} />
       </Box>
 
-      {/* Render the list items */}
-      <ul>
+      {/* List of items */}
+      <List sx={{ flexGrow: 1 }}>
         {data.map((item) => (
-          <ListItemButton
-            key={getKey(item)} // Use the item's id or unique key
-            onClick={() => onSelect(item)}
-            sx={{
-              mb: 1,
-              borderRadius: 1,
-              border: '1px solid #ccc',
-              '&:hover': { backgroundColor: '#f0f0f0' },
-              padding: '8px 16px', // Add padding to the list item for better appearance
-            }}
-          >
-            {renderItem(item)} {/* Render each item based on provided function */}
+          <ListItemButton key={getKey(item)} onClick={() => onSelect(item)}>
+            {renderItem(item)}
           </ListItemButton>
         ))}
-      </ul>
-    </div>
+      </List>
+    </Box>
   );
 };
 
