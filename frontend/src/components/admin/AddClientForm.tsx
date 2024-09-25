@@ -55,16 +55,18 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
     const handleSave = () => {
         const newClient = {
             ...formData,
-            trainer_id: formData.trainer?.id || undefined,  // Ensure trainer_id is either a number or undefined
+            trainer_id: formData.trainer?.id ?? undefined,  // Ensure `trainer_id` is properly set
             user: {
                 ...formData.user,
-                id: formData.user.id ?? '',  // Ensure id is either a string or an empty string
-                username: formData.user.username || ''  // Ensure username is always a string
-            }
+                id: formData.user.id ?? '',  // Ensure `id` is a string or empty string
+                username: formData.user.username || '',  // Ensure `username` is always a string
+            },
         };
     
-        onSubmit(newClient);  // Call onSubmit with the new client data
+        console.log('Submitting new client:', newClient);  // Debug: Log the new client data before submitting
+        onSubmit(newClient);  // Call `onSubmit` with the new client data
     };
+    
     
     
     
