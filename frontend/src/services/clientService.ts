@@ -11,7 +11,7 @@ export const fetchClients = async (accessToken: string): Promise<Client[] | null
         'Authorization': `Bearer ${accessToken}`,  // Add Bearer token to the Authorization header
         'Content-Type': 'application/json'
       },
-      credentials: 'include'  // Ensure cookies are included
+      credentials: 'include'
     });
 
     if (!res.ok) {

@@ -1,5 +1,5 @@
 // File: src/app/admin/clients/page.tsx
-"use client"; // Ensure this is a client component
+"use client";
 import React, { useEffect, useState } from 'react';
 import BaseListDetailsPage from './../../../components/common/BaseListDetailsPage';
 import { Client } from './../../../interfaces/client';
@@ -11,7 +11,7 @@ const ClientsPage = () => {
 
   useEffect(() => {
     const getAccessToken = () => {
-      const match = document.cookie.match(/access_token=([^;]+)/); // Get access token from cookies
+      const match = document.cookie.match(/access_token=([^;]+)/);
       return match ? match[1] : null;
     };
 
