@@ -42,8 +42,8 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
 
   // Conditionally render menu items based on the role
   const menuItems = role === 'admin' ? adminMenuItems :
-                    role === 'trainer' ? trainerMenuItems :
-                    clientMenuItems;  // Defaults to client if no match
+    role === 'trainer' ? trainerMenuItems :
+      clientMenuItems;  // Defaults to client if no match
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -78,7 +78,8 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
         <Box role="presentation" sx={{ display: 'flex', flexDirection: 'column', alignItems: isDrawerOpen ? 'flex-start' : 'center' }}>
           <List>
             {menuItems.map((item, index) => (
-              <Link href={item.href} key={index} passHref>
+              // Disable prefetching if you want to avoid unnecessary preloading
+              <Link href={item.href} key={index} prefetch={false} passHref>
                 <Tooltip title={isDrawerOpen ? '' : item.text} placement="right">
                   <ListItemButton>
                     <ListItemIcon>{item.icon}</ListItemIcon>
@@ -86,6 +87,7 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
                   </ListItemButton>
                 </Tooltip>
               </Link>
+
             ))}
           </List>
         </Box>

@@ -3,26 +3,26 @@ import { Client } from '../interfaces/client';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-// Fetch clients with Bearer token authorization
-export const fetchClients = async (accessToken: string): Promise<Client[] | null> => {
+export async function fetchClients(accessToken: string): Promise<Client[] | null> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/clients/`, {
+    const response = await fetch(`${API_BASE_URL}/api/clients/`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,  // Include Bearer token in headers
+        'Authorization': `Bearer ${accessToken}`, // Add the Bearer token to headers
         'Content-Type': 'application/json',
       },
-      credentials: 'include',  // Include cookies if necessary
+      credentials: 'include',
     });
 
-    if (!res.ok) {
-      throw new Error('Failed to load clients');
+    if (!response.ok) {
+      console.error('Failed to fetch clients:', response.status);
+      return null;
     }
 
-    const clients = await res.json();
-    return clients;
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Error fetching clients:', error);
     return null;
   }
-};
+}

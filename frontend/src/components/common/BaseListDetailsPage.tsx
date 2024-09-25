@@ -1,7 +1,5 @@
-// File: components/common/BaseListDetailsPage.tsx
-"use client";
-
-import React, { useState } from 'react';
+"use client"; // Ensure this is a client component
+import React, { useState, useEffect } from 'react';
 import BaseList from './BaseList';
 import BaseListDetails from './BaseListDetails';
 
@@ -10,12 +8,16 @@ interface Identifiable {
 }
 
 interface BaseListDetailsPageProps<T extends Identifiable> {
-  data: T[]; // Ensure the data array contains items with an 'id'
-  renderItem: (item: T) => React.ReactNode; // Custom render function for list items
-  renderDetails: (item: T) => React.ReactNode; // Custom render function for item details
+  data: T[];
+  renderItem: (item: T) => React.ReactNode;
+  renderDetails: (item: T) => React.ReactNode;
 }
 
-const BaseListDetailsPage = <T extends Identifiable>({ data, renderItem, renderDetails }: BaseListDetailsPageProps<T>) => {
+const BaseListDetailsPage = <T extends Identifiable>({
+  data,
+  renderItem,
+  renderDetails
+}: BaseListDetailsPageProps<T>) => {
   const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
   const handleSelect = (item: T) => {
@@ -23,10 +25,10 @@ const BaseListDetailsPage = <T extends Identifiable>({ data, renderItem, renderD
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
-      {/* Render the list of items */}
+    <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
+      {/* Render list of items */}
       <BaseList data={data} onSelect={handleSelect} renderItem={renderItem} />
-
+      
       {/* Render details of the selected item */}
       {selectedItem && <BaseListDetails item={selectedItem} renderDetails={renderDetails} />}
     </div>
