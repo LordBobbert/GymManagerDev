@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import BaseListDetailsPage from './../../../components/common/BaseListDetailsPage';
 import { Client } from './../../../interfaces/client';
-import { fetchClients } from './../../../services/clientService'; // Ensure this points to the correct service
+import { fetchClients } from './../../../services/clientService'; // Ensure this is pointing to the right service
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
