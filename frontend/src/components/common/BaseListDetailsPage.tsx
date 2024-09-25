@@ -20,19 +20,23 @@ const BaseListDetailsPage = <T,>({ data, fieldConfig, onSave }: BaseListDetailsP
     }));
   };
 
-  const handleNestedChange = (key: string, value: any) => {
+  const handleNestedChange = (key: string, value: string | number | boolean) => {
     const keys = key.split('.');
-    let updatedData: any = { ...formData };
-    let current: any = updatedData;
+    let updatedData: Partial<T> = { ...formData };
+    let current: Partial<T> | any = updatedData;
 
-    for (let i = 0; i < keys.length - 1; i++) {
-      const part = keys[i];
-      if (!current[part]) current[part] = {};
-      current = current[part];
-    }
+    keys.forEach((part, index) => {
+      if (index === keys.length - 1) {
+        current[part] = value;
+      } else {
+        if (!current[part]) {
+          current[part] = {};
+        }
+        current = current[part];
+      }
+    });
 
-    current[keys[keys.length - 1]] = value;
-    setFormData(updatedData);
+    setFormData(updatedData as T);
   };
 
   const handleSave = () => {
