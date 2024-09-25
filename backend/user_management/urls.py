@@ -13,9 +13,9 @@ app_name = 'user_management'
 
 # Set up the router for ViewSets
 router = DefaultRouter()
-router.register(r'api/clients', client_views.ClientProfileViewSet, basename='clientprofile')  # Updated to 'api/clients'
-router.register(r'api/trainers', trainer_views.TrainerProfileViewSet, basename='trainerprofile')
-router.register(r'api/users', user_management_views.UserViewSet, basename='user')
+router.register(r'clients', client_views.ClientProfileViewSet, basename='clientprofile')  # Updated to 'api/clients'
+router.register(r'trainers', trainer_views.TrainerProfileViewSet, basename='trainerprofile')
+router.register(r'users', user_management_views.UserViewSet, basename='user')
 
 urlpatterns = [
     # Authentication routes
