@@ -1,7 +1,7 @@
 // File: src/components/common/BaseList.tsx
 
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, List, ListItemButton, Divider, ListItemText } from '@mui/material';
 import ActionButton from './ActionButton'; // Import the ActionButton component
 
 interface BaseListProps<T> {
@@ -38,14 +38,14 @@ const BaseList = <T,>({
   };
 
   return (
-    <div style={{ flex: 1 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
       {/* Heading and Action Button container */}
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          mb: 2, // Margin-bottom for some spacing
+          mb: 2, // Margin-bottom for spacing
         }}
       >
         {/* Heading aligned to the left */}
@@ -57,15 +57,27 @@ const BaseList = <T,>({
         <ActionButton section={section} onClick={handleAddItemClick} />
       </Box>
 
-      {/* Render the list items */}
-      <ul>
+      {/* Divider for separation */}
+      <Divider sx={{ mb: 2 }} />
+
+      {/* Render the list items using Material-UI List component */}
+      <List sx={{ flexGrow: 1, overflow: 'auto' }}>
         {data.map((item) => (
-          <li key={getKey(item)} onClick={() => onSelect(item)}>
-            {renderItem(item)} {/* Render each item based on the provided function */}
-          </li>
+          <ListItemButton
+            key={getKey(item)}
+            onClick={() => onSelect(item)}
+            sx={{
+              mb: 1,
+              borderRadius: 1,
+              border: '1px solid #ccc',
+              '&:hover': { backgroundColor: '#f0f0f0' },
+            }}
+          >
+            <ListItemText primary={renderItem(item)} />
+          </ListItemButton>
         ))}
-      </ul>
-    </div>
+      </List>
+    </Box>
   );
 };
 
