@@ -5,47 +5,61 @@
 import React, { useEffect, useState } from 'react';
 import BaseList from '../../../components/common/BaseList';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
-import { Client } from '../../../interfaces/client';
-import { fetchClients, addClient } from '../../../services/clientService';
-import { clientFieldConfig } from '../../../config/fieldConfigs';
 import AddClientForm from '../../../components/admin/AddClientForm';
+import { Client } from '../../../interfaces/client';
+import { Trainer } from '../../../interfaces/trainer'; // Import Trainer type
+import { fetchClients } from '../../../services/clientService';
+import { fetchTrainers } from '../../../services/trainerService'; // Assuming you have a service to fetch trainers
+import { clientFieldConfig } from '../../../config/fieldConfigs';
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
+  const [trainers, setTrainers] = useState<Trainer[] | null>(null); // State to store trainers
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [isAddClientOpen, setIsAddClientOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [isAddClientOpen, setIsAddClientOpen] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true); // State to show loading spinner
 
   useEffect(() => {
-    fetchClients()
-      .then((data) => setClients(data))
-      .catch(() => setError('Failed to load clients.'));
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        // Fetch both clients and trainers concurrently
+        const [clientsData, trainersData] = await Promise.all([
+          fetchClients(),
+          fetchTrainers(),
+        ]);
+        setClients(clientsData);
+        setTrainers(trainersData);
+      } catch (error) {
+        setError('Failed to load clients or trainers.');
+      } finally {
+        setLoading(false); // Stop loading spinner once fetching is done
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleClientSelect = (client: Client) => {
     setSelectedClient(client);
   };
 
-  const handleClientSave = (updatedClient: Client) => {
-    console.log('Client saved:', updatedClient);
-  };
-
-  const handleAddClientSubmit = async (newClient: Omit<Client, 'id'>) => {
-    try {
-      const addedClient = await addClient(newClient);
-      setClients((prev) => (prev ? [...prev, addedClient] : [addedClient]));
-      setIsAddClientOpen(false);
-    } catch (error) {
-      console.error('Failed to add client:', error);
-    }
+  const handleAddClientSubmit = (newClient: Omit<Client, 'id'>) => {
+    console.log('Adding client:', newClient);
+    setIsAddClientOpen(false); // Close the modal after adding
   };
 
   if (error) {
     return <div>{error}</div>;
   }
 
-  if (!clients) {
-    return <div>Loading...</div>;
+  if (loading) {
+    return <div>Loading...</div>; // Show loading while data is being fetched
+  }
+
+  if (!clients || !trainers) {
+    return <div>No data available</div>;
   }
 
   return (
@@ -57,7 +71,6 @@ const ClientsPage = () => {
           section="clients"
           getKey={(client) => client.id}
           onSelect={handleClientSelect}
-          onAddClient={() => setIsAddClientOpen(true)} // Trigger the AddClientForm
           renderItem={(client) => (
             <span>{client.user.first_name} {client.user.last_name}</span>
           )}
@@ -70,7 +83,7 @@ const ClientsPage = () => {
           <BaseListDetailsPage
             data={selectedClient}
             fieldConfig={clientFieldConfig}
-            onSave={handleClientSave}
+            onSave={(updatedClient: Client) => console.log('Updated Client:', updatedClient)}
           />
         </div>
       )}
@@ -80,8 +93,8 @@ const ClientsPage = () => {
         open={isAddClientOpen}
         onClose={() => setIsAddClientOpen(false)}
         onSubmit={handleAddClientSubmit}
-        trainers={[]}  // Passing an empty array for now, adjust as needed
-        loading={false}  // Defaulting to false, adjust as needed
+        trainers={trainers} // Pass the fetched trainers to the AddClientForm
+        loading={loading} // Pass the loading state to the AddClientForm (if needed)
       />
     </div>
   );
