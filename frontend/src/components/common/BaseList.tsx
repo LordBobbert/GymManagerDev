@@ -1,7 +1,7 @@
 // File: src/components/common/BaseList.tsx
 
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Button, Box, Typography } from '@mui/material';
 import ActionButton from './ActionButton'; // Import the ActionButton component
 
 interface BaseListProps<T> {
@@ -9,9 +9,16 @@ interface BaseListProps<T> {
   onSelect: (item: T) => void; // Item selection handler
   renderItem: (item: T) => React.ReactNode; // Custom render function for list items
   section: 'clients' | 'trainers' | 'sessions'; // Section type for heading and button text
+  getKey: (item: T) => string | number; // Function to get a unique key for each item
 }
 
-const BaseList = <T,>({ data, onSelect, renderItem, section }: BaseListProps<T>) => {
+const BaseList = <T,>({
+  data,
+  onSelect,
+  renderItem,
+  section,
+  getKey,
+}: BaseListProps<T>) => {
   const handleAddItemClick = () => {
     // Handle the "Add" button click here (e.g., open modal, navigate to form, etc.)
     console.log(`Add new ${section}`);
@@ -53,7 +60,7 @@ const BaseList = <T,>({ data, onSelect, renderItem, section }: BaseListProps<T>)
       {/* Render the list items */}
       <ul>
         {data.map((item) => (
-          <li key={(item as any).id} onClick={() => onSelect(item)}>
+          <li key={getKey(item)} onClick={() => onSelect(item)}>
             {renderItem(item)} {/* Render each item based on the provided function */}
           </li>
         ))}

@@ -9,9 +9,16 @@ interface BaseListDetailsPageProps<T> {
   renderItem: (item: T) => React.ReactNode;
   renderDetails: (item: T) => React.ReactNode;
   section: 'clients' | 'trainers' | 'sessions'; // Section type for heading and button text
+  getKey: (item: T) => string | number; // Function to get a unique key for each item
 }
 
-const BaseListDetailsPage = <T,>({ data, renderItem, renderDetails, section }: BaseListDetailsPageProps<T>) => {
+const BaseListDetailsPage = <T,>({
+  data,
+  renderItem,
+  renderDetails,
+  section,
+  getKey, // Include getKey in props
+}: BaseListDetailsPageProps<T>) => {
   const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
   const handleSelect = (item: T) => {
@@ -20,11 +27,14 @@ const BaseListDetailsPage = <T,>({ data, renderItem, renderDetails, section }: B
 
   return (
     <div style={{ display: 'flex' }}>
-      {/* Pass the section prop to BaseList */}
-      <BaseList data={data} onSelect={handleSelect} renderItem={renderItem} section={section} />
-      {selectedItem && (
-        <BaseListDetails item={selectedItem} renderDetails={renderDetails} />
-      )}
+      <BaseList
+        data={data}
+        onSelect={handleSelect}
+        renderItem={renderItem}
+        section={section}
+        getKey={getKey} // Pass the getKey function to BaseList
+      />
+      {selectedItem && <BaseListDetails item={selectedItem} renderDetails={renderDetails} />}
     </div>
   );
 };

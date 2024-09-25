@@ -1,5 +1,3 @@
-"use client";
-
 // File: src/app/admin/clients/page.tsx
 
 import React, { useEffect, useState } from 'react';
@@ -29,21 +27,18 @@ const ClientsPage = () => {
     <BaseListDetailsPage
       data={clients}
       renderItem={(client) => (
-        <span>
-          {client.user.first_name} {client.user.last_name}
-        </span>
+        <span>{client.user.first_name} {client.user.last_name}</span>
       )}
       renderDetails={(client) => (
         <div>
-          <h2>
-            {client.user.first_name} {client.user.last_name}
-          </h2>
+          <h2>{client.user.first_name} {client.user.last_name}</h2>
           <p>Email: {client.user.email}</p>
           <p>Phone: {client.user.phone_number}</p>
           <p>Training Status: {client.training_status}</p>
         </div>
       )}
-      section="clients" // Pass the section as 'clients' to show 'Add Client' button
+      section="clients" // Pass the section as 'clients'
+      getKey={(client) => client.user.id} // Use the `user.id` as the unique key for clients
     />
   );
 };
