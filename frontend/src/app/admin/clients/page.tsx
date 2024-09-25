@@ -1,3 +1,5 @@
+"use client";
+
 // File: src/app/admin/clients/page.tsx
 
 import React, { useEffect, useState } from 'react';
