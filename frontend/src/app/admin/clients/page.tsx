@@ -7,24 +7,23 @@ import BaseList from '../../../components/common/BaseList';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
 import AddClientForm from '../../../components/admin/AddClientForm';
 import { Client } from '../../../interfaces/client';
-import { Trainer } from '../../../interfaces/trainer'; // Import Trainer type
+import { Trainer } from '../../../interfaces/trainer'; 
 import { fetchClients } from '../../../services/clientService';
-import { fetchTrainers } from '../../../services/trainerService'; // Assuming you have a service to fetch trainers
+import { fetchTrainers } from '../../../services/trainerService'; 
 import { clientFieldConfig } from '../../../config/fieldConfigs';
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
-  const [trainers, setTrainers] = useState<Trainer[] | null>(null); // State to store trainers
+  const [trainers, setTrainers] = useState<Trainer[] | null>(null);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isAddClientOpen, setIsAddClientOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // State to show loading spinner
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Fetch both clients and trainers concurrently
         const [clientsData, trainersData] = await Promise.all([
           fetchClients(),
           fetchTrainers(),
@@ -34,7 +33,7 @@ const ClientsPage = () => {
       } catch (error) {
         setError('Failed to load clients or trainers.');
       } finally {
-        setLoading(false); // Stop loading spinner once fetching is done
+        setLoading(false);
       }
     };
 
@@ -50,16 +49,16 @@ const ClientsPage = () => {
     setIsAddClientOpen(false); // Close the modal after adding
   };
 
+  const handleOpenAddClient = () => {
+    setIsAddClientOpen(true); // Open modal
+  };
+
   if (error) {
     return <div>{error}</div>;
   }
 
   if (loading) {
-    return <div>Loading...</div>; // Show loading while data is being fetched
-  }
-
-  if (!clients || !trainers) {
-    return <div>No data available</div>;
+    return <div>Loading...</div>;
   }
 
   return (
@@ -67,10 +66,11 @@ const ClientsPage = () => {
       {/* Left panel: BaseList */}
       <div style={{ flex: 1 }}>
         <BaseList
-          data={clients}
+          data={clients || []}  // Ensure we pass an empty array if clients is null
           section="clients"
           getKey={(client) => client.id}
           onSelect={handleClientSelect}
+          onAddClient={handleOpenAddClient} // Pass handler to open AddClientForm
           renderItem={(client) => (
             <span>{client.user.first_name} {client.user.last_name}</span>
           )}
@@ -93,8 +93,8 @@ const ClientsPage = () => {
         open={isAddClientOpen}
         onClose={() => setIsAddClientOpen(false)}
         onSubmit={handleAddClientSubmit}
-        trainers={trainers} // Pass the fetched trainers to the AddClientForm
-        loading={loading} // Pass the loading state to the AddClientForm (if needed)
+        trainers={trainers || []} // Ensure trainers is passed, even if empty
+        loading={loading} // Loading state
       />
     </div>
   );

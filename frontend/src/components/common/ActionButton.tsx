@@ -5,7 +5,7 @@ import { Button } from '@mui/material';
 
 interface ActionButtonProps {
   section: 'clients' | 'trainers' | 'sessions';
-  onClick: () => void;
+  onClick?: () => void;  // Make sure onClick is optional
 }
 
 const ActionButton: React.FC<ActionButtonProps> = ({ section, onClick }) => {
@@ -23,7 +23,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({ section, onClick }) => {
   };
 
   return (
-    <Button variant="contained" onClick={onClick}>
+    <Button variant="contained" onClick={onClick}> {/* Trigger onClick */}
       {getLabel()}
     </Button>
   );
