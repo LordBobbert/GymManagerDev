@@ -8,10 +8,10 @@ export const fetchClients = async (accessToken: string): Promise<Client[] | null
     const res = await fetch(`${API_BASE_URL}/api/user-management/clients/`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,  // Add Bearer token to the Authorization header
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
     });
 
     if (!res.ok) {

@@ -1,21 +1,17 @@
 // File: src/app/admin/clients/page.tsx
 "use client";
+
 import React, { useEffect, useState } from 'react';
 import BaseListDetailsPage from './../../../components/common/BaseListDetailsPage';
 import { Client } from './../../../interfaces/client';
-import { fetchClients } from './../../../services/clientService';
+import { fetchClients } from './../../../services/clientService'; // Ensure this points to the correct service
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const getAccessToken = () => {
-      const match = document.cookie.match(/access_token=([^;]+)/);
-      return match ? match[1] : null;
-    };
-
-    const accessToken = getAccessToken();
+    const accessToken = document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1];
 
     if (!accessToken) {
       setError('You must be logged in to view clients.');
