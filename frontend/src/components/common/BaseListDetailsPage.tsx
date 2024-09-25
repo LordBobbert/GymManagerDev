@@ -5,15 +5,15 @@
 import React, { useState } from 'react';
 import { Box, Button, Typography, TextField, Grid } from '@mui/material';
 
-interface FieldConfig {
+interface FieldConfig<T> {
   label: string;
-  key: string;
+  key: keyof T; // Type-safe key based on the generic type T
   type?: string; // Optional type for fields like 'number', 'text', etc.
 }
 
 interface BaseListDetailsPageProps<T> {
   data: T | null; // The selected item for details
-  fieldConfig: FieldConfig[]; // Dynamic field configuration
+  fieldConfig: FieldConfig<T>[]; // Dynamic field configuration
   section: string; // Section to define whether it's clients, trainers, etc.
   onSave: (updatedItem: T) => void; // Save handler
   renderList: () => React.ReactNode; // Function to render the list
@@ -28,7 +28,7 @@ const BaseListDetailsPage = <T,>({
 }: BaseListDetailsPageProps<T>) => {
   const [editedItem, setEditedItem] = useState<T | null>(data); // Local state for editing
 
-  const handleInputChange = (key: string, value: any) => {
+  const handleInputChange = (key: keyof T, value: any) => {
     if (editedItem) {
       setEditedItem({ ...editedItem, [key]: value });
     }
@@ -54,11 +54,11 @@ const BaseListDetailsPage = <T,>({
             <Typography variant="h6">{`Edit ${section.slice(0, -1)}`}</Typography>
             <Grid container spacing={2}>
               {fieldConfig.map((field) => (
-                <Grid item xs={6} key={field.key}>
+                <Grid item xs={6} key={String(field.key)}>
                   <TextField
                     fullWidth
                     label={field.label}
-                    value={(data as any)[field.key] || ''}
+                    value={data[field.key] as string | number | undefined}
                     onChange={(e) => handleInputChange(field.key, e.target.value)}
                     type={field.type || 'text'}
                   />
