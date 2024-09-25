@@ -1,32 +1,37 @@
 // File: src/components/common/BaseListDetailsPage.tsx
 
 import React, { useState } from 'react';
-import { Box, TextField, MenuItem } from '@mui/material';
+import { Box, Button, TextField } from '@mui/material';
 import { FieldConfig } from '../../interfaces/FieldConfig';
 
 interface BaseListDetailsPageProps<T> {
   data: T;
   fieldConfig: FieldConfig<T>[];
-  onSave: (updatedData: T) => void;
-}
-
-function getNestedValue(obj: any, path: string) {
-  return path.split('.').reduce((o, i) => (o ? o[i] : ''), obj);
-}
-
-function setNestedValue(obj: any, path: string, value: any) {
-  const keys = path.split('.');
-  const lastKey = keys.pop();
-  const deep = keys.reduce((o, key) => o[key] = o[key] || {}, obj);
-  deep[lastKey!] = value;
+  onSave: (updatedItem: T) => void;
 }
 
 const BaseListDetailsPage = <T,>({ data, fieldConfig, onSave }: BaseListDetailsPageProps<T>) => {
-  const [formData, setFormData] = useState<T>({ ...data });
+  const [formData, setFormData] = useState<T>(data);
 
-  const handleChange = (key: string, value: any) => {
-    const updatedData = { ...formData };
-    setNestedValue(updatedData, key, value);
+  const handleChange = <K extends keyof T>(key: K, value: T[K]) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const handleNestedChange = (key: string, value: any) => {
+    const keys = key.split('.');
+    let updatedData: any = { ...formData };
+    let current: any = updatedData;
+
+    for (let i = 0; i < keys.length - 1; i++) {
+      const part = keys[i];
+      if (!current[part]) current[part] = {};
+      current = current[part];
+    }
+
+    current[keys[keys.length - 1]] = value;
     setFormData(updatedData);
   };
 
@@ -35,37 +40,36 @@ const BaseListDetailsPage = <T,>({ data, fieldConfig, onSave }: BaseListDetailsP
   };
 
   return (
-    <Box>
-      {/* Render form fields based on fieldConfig */}
-      {fieldConfig.map(({ label, key, type, options }) => (
-        <Box key={key.toString()} sx={{ mb: 2 }}>
-          {type === 'select' && options ? (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      {fieldConfig.map(({ label, key, type }) => {
+        if (typeof key === 'string' && key.includes('.')) {
+          // Handle nested fields like 'user.first_name'
+          const value = key.split('.').reduce((acc: any, curr: string) => acc?.[curr], formData);
+          return (
             <TextField
-              select
+              key={key}
               label={label}
-              value={getNestedValue(formData, key.toString())}
-              onChange={(e) => handleChange(key.toString(), e.target.value)}
-              fullWidth
-            >
-              {options.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          ) : (
-            <TextField
-              label={label}
-              value={getNestedValue(formData, key.toString())}
-              onChange={(e) => handleChange(key.toString(), e.target.value)}
               type={type}
-              fullWidth
+              value={value || ''}
+              onChange={(e) => handleNestedChange(key, e.target.value)}
             />
-          )}
-        </Box>
-      ))}
+          );
+        }
 
-      <button onClick={handleSave}>Save</button>
+        const keyAsK = key as keyof T;
+        return (
+          <TextField
+            key={keyAsK as string}
+            label={label}
+            type={type}
+            value={formData[keyAsK] as string | number | ''} // Ensure value matches the type
+            onChange={(e) => handleChange(keyAsK, e.target.value as T[keyof T])}
+          />
+        );
+      })}
+      <Button variant="contained" onClick={handleSave}>
+        Save
+      </Button>
     </Box>
   );
 };
