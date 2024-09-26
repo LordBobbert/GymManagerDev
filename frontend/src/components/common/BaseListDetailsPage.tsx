@@ -18,9 +18,10 @@ const BaseListDetailsPage = <T,>({
 }: BaseListDetailsPageProps<T>) => {
   const [formData, setFormData] = useState<T>(data);
 
-  const handleChange = (key: string, value: any) => {
+  const handleChange = (key: string, value: string | number | boolean | unknown) => {  // Replace 'any' with 'unknown' or specific types
     setFormData((prev) => setNestedValue(prev, key, value));
   };
+  
 
   const handleSave = () => {
     onSave(formData);  // Call the save handler with the updated data
