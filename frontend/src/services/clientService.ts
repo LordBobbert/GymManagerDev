@@ -29,13 +29,14 @@ export const addClient = async (newClient: Omit<Client, 'id'>): Promise<Client> 
   return response.json();
 };
 
+// clientService.ts
 export const updateClient = async (id: number, updatedClient: Client): Promise<Client> => {
-  const response = await fetch(`/api/user-management/clients/${id}/`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/clients/${id}/`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(updatedClient), // Send the updated client data
+    body: JSON.stringify(updatedClient),
   });
 
   if (!response.ok) {
@@ -44,3 +45,4 @@ export const updateClient = async (id: number, updatedClient: Client): Promise<C
 
   return response.json();
 };
+

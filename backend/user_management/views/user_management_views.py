@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView, UpdateAPIView
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -73,3 +73,8 @@ class UserViewSet(viewsets.ModelViewSet):
         trainers = User.objects.filter(roles__name='trainer')
         serializer = self.get_serializer(trainers, many=True)
         return Response(serializer.data)
+
+class ClientUpdateView(UpdateAPIView):
+    queryset = ClientProfile.objects.all()
+    serializer_class = ClientProfileSerializer
+    lookup_field = 'id'  # This tells the view to look up by 'id' in the URL

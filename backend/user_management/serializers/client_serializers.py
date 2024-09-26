@@ -63,9 +63,10 @@ class ClientProfileSerializer(serializers.ModelSerializer):
         user.save()
 
         # Handle the trainer update if `trainer_id` is provided
-        trainer_id = validated_data.pop('trainer_id', None)
-        if trainer_id:
-            instance.trainer = trainer_id
+        trainer_data = validated_data.pop('trainer_id', None)
+        if trainer_data:
+            instance.trainer = User.objects.get(id=trainer_data.id)
+
 
         # Update the rest of the client profile fields
         for attr, value in validated_data.items():
