@@ -45,7 +45,7 @@ class ClientProfileSerializer(serializers.ModelSerializer):
         user_data = validated_data.pop('user', {})
         user = instance.user
 
-        # Check for changes in username or email
+        # Check for changes in username or email, ensuring we exclude the current user
         new_username = user_data.get('username')
         new_email = user_data.get('email')
 
@@ -57,9 +57,9 @@ class ClientProfileSerializer(serializers.ModelSerializer):
             if User.objects.filter(email=new_email).exclude(id=user.id).exists():
                 raise serializers.ValidationError({'user': {'email': 'A user with this email already exists.'}})
 
-        # Update the user fields (only if changes exist)
+        # Update the user fields only if they have changed
         for attr, value in user_data.items():
-            if getattr(user, attr) != value:  # Avoid redundant updates
+            if getattr(user, attr) != value:
                 setattr(user, attr, value)
         user.save()
 
