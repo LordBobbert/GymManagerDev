@@ -57,16 +57,20 @@ class ClientProfileSerializer(serializers.ModelSerializer):
             if User.objects.filter(email=new_email).exclude(id=user.id).exists():
                 raise serializers.ValidationError({'user': {'email': 'A user with this email already exists.'}})
 
-        # Update the user fields
+        # Update the user fields (only if changes exist)
         for attr, value in user_data.items():
-            setattr(user, attr, value)
+            if getattr(user, attr) != value:  # Avoid redundant updates
+                setattr(user, attr, value)
         user.save()
 
         # Handle the trainer update if `trainer_id` is provided
-        trainer_data = validated_data.pop('trainer_id', None)
-        if trainer_data:
-            instance.trainer = User.objects.get(id=trainer_data.id)
-
+        trainer_id = validated_data.pop('trainer_id', None)
+        if trainer_id:
+            try:
+                trainer = User.objects.get(id=trainer_id)
+                instance.trainer = trainer
+            except User.DoesNotExist:
+                raise serializers.ValidationError({'trainer_id': 'Trainer not found.'})
 
         # Update the rest of the client profile fields
         for attr, value in validated_data.items():
