@@ -49,18 +49,25 @@ class ClientProfileSerializer(serializers.ModelSerializer):
         new_username = user_data.get('username')
         new_email = user_data.get('email')
 
+        # Check and update username if it's provided and different from the current one
         if new_username and new_username != user.username:
+            # Ensure the new username doesn't already exist for another user
             if User.objects.filter(username=new_username).exclude(id=user.id).exists():
                 raise serializers.ValidationError({'user': {'username': 'A user with that username already exists.'}})
 
+        # Check and update email if it's provided and different from the current one
         if new_email and new_email != user.email:
+            # Ensure the new email doesn't already exist for another user
             if User.objects.filter(email=new_email).exclude(id=user.id).exists():
                 raise serializers.ValidationError({'user': {'email': 'A user with this email already exists.'}})
 
         # Update the user fields only if they have changed
         for attr, value in user_data.items():
+            # Only update the attribute if it's different from the current value
             if getattr(user, attr) != value:
                 setattr(user, attr, value)
+
+        # Save the updated user data
         user.save()
 
         # Handle the trainer update if `trainer_id` is provided
@@ -75,6 +82,8 @@ class ClientProfileSerializer(serializers.ModelSerializer):
         # Update the rest of the client profile fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
+
+        # Save the updated client profile data
         instance.save()
 
         return instance
