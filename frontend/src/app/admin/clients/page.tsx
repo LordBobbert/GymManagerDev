@@ -7,7 +7,7 @@ import BaseList from '../../../components/common/BaseList';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
 import AddClientForm from '../../../components/admin/AddClientForm';
 import { Client } from '../../../interfaces/client';
-import { fetchClients, addClient } from '../../../services/clientService';
+import { fetchClients, addClient, updateClient } from '../../../services/clientService';
 import { clientFieldConfig } from '../../../config/fieldConfigs';
 import { Trainer } from '../../../interfaces/trainer';
 import { fetchTrainers } from '../../../services/trainerService';
@@ -45,9 +45,15 @@ const ClientsPage = () => {
     }, 0); 
   };
 
-  const handleClientSave = (updatedClient: Client) => {
-    console.log('Client saved:', updatedClient);
+  const handleClientSave = async (updatedClient: Client) => {
+    try {
+      await updateClient(updatedClient.id, updatedClient);
+      console.log('Client updated successfully');
+    } catch (error) {
+      console.error('Error updating client:', error);
+    }
   };
+  
 
   const handleAddClientSubmit = async (newClient: Omit<Client, 'id'>) => {
     try {

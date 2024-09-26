@@ -28,3 +28,19 @@ export const addClient = async (newClient: Omit<Client, 'id'>): Promise<Client> 
   if (!response.ok) throw new Error('Failed to add client');
   return response.json();
 };
+
+export const updateClient = async (id: number, updatedClient: Client): Promise<Client> => {
+  const response = await fetch(`/api/user-management/clients/${id}/`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updatedClient), // Send the updated client data
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update client');
+  }
+
+  return response.json();
+};

@@ -41,6 +41,7 @@ class ClientProfileSerializer(serializers.ModelSerializer):
         return client_profile
 
     def update(self, instance, validated_data):
+        # Handle the nested 'user' fields
         user_data = validated_data.pop('user', {})
         user = instance.user
 
@@ -56,11 +57,17 @@ class ClientProfileSerializer(serializers.ModelSerializer):
             if User.objects.filter(email=new_email).exclude(id=user.id).exists():
                 raise serializers.ValidationError({'user': {'email': 'A user with this email already exists.'}})
 
-        # Update the user and profile as necessary
+        # Update the user fields
         for attr, value in user_data.items():
             setattr(user, attr, value)
         user.save()
 
+        # Handle the trainer update if `trainer_id` is provided
+        trainer_id = validated_data.pop('trainer_id', None)
+        if trainer_id:
+            instance.trainer = trainer_id
+
+        # Update the rest of the client profile fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
