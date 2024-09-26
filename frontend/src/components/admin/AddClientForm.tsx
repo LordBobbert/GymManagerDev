@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { Client } from '../../interfaces/client';
 import { Trainer } from '../../interfaces/trainer';
-import { clientFieldConfig } from '../../config/fieldConfigs';
+import { getClientFieldConfig } from './../../config/fieldConfigs';  // Import the correct function
 import { setNestedValue, getNestedValue } from '../../utils/nestedUtils';
 
 interface AddClientFormProps {
@@ -62,30 +62,25 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
                 username: formData.user.username || '',  // Ensure `username` is always a string
             },
         };
-    
+
         console.log('Submitting new client:', newClient);  // Debug: Log the new client data before submitting
         onSubmit(newClient);  // Call `onSubmit` with the new client data
     };
-    
-    
-    
-    
-    
 
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>Add Client</DialogTitle>
             <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {clientFieldConfig.map(({ label, key, type }) => {
-                        const value = getNestedValue(formData, key as string) || ''; // Correct usage for retrieving nested value
+                    {getClientFieldConfig(trainers).map(({ label, key, type }: { label: string; key: string; type: string }) => {
+                        const value = getNestedValue(formData, key as string) || '';  // Correct usage for retrieving nested value
                         return (
                             <TextField
                                 key={String(key)}
                                 label={label}
                                 type={type}
                                 value={value}
-                                onChange={(e) => handleChange(key as string, e.target.value)} // Update form data using setNestedValue
+                                onChange={(e) => handleChange(key as string, e.target.value)}  // Update form data using setNestedValue
                             />
                         );
                     })}
