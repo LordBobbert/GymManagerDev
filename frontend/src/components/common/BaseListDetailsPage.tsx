@@ -1,14 +1,14 @@
 // File: src/components/common/BaseListDetailsPage.tsx
 
 import React, { useState } from 'react';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Select, MenuItem, InputLabel } from '@mui/material';
 import { FieldConfig } from '../../interfaces/FieldConfig';
 import { getNestedValue, setNestedValue } from '../../utils/nestedUtils';
 
 interface BaseListDetailsPageProps<T> {
   data: T;
-  fieldConfig: FieldConfig<T>[];
-  onSave: (updatedItem: T) => void;
+  fieldConfig: FieldConfig<T>[];  // Configuration for fields
+  onSave: (updatedItem: T) => void;  // Save handler
 }
 
 const BaseListDetailsPage = <T,>({
@@ -18,25 +18,46 @@ const BaseListDetailsPage = <T,>({
 }: BaseListDetailsPageProps<T>) => {
   const [formData, setFormData] = useState<T>(data);
 
-  const handleChange = (key: string, value: string | number | boolean) => {
+  const handleChange = (key: string, value: any) => {
     setFormData((prev) => setNestedValue(prev, key, value));
   };
 
   const handleSave = () => {
-    onSave(formData); // Save the updated item
+    onSave(formData);  // Call the save handler with the updated data
   };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {fieldConfig.map(({ label, key, type }) => {
-        const value = getNestedValue(formData, key as string) || ''; // Cast `key` to string
+      {fieldConfig.map(({ label, key, type, options }) => {
+        const value = getNestedValue(formData, key as string) || '';  // Get value from formData
+
+        // Render select dropdown if `type` is 'select' and options are provided
+        if (type === 'select' && options) {
+          return (
+            <div key={String(key)}>
+              <InputLabel>{label}</InputLabel>
+              <Select
+                value={value}
+                onChange={(e) => handleChange(key as string, e.target.value)}
+              >
+                {options.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </div>
+          );
+        }
+
+        // Render regular text fields
         return (
           <TextField
-            key={String(key)} // Cast key to string for the 'key' prop
+            key={String(key)}
             label={label}
             type={type}
             value={value}
-            onChange={(e) => handleChange(key as string, e.target.value)} // Ensure `key` is treated as string
+            onChange={(e) => handleChange(key as string, e.target.value)}
           />
         );
       })}

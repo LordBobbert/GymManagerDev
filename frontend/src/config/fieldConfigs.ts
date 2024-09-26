@@ -2,8 +2,9 @@
 
 import { FieldConfig } from '../interfaces/FieldConfig';
 import { Client } from '../interfaces/client';
+import { Trainer } from '../interfaces/trainer';
 
-export const clientFieldConfig: FieldConfig<Client>[] = [
+export const getClientFieldConfig = (trainers: Trainer[]): FieldConfig<Client>[] => [
   {
     label: 'First Name',
     key: 'user.first_name',
@@ -74,9 +75,13 @@ export const clientFieldConfig: FieldConfig<Client>[] = [
     ],
   },
   {
-    label: 'Trainer',
-    key: 'trainer.user.first_name', // Assuming you want to display the trainer's first name
-    type: 'text',
+    label: 'Trainer', // Field for trainer
+    key: 'trainer.id',  // Use `trainer.id` to reference the trainer's id
+    type: 'select',  // Make this a select dropdown
+    options: trainers.map((trainer) => ({
+      label: `${trainer.user.first_name} ${trainer.user.last_name}`,
+      value: trainer.id,
+    })),  // Map the trainers into options
   },
   {
     label: 'Emergency Contact Name',

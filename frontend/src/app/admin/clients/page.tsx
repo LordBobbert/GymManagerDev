@@ -8,7 +8,7 @@ import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage'
 import AddClientForm from '../../../components/admin/AddClientForm';
 import { Client } from '../../../interfaces/client';
 import { fetchClients, addClient, updateClient } from '../../../services/clientService';
-import { clientFieldConfig } from '../../../config/fieldConfigs';
+import { getClientFieldConfig } from '../../../config/fieldConfigs';  // Import the correct function
 import { Trainer } from '../../../interfaces/trainer';
 import { fetchTrainers } from '../../../services/trainerService';
 
@@ -97,7 +97,7 @@ const ClientsPage = () => {
           <BaseListDetailsPage
             key={selectedClient.id} // Use key to force re-render when client changes
             data={selectedClient}
-            fieldConfig={clientFieldConfig}
+            fieldConfig={getClientFieldConfig(trainers)}  // Call the function with trainers
             onSave={handleClientSave}
           />
         </div>
