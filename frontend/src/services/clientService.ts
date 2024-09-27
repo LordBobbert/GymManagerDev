@@ -2,7 +2,7 @@
 
 import { Client } from '../interfaces/client';
 
-export const fetchClients = async () => {
+export const fetchClients = async (): Promise<Client[]> => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/clients/`, {
     method: 'GET',
     credentials: 'include',  // Automatically include cookies
@@ -20,7 +20,7 @@ export const addClient = async (newClient: Omit<Client, 'id'>): Promise<Client> 
     method: 'POST',
     credentials: 'include',  // Automatically include cookies
     headers: {
-      'Content-Type': 'application/json',  // Ensure this is set to 'application/json'
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(newClient),
   });
@@ -29,15 +29,14 @@ export const addClient = async (newClient: Omit<Client, 'id'>): Promise<Client> 
   return response.json();
 };
 
-// clientService.ts
-export const updateClient = async (id: number, updatedClient: Client): Promise<Client> => {
+export const updateClient = async (id: number, updatedFields: Partial<Client>): Promise<Client> => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/clients/${id}/`, {
     method: 'PATCH',
-    credentials: 'include',
+    credentials: 'include',  // Automatically include cookies
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(updatedClient),
+    body: JSON.stringify(updatedFields),  // Send only modified fields
   });
 
   if (!response.ok) {
@@ -46,4 +45,3 @@ export const updateClient = async (id: number, updatedClient: Client): Promise<C
 
   return response.json();
 };
-

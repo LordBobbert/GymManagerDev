@@ -45,10 +45,29 @@ const ClientsPage = () => {
     }, 0); 
   };
 
-  const handleClientSave = async (updatedClient: Client) => {
+  const handleClientSave = async (updatedFields: Partial<Client>) => {
     try {
-      await updateClient(updatedClient.id, updatedClient);
-      console.log('Client updated successfully');
+      if (selectedClient) {
+        const response = await fetch(`/clients/update/${selectedClient.id}/`, {
+          method: 'PATCH',  // Use PATCH method
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedFields),  // Send only modified fields
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to update client');
+        }
+  
+        const data = await response.json();
+        console.log('Client updated successfully', data);
+  
+        // Refresh clients list after successful update
+        const updatedClients = await fetchClients();
+        setClients(updatedClients);
+        setSelectedClient(null);  // Reset selected client to force UI update
+      }
     } catch (error) {
       console.error('Error updating client:', error);
     }

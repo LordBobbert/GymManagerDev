@@ -7,8 +7,8 @@ import { getNestedValue, setNestedValue } from '../../utils/nestedUtils';
 
 interface BaseListDetailsPageProps<T> {
   data: T;
-  fieldConfig: FieldConfig<T>[];  // Configuration for fields
-  onSave: (updatedItem: T) => void;  // Save handler
+  fieldConfig: FieldConfig<T>[];
+  onSave: (updatedItem: Partial<T>) => void;  // Send partial updates
 }
 
 const BaseListDetailsPage = <T,>({
@@ -17,22 +17,22 @@ const BaseListDetailsPage = <T,>({
   onSave,
 }: BaseListDetailsPageProps<T>) => {
   const [formData, setFormData] = useState<T>(data);
+  const [modifiedData, setModifiedData] = useState<Partial<T>>({});  // Track modified fields
 
-  const handleChange = (key: string, value: string | number | boolean | unknown) => {  // Replace 'any' with 'unknown' or specific types
+  const handleChange = (key: string, value: unknown) => {
     setFormData((prev) => setNestedValue(prev, key, value));
+    setModifiedData((prev) => setNestedValue(prev, key, value));  // Track changes
   };
-  
 
   const handleSave = () => {
-    onSave(formData);  // Call the save handler with the updated data
+    onSave(modifiedData);  // Send only the modified data
   };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {fieldConfig.map(({ label, key, type, options }) => {
-        const value = getNestedValue(formData, key as string) || '';  // Get value from formData
+        const value = getNestedValue(formData, key as string) || '';
 
-        // Render select dropdown if `type` is 'select' and options are provided
         if (type === 'select' && options) {
           return (
             <div key={String(key)}>
@@ -51,7 +51,6 @@ const BaseListDetailsPage = <T,>({
           );
         }
 
-        // Render regular text fields
         return (
           <TextField
             key={String(key)}
