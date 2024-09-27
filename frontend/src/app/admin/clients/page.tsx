@@ -7,7 +7,7 @@ import BaseList from '../../../components/common/BaseList';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
 import AddClientForm from '../../../components/admin/AddClientForm';
 import { Client } from '../../../interfaces/client';
-import { fetchClients, addClient, updateClient } from '../../../services/clientService';
+import { fetchClients, addClient } from '../../../services/clientService';
 import { getClientFieldConfig } from '../../../config/fieldConfigs';  // Import the correct function
 import { Trainer } from '../../../interfaces/trainer';
 import { fetchTrainers } from '../../../services/trainerService';
