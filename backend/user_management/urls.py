@@ -5,9 +5,12 @@ from user_management.views import (
     dashboard_views,
     user_management_views,
     client_views,
-    trainer_views
+    trainer_views,
 )
 from user_management.views.authentication_views import CurrentUserView
+from user_management.views.user_management_views import ClientUpdateView
+
+
 
 app_name = 'user_management'
 
@@ -28,6 +31,10 @@ urlpatterns = [
     path('admin/dashboard/', dashboard_views.admin_dashboard, name='admin_dashboard'),
     path('trainer/dashboard/', dashboard_views.trainer_dashboard, name='trainer_dashboard'),
     path('client/dashboard/', dashboard_views.client_dashboard, name='client_dashboard'),
+
+    # User management routes
+    path('clients/update/<int:id>/', ClientUpdateView.as_view(), name='client-update'),
+
 
     # Include the router URLs for users, clients, and trainers
     path('', include(router.urls)),  # This will include /api/clients/, /api/trainers/, and /api/users/ endpoints

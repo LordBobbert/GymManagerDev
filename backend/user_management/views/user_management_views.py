@@ -74,7 +74,10 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(trainers, many=True)
         return Response(serializer.data)
 
+# /mnt/data/user_management_views.py
+
 class ClientUpdateView(UpdateAPIView):
-    queryset = ClientProfile.objects.all()
-    serializer_class = ClientProfileSerializer
-    lookup_field = 'id'  # This tells the view to look up by 'id' in the URL
+    queryset = ClientProfile.objects.all()  # Query all client profiles
+    serializer_class = ClientProfileSerializer  # Use the serializer for ClientProfile
+    lookup_field = 'id'  # Lookup by ID for the client
+    permission_classes = [IsAuthenticated, IsAdmin]  # Ensure proper permissions
