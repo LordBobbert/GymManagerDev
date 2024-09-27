@@ -32,7 +32,7 @@ export const addClient = async (newClient: Omit<Client, 'id'>): Promise<Client> 
 // clientService.ts
 export const updateClient = async (id: number, updatedClient: Client): Promise<Client> => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/clients/${id}/`, {
-    method: 'PUT',
+    method: 'PATCH',
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
