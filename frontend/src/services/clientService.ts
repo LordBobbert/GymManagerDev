@@ -30,13 +30,13 @@ export const addClient = async (newClient: Omit<Client, 'id'>): Promise<Client> 
 };
 
 export const updateClient = async (id: number, updatedFields: Partial<Client>): Promise<Client> => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/clients/update/${id}/`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/clients/update/${id}/`, {
     method: 'PATCH',
-    credentials: 'include',  // Automatically include cookies
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(updatedFields),  // Send only modified fields
+    body: JSON.stringify(updatedFields),
   });
 
   if (!response.ok) {
