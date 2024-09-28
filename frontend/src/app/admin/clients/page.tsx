@@ -11,6 +11,8 @@ import { fetchClients, addClient } from '../../../services/clientService';
 import { getClientFieldConfig } from '../../../config/fieldConfigs';  // Import the correct function
 import { Trainer } from '../../../interfaces/trainer';
 import { fetchTrainers } from '../../../services/trainerService';
+import { updateClient } from '../../../services/clientService';
+
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
@@ -48,25 +50,17 @@ const ClientsPage = () => {
   const handleClientSave = async (updatedFields: Partial<Client>) => {
     try {
       if (selectedClient) {
-        const response = await fetch(`/clients/update/${selectedClient.id}/`, {
-          method: 'PATCH',  // Use PATCH method
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(updatedFields),  // Send only modified fields
-        });
+        // Make sure to send the PATCH request to update the client with only the modified fields
+        const response = await updateClient(selectedClient.id, updatedFields);
+        
+        console.log('Client updated successfully', response);
   
-        if (!response.ok) {
-          throw new Error('Failed to update client');
-        }
-  
-        const data = await response.json();
-        console.log('Client updated successfully', data);
-  
-        // Refresh clients list after successful update
+        // Refresh the list of clients after the update
         const updatedClients = await fetchClients();
         setClients(updatedClients);
-        setSelectedClient(null);  // Reset selected client to force UI update
+        
+        // Clear selected client to refresh the UI
+        setSelectedClient(null);
       }
     } catch (error) {
       console.error('Error updating client:', error);
