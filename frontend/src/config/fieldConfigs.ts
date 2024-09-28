@@ -102,6 +102,12 @@ export const getTrainerFieldConfig = () => {
     { label: 'Last Name', key: 'user.last_name', type: 'text' },
     { label: 'Username', key: 'user.username', type: 'text' },
     { label: 'Email', key: 'user.email', type: 'email' },
+    { label: 'Phone Number', key: 'user.phone_number', type: 'text' },
+    { label: 'Birthday', key: 'user.birthday', type: 'date' },
+    { label: 'Gender', key: 'user.gender', type: 'select', options: [
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' },
+    ]},
     { label: 'Status', key: 'status', type: 'select', options: [
         { value: 'sub_part_time', label: 'Subcontractor Part Time' },
         { value: 'sub_full_time', label: 'Subcontractor Full Time' },
@@ -110,6 +116,7 @@ export const getTrainerFieldConfig = () => {
         { value: 'inactive', label: 'Inactive' }
       ]
     },
+
     { label: 'Monthly Rate', key: 'monthly_rate', type: 'select', options: [
         { value: '200', label: 'Legacy Part Time - $200' },
         { value: '250', label: 'Part Time - $250' },
