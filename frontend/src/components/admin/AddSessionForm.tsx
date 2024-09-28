@@ -9,32 +9,39 @@ import {
     TextField,
     Select,
     MenuItem,
+    CircularProgress,
     InputLabel
 } from '@mui/material';
-import { Session } from '../../interfaces/session';
 import { Client } from '../../interfaces/client';
 import { Trainer } from '../../interfaces/trainer';
 
 interface AddSessionFormProps {
     open: boolean;
     onClose: () => void;
-    onSubmit: (newSession: Omit<Session, 'id'>) => Promise<void>;
-    clients: Client[];  // List of clients for dropdown
-    trainers: Trainer[];  // List of trainers for dropdown
+    onSubmit: (newSession: { client_id: number; trainer_id: number; session_type: string; date: string; notes?: string }) => Promise<void>;
+    clients: Client[];
+    trainers: Trainer[];
     loading: boolean;
-    session?: Session;  // Optional session prop for editing existing sessions
+    session?: { client: Client; trainer: Trainer; session_type: string; date: string; notes?: string };  // Optional session data for editing
 }
 
+const SESSION_TYPE_CHOICES = [
+    { value: 'one_on_one', label: 'One on One' },
+    { value: 'partner', label: 'Partner' },
+    { value: 'small_group', label: 'Small Group' },
+    { value: 'group', label: 'Group' },
+];
+
 const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit, clients, trainers, loading, session }) => {
-    const [formData, setFormData] = useState<Omit<Session, 'id'>>({
+    const [formData, setFormData] = useState({
         client: session?.client || undefined,
         trainer: session?.trainer || undefined,
-        session_type: session?.session_type || 'individual',
+        session_type: session?.session_type || 'one_on_one',
         date: session?.date ? session.date.split('T')[0] : '',
         notes: session?.notes || '',
     });
 
-    const handleChange = (key: string, value: string | Client | Trainer | undefined) => {
+    const handleChange = (key: string, value: any) => {
         setFormData((prev) => ({
             ...prev,
             [key]: value,
@@ -42,16 +49,24 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
     };
 
     const handleSave = () => {
-        // Extract client_id and trainer_id
+        if (!formData.client || !formData.client.id) {
+            alert("Please select a client.");
+            return;
+        }
+        if (!formData.trainer || !formData.trainer.id) {
+            alert("Please select a trainer.");
+            return;
+        }
+    
         const payload = {
-            client_id: formData.client?.id,  // Send client_id instead of full client object
-            trainer_id: formData.trainer?.id,  // Send trainer_id instead of full trainer object
+            client_id: formData.client.id,  // Ensure client_id is a number
+            trainer_id: formData.trainer.id,  // Ensure trainer_id is a number
             session_type: formData.session_type,
             date: formData.date,
             notes: formData.notes,
         };
-
-        onSubmit(payload);  // Submit payload with client_id and trainer_id
+    
+        onSubmit(payload);
     };
 
     return (
@@ -59,6 +74,7 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
             <DialogTitle>{session ? 'Edit Session' : 'Add Session'}</DialogTitle>
             <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {/* Date Field */}
                     <TextField
                         label="Date"
                         type="date"
@@ -67,14 +83,21 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
                         fullWidth
                     />
 
-                    <TextField
-                        label="Session Type"
-                        type="text"
+                    {/* Session Type Dropdown */}
+                    <InputLabel>Session Type</InputLabel>
+                    <Select
                         value={formData.session_type}
                         onChange={(e) => handleChange('session_type', e.target.value)}
                         fullWidth
-                    />
+                    >
+                        {SESSION_TYPE_CHOICES.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </Select>
 
+                    {/* Notes */}
                     <TextField
                         label="Notes"
                         type="text"
@@ -133,7 +156,5 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
         </Dialog>
     );
 };
-
-
 
 export default AddSessionForm;
