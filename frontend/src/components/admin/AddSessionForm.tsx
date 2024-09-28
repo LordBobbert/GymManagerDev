@@ -27,10 +27,10 @@ interface AddSessionFormProps {
 
 const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit, clients, trainers, loading, session }) => {
     const [formData, setFormData] = useState<Omit<Session, 'id'>>({
-        client: session?.client || undefined,  // Use undefined instead of null
-        trainer: session?.trainer || undefined,  // Use undefined instead of null
+        client: session?.client || undefined,
+        trainer: session?.trainer || undefined,
         session_type: session?.session_type || 'individual',
-        date: session?.date ? session.date.split('T')[0] : '',  // Format date correctly for editing
+        date: session?.date ? session.date.split('T')[0] : '',
         notes: session?.notes || '',
     });
 
@@ -42,7 +42,16 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
     };
 
     const handleSave = () => {
-        onSubmit(formData);
+        // Extract client_id and trainer_id
+        const payload = {
+            client_id: formData.client?.id,  // Send client_id instead of full client object
+            trainer_id: formData.trainer?.id,  // Send trainer_id instead of full trainer object
+            session_type: formData.session_type,
+            date: formData.date,
+            notes: formData.notes,
+        };
+
+        onSubmit(payload);  // Submit payload with client_id and trainer_id
     };
 
     return (
@@ -74,6 +83,7 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
                         fullWidth
                     />
 
+                    {/* Client Dropdown */}
                     <InputLabel>Client</InputLabel>
                     <Select
                         value={formData.client?.id || ''}
@@ -91,6 +101,7 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
                         ))}
                     </Select>
 
+                    {/* Trainer Dropdown */}
                     <InputLabel>Trainer</InputLabel>
                     <Select
                         value={formData.trainer?.id || ''}
