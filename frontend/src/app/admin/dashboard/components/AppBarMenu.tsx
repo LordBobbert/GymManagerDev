@@ -1,8 +1,8 @@
 // File: src/app/admin/dashboard/components/AppBarMenu.tsx
 "use client";  // Ensure this is client-side code
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';  // Use this instead of require('next/router')
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Box, Tooltip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
@@ -17,17 +17,7 @@ interface AppBarMenuProps {
 
 const AppBarMenu = ({ role }: AppBarMenuProps) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-  const [isClient, setIsClient] = useState(false);  // Ensure this component is rendered only on the client
-  const [pathname, setPathname] = useState<string | null>(null);
-
-  // Wait for the component to mount before accessing the router
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsClient(true);
-      const router = require('next/router');
-      setPathname(router.pathname);  // Access the router on the client side
-    }
-  }, []);
+  const pathname = usePathname();  // Use the new Next.js 13 `usePathname()` hook for client-side routing
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
