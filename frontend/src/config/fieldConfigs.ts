@@ -100,6 +100,7 @@ export const getTrainerFieldConfig = () => {
   return [
     { label: 'First Name', key: 'user.first_name', type: 'text' },
     { label: 'Last Name', key: 'user.last_name', type: 'text' },
+    { label: 'Username', key: 'user.username', type: 'text' },
     { label: 'Email', key: 'user.email', type: 'email' },
     { label: 'Status', key: 'status', type: 'select', options: [
         { value: 'sub_part_time', label: 'Subcontractor Part Time' },
