@@ -3,28 +3,24 @@ import React, { ReactNode } from 'react';
 import AppBarMenu from './dashboard/components/AppBarMenu';
 import { Box } from '@mui/material';
 
-interface AdminLayoutProps {
-  children: ReactNode;
-  role: 'admin' | 'trainer' | 'client';  // Define the role as part of the props
-}
+export default function AdminLayout({ children }: { children: ReactNode }) {
+  // Assuming you have some auth logic to determine role
+  const role: 'admin' | 'trainer' | 'client' = 'admin'; // Replace with dynamic logic
 
-const AdminLayout: React.FC<AdminLayoutProps> = ({ children, role }) => {
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
-      <AppBarMenu role={role} />  {/* Pass the role prop to AppBarMenu */}
+      <AppBarMenu role={role} /> {/* Dynamic role */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           p: 3,
-          mt: '64px',  // Adjust top margin to account for the AppBar
+          mt: '64px',
           backgroundColor: '#f4f4f4',
         }}
       >
-        {children}  {/* This renders the child pages */}
+        {children}
       </Box>
     </Box>
   );
-};
-
-export default AdminLayout;
+}
