@@ -3,7 +3,7 @@
 import { Session } from '../interfaces/session';
 
 export const fetchSessions = async (): Promise<Session[]> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/sessions/`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/training-sessions/sessions/`, {
     method: 'GET',
     credentials: 'include',
   });
@@ -16,7 +16,7 @@ export const fetchSessions = async (): Promise<Session[]> => {
 };
 
 export const addSession = async (newSession: Omit<Session, 'id'>): Promise<Session> => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/sessions/`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/training-sessions/sessions/`, {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -30,7 +30,7 @@ export const addSession = async (newSession: Omit<Session, 'id'>): Promise<Sessi
 };
 
 export const updateSession = async (id: number, updatedSession: Partial<Session>): Promise<Session> => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/sessions/${id}/`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/training-sessions/sessions/${id}/`, {
     method: 'PATCH',
     credentials: 'include',
     headers: {
