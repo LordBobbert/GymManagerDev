@@ -5,22 +5,23 @@ import { Box } from '@mui/material';
 
 interface AdminLayoutProps {
   children: ReactNode;
+  role: 'admin' | 'trainer' | 'client';  // Role passed down to determine the menu
 }
 
-const AdminLayout = ({ children }: AdminLayoutProps) => {
+const AdminLayout = ({ children, role }: AdminLayoutProps) => {
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
-      <AppBarMenu role="admin" /> {/* Or dynamically fetch role */}
+      <AppBarMenu role={role} />  {/* Pass down the role prop */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           p: 3,
-          mt: '64px', // Adjust top margin to account for the AppBar
+          mt: '64px',  // Adjust top margin to account for the AppBar
           backgroundColor: '#f4f4f4',
         }}
       >
-        {children} {/* This ensures the child page (like /clients) is rendered here */}
+        {children}  {/* Child pages are rendered here */}
       </Box>
     </Box>
   );

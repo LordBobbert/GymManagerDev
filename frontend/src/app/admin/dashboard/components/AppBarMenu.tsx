@@ -1,7 +1,8 @@
-"use client";
+// File: src/app/admin/dashboard/components/AppBarMenu.tsx
+"use client";  // Ensure this is client-side code
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Box, Tooltip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
@@ -15,26 +16,24 @@ interface AppBarMenuProps {
 }
 
 const AppBarMenu = ({ role }: AppBarMenuProps) => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true);  // State for drawer open/close
-  const [isClient, setIsClient] = useState(false);  // State to ensure client-side rendering
-  const router = useRouter();  // Initialize useRouter
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const [isClient, setIsClient] = useState(false);  // Ensure this component is rendered only on the client
+  const [pathname, setPathname] = useState<string | null>(null);
 
+  // Wait for the component to mount before accessing the router
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setIsClient(true);  // Ensure it's client-side
+      setIsClient(true);
+      const router = require('next/router');
+      setPathname(router.pathname);  // Access the router on the client side
     }
   }, []);
 
   const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);  // Toggle the drawer state
+    setIsDrawerOpen(!isDrawerOpen);
   };
 
-  // Return null if not client-side
-  if (!isClient) {
-    return null;
-  }
-
-  // Menu items based on role
+  // Admin menu items
   const adminMenuItems = [
     { text: 'Home', href: '/admin/dashboard', icon: <HomeIcon /> },
     { text: 'Clients', href: '/admin/clients', icon: <PeopleIcon /> },
@@ -44,18 +43,21 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
     { text: 'Chat', href: '/admin/chat', icon: <ChatIcon /> },
   ];
 
+  // Trainer menu items
   const trainerMenuItems = [
     { text: 'Home', href: '/trainer/dashboard', icon: <HomeIcon /> },
     { text: 'Sessions', href: '/trainer/sessions', icon: <EventIcon /> },
     { text: 'Chat', href: '/trainer/chat', icon: <ChatIcon /> },
   ];
 
+  // Client menu items
   const clientMenuItems = [
     { text: 'Home', href: '/client/dashboard', icon: <HomeIcon /> },
     { text: 'Sessions', href: '/client/sessions', icon: <EventIcon /> },
     { text: 'Chat', href: '/client/chat', icon: <ChatIcon /> },
   ];
 
+  // Select menu items based on role
   const menuItems = role === 'admin' ? adminMenuItems :
     role === 'trainer' ? trainerMenuItems :
       clientMenuItems;
@@ -101,7 +103,7 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
                       '&:hover': {
                         backgroundColor: '#eceff1',
                       },
-                      backgroundColor: router.pathname === item.href ? '#e3f2fd' : 'inherit',
+                      backgroundColor: pathname === item.href ? '#e3f2fd' : 'inherit',
                     }}
                   >
                     <ListItemIcon sx={{ color: '#546e7a', minWidth: '40px' }}>{item.icon}</ListItemIcon>
