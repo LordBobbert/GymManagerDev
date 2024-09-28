@@ -6,6 +6,8 @@ from user_management.models import ClientProfile, TrainerProfile
 class Session(models.Model):
     SESSION_TYPE_CHOICES = [
         ('one_on_one', 'One on One'),
+        ('partner', 'Partner'),
+        ('small_group', 'Small Group')
         ('group', 'Group'),
     ]
 
