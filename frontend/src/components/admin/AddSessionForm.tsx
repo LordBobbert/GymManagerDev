@@ -9,6 +9,7 @@ import {
     TextField,
     Select,
     MenuItem,
+    CircularProgress,
     InputLabel
 } from '@mui/material';
 import { Client } from '../../interfaces/client';
@@ -40,7 +41,7 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
         notes: session?.notes || '',
     });
 
-    const handleChange = (key: string, value: any) => {
+    const handleChange = (key: keyof typeof formData, value: string | Client | Trainer | undefined) => {
         setFormData((prev) => ({
             ...prev,
             [key]: value,
@@ -56,15 +57,15 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
             alert("Please select a trainer.");
             return;
         }
-    
+
         const payload = {
-            client_id: formData.client.id,  // Ensure client_id is a number
-            trainer_id: formData.trainer.id,  // Ensure trainer_id is a number
+            client_id: formData.client.id,
+            trainer_id: formData.trainer.id,
             session_type: formData.session_type,
             date: formData.date,
             notes: formData.notes,
         };
-    
+
         onSubmit(payload);
     };
 
@@ -73,7 +74,6 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
             <DialogTitle>{session ? 'Edit Session' : 'Add Session'}</DialogTitle>
             <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {/* Date Field */}
                     <TextField
                         label="Date"
                         type="date"
@@ -82,7 +82,6 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
                         fullWidth
                     />
 
-                    {/* Session Type Dropdown */}
                     <InputLabel>Session Type</InputLabel>
                     <Select
                         value={formData.session_type}
@@ -96,7 +95,6 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
                         ))}
                     </Select>
 
-                    {/* Notes */}
                     <TextField
                         label="Notes"
                         type="text"
@@ -105,13 +103,12 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
                         fullWidth
                     />
 
-                    {/* Client Dropdown */}
                     <InputLabel>Client</InputLabel>
                     <Select
                         value={formData.client?.id || ''}
                         onChange={(e) => {
                             const selectedClient = clients.find(client => client.id === Number(e.target.value));
-                            handleChange('client', selectedClient || undefined);
+                            handleChange('client', selectedClient);
                         }}
                         fullWidth
                     >
@@ -123,13 +120,12 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
                         ))}
                     </Select>
 
-                    {/* Trainer Dropdown */}
                     <InputLabel>Trainer</InputLabel>
                     <Select
                         value={formData.trainer?.id || ''}
                         onChange={(e) => {
                             const selectedTrainer = trainers.find(trainer => trainer.id === Number(e.target.value));
-                            handleChange('trainer', selectedTrainer || undefined);
+                            handleChange('trainer', selectedTrainer);
                         }}
                         fullWidth
                     >
