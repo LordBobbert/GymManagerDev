@@ -1,9 +1,7 @@
-// File: src/app/admin/dashboard/components/AppBarMenu.tsx
-
-"use client"; // Ensure this is client-side
+"use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';  // Import useRouter for client-side navigation
+import { useRouter } from 'next/router';
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Box, Tooltip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
@@ -17,16 +15,26 @@ interface AppBarMenuProps {
 }
 
 const AppBarMenu = ({ role }: AppBarMenuProps) => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-  const [isClient, setIsClient] = useState(false); // State to check if component is mounted on client
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);  // State for drawer open/close
+  const [isClient, setIsClient] = useState(false);  // State to ensure client-side rendering
   const router = useRouter();  // Initialize useRouter
 
   useEffect(() => {
-    // Ensure the router is available only when running on the client
-    setIsClient(true);
+    if (typeof window !== 'undefined') {
+      setIsClient(true);  // Ensure it's client-side
+    }
   }, []);
 
-  // Menu items depending on the role
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);  // Toggle the drawer state
+  };
+
+  // Return null if not client-side
+  if (!isClient) {
+    return null;
+  }
+
+  // Menu items based on role
   const adminMenuItems = [
     { text: 'Home', href: '/admin/dashboard', icon: <HomeIcon /> },
     { text: 'Clients', href: '/admin/clients', icon: <PeopleIcon /> },
@@ -48,19 +56,9 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
     { text: 'Chat', href: '/client/chat', icon: <ChatIcon /> },
   ];
 
-  // Conditionally set menu items based on role
   const menuItems = role === 'admin' ? adminMenuItems :
     role === 'trainer' ? trainerMenuItems :
       clientMenuItems;
-
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
-
-  if (!isClient) {
-    // Prevent server-side rendering errors related to useRouter
-    return null;
-  }
 
   return (
     <>
