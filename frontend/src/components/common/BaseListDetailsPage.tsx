@@ -1,7 +1,7 @@
 // File: src/components/common/BaseListDetailsPage.tsx
 
 import React, { useState } from 'react';
-import { Box, Button, TextField, Select, MenuItem, InputLabel } from '@mui/material';
+import { Box, Button, TextField, Select, MenuItem, InputLabel, Typography } from '@mui/material';
 import { FieldConfig } from '../../interfaces/FieldConfig';
 import { getNestedValue, setNestedValue } from '../../utils/nestedUtils';
 
@@ -18,6 +18,7 @@ const BaseListDetailsPage = <T,>({
 }: BaseListDetailsPageProps<T>) => {
   const [formData, setFormData] = useState<T>(data);
   const [modifiedData, setModifiedData] = useState<Partial<T>>({});  // Track modified fields
+  const [isEditing, setIsEditing] = useState<boolean>(false);  // Track edit state
 
   const handleChange = (key: string, value: unknown) => {
     setFormData((prev) => setNestedValue(prev, key, value));
@@ -26,44 +27,77 @@ const BaseListDetailsPage = <T,>({
 
   const handleSave = () => {
     onSave(modifiedData);  // Send only the modified data
+    setIsEditing(false);  // Exit edit mode after saving
   };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {fieldConfig.map(({ label, key, type, options }) => {
-        const value = getNestedValue(formData, key as string) || '';
+      <Typography variant="h5" gutterBottom>
+        Details
+      </Typography>
 
-        if (type === 'select' && options) {
-          return (
-            <div key={String(key)}>
-              <InputLabel>{label}</InputLabel>
-              <Select
-                value={value}
-                onChange={(e) => handleChange(key as string, e.target.value)}
-              >
-                {options.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </div>
-          );
+      {fieldConfig.map(({ label, key, type, options }) => {
+        // Explicitly cast the value to React.ReactNode to satisfy TypeScript
+        let value: React.ReactNode = getNestedValue(formData, key as string) as React.ReactNode;
+
+        // Ensure value is valid before rendering
+        if (typeof value === 'object' && value !== null) {
+          value = JSON.stringify(value);  // Convert object to string for display
+        } else if (value == null || value === '') {
+          value = 'N/A';  // Handle null or empty values
         }
 
-        return (
-          <TextField
-            key={String(key)}
-            label={label}
-            type={type}
-            value={value}
-            onChange={(e) => handleChange(key as string, e.target.value)}
-          />
+        return !isEditing ? (
+          <Box key={String(key)} sx={{ mb: 2 }}>
+            <Typography variant="subtitle1">{label}</Typography>
+            <Typography variant="body1">{String(value)}</Typography>  {/* Valid ReactNode */}
+          </Box>
+        ) : (
+          <div key={String(key)}>
+            {type === 'select' && options ? (
+              <>
+                <InputLabel>{label}</InputLabel>
+                <Select
+                  value={value}
+                  onChange={(e) => handleChange(key as string, e.target.value)}
+                  fullWidth
+                >
+                  {options.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </>
+            ) : (
+              <TextField
+                label={label}
+                type={type}
+                value={value}
+                onChange={(e) => handleChange(key as string, e.target.value)}
+                fullWidth
+              />
+            )}
+          </div>
         );
       })}
-      <Button variant="contained" onClick={handleSave}>
-        Save
-      </Button>
+
+      <Box display="flex" justifyContent="space-between" mt={2}>
+        {isEditing ? (
+          <>
+            <Button variant="outlined" onClick={() => setIsEditing(false)}>
+              Cancel
+            </Button>
+            <Button variant="contained" onClick={handleSave}>
+              Save
+            </Button>
+          </>
+        ) : (
+          <Button variant="contained" onClick={() => setIsEditing(true)}>
+            Edit
+          </Button>
+        )}
+      </Box>
     </Box>
   );
 };
