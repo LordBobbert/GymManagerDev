@@ -1,9 +1,9 @@
 // File: src/app/admin/dashboard/components/AppBarMenu.tsx
 
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';  // Import the useRouter hook
+import { useRouter } from 'next/router';
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Box, Tooltip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
@@ -13,14 +13,19 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ChatIcon from '@mui/icons-material/Chat';
 
 interface AppBarMenuProps {
-  role: 'admin' | 'trainer' | 'client'; // Role prop definition
+  role: 'admin' | 'trainer' | 'client';
 }
 
 const AppBarMenu = ({ role }: AppBarMenuProps) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-  const router = useRouter();  // Initialize the router hook
+  const [isMounted, setIsMounted] = useState(false);
+  const router = useRouter();  // Initialize the router
 
-  // Define role-specific menu items based on the role
+  useEffect(() => {
+    // Set mounted state to true to allow rendering on the client side only
+    setIsMounted(true);
+  }, []);
+
   const adminMenuItems = [
     { text: 'Home', href: '/admin/dashboard', icon: <HomeIcon /> },
     { text: 'Clients', href: '/admin/clients', icon: <PeopleIcon /> },
@@ -42,14 +47,18 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
     { text: 'Chat', href: '/client/chat', icon: <ChatIcon /> },
   ];
 
-  // Conditionally render menu items based on the role
   const menuItems = role === 'admin' ? adminMenuItems :
     role === 'trainer' ? trainerMenuItems :
-      clientMenuItems;  // Defaults to client if no match
+      clientMenuItems;
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
+
+  // Return null if the component is not mounted (avoiding router access on the server)
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <>
@@ -59,7 +68,7 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {role.charAt(0).toUpperCase() + role.slice(1)} Dashboard {/* Capitalizes the role */}
+            {role.charAt(0).toUpperCase() + role.slice(1)} Dashboard
           </Typography>
         </Toolbar>
       </AppBar>
@@ -70,11 +79,11 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
           width: isDrawerOpen ? 240 : 60,
           "& .MuiDrawer-paper": {
             width: isDrawerOpen ? 240 : 60,
-            marginTop: '64px',  // Adjust for the AppBar height
+            marginTop: '64px',
             height: `calc(100% - 64px)`,
             overflowX: 'hidden',
             transition: 'width 0.3s',
-            backgroundColor: '#f8f9fa',  // Light gray background
+            backgroundColor: '#f8f9fa',
             boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
           },
         }}
@@ -92,7 +101,7 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
                       '&:hover': {
                         backgroundColor: '#eceff1',
                       },
-                      backgroundColor: router.pathname === item.href ? '#e3f2fd' : 'inherit',  // Use the router object
+                      backgroundColor: router.pathname === item.href ? '#e3f2fd' : 'inherit',
                     }}
                   >
                     <ListItemIcon sx={{ color: '#546e7a', minWidth: '40px' }}>{item.icon}</ListItemIcon>
