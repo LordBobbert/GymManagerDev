@@ -94,3 +94,31 @@ export const getClientFieldConfig = (trainers: Trainer[]): FieldConfig<Client>[]
     type: 'text',
   },
 ];
+
+
+export const getTrainerFieldConfig = () => {
+  return [
+    { label: 'First Name', key: 'user.first_name', type: 'text' },
+    { label: 'Last Name', key: 'user.last_name', type: 'text' },
+    { label: 'Email', key: 'user.email', type: 'email' },
+    { label: 'Status', key: 'status', type: 'select', options: [
+        { value: 'sub_part_time', label: 'Subcontractor Part Time' },
+        { value: 'sub_full_time', label: 'Subcontractor Full Time' },
+        { value: 'emp_part_time', label: 'Employee Part Time' },
+        { value: 'emp_full_time', label: 'Employee Full Time' },
+        { value: 'inactive', label: 'Inactive' }
+      ]
+    },
+    { label: 'Monthly Rate', key: 'monthly_rate', type: 'select', options: [
+        { value: '200', label: 'Legacy Part Time - $200' },
+        { value: '250', label: 'Part Time - $250' },
+        { value: '1000', label: 'Full Time - $1000' }
+      ]
+    },
+    { label: 'Rent Rate per Session', key: 'rent_rate_per_session', type: 'select', options: [
+        { value: '15', label: 'Legacy Part Time - $15' },
+        { value: '20', label: 'Part Time - $20' }
+      ]
+    }
+  ];
+};
