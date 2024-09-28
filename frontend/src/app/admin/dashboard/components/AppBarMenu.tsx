@@ -1,9 +1,9 @@
 // File: src/app/admin/dashboard/components/AppBarMenu.tsx
 
-"use client";
+"use client"; // Ensure this is client-side
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router';  // Import useRouter for client-side navigation
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Box, Tooltip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
@@ -18,14 +18,15 @@ interface AppBarMenuProps {
 
 const AppBarMenu = ({ role }: AppBarMenuProps) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-  const [isMounted, setIsMounted] = useState(false);
-  const router = useRouter();  // Initialize the router
+  const [isClient, setIsClient] = useState(false); // State to check if component is mounted on client
+  const router = useRouter();  // Initialize useRouter
 
   useEffect(() => {
-    // Set mounted state to true to allow rendering on the client side only
-    setIsMounted(true);
+    // Ensure the router is available only when running on the client
+    setIsClient(true);
   }, []);
 
+  // Menu items depending on the role
   const adminMenuItems = [
     { text: 'Home', href: '/admin/dashboard', icon: <HomeIcon /> },
     { text: 'Clients', href: '/admin/clients', icon: <PeopleIcon /> },
@@ -47,6 +48,7 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
     { text: 'Chat', href: '/client/chat', icon: <ChatIcon /> },
   ];
 
+  // Conditionally set menu items based on role
   const menuItems = role === 'admin' ? adminMenuItems :
     role === 'trainer' ? trainerMenuItems :
       clientMenuItems;
@@ -55,8 +57,8 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
     setIsDrawerOpen(!isDrawerOpen);
   };
 
-  // Return null if the component is not mounted (avoiding router access on the server)
-  if (!isMounted) {
+  if (!isClient) {
+    // Prevent server-side rendering errors related to useRouter
     return null;
   }
 
