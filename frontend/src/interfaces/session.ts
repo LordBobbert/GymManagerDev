@@ -5,8 +5,8 @@ import { Trainer } from './trainer';
 
 export interface Session {
     id: number;
-    client: Client;
-    trainer: Trainer;
+    client?: Client;
+    trainer?: Trainer;
     session_type: string;
     date: string; // ISO date string
     notes?: string;
