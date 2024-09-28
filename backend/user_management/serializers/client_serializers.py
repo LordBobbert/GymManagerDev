@@ -8,7 +8,7 @@ class ClientProfileSerializer(serializers.ModelSerializer):
     
     trainer_id = serializers.PrimaryKeyRelatedField(
         source='trainer',
-        queryset=User.objects.filter(roles__name='trainer'),
+        queryset=User.objects.filter(roles__name='trainer').distinct(),
         write_only=True
     )
 
