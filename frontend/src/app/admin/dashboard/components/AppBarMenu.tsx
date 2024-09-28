@@ -1,6 +1,6 @@
 // File: src/app/admin/dashboard/components/AppBarMenu.tsx
 "use client";  // Ensure this is client-side code
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';  // Use this instead of require('next/router')
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Box, Tooltip } from '@mui/material';
