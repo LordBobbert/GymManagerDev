@@ -3,12 +3,12 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import BaseList from './../../components/common/BaseList';
-import BaseListDetailsPage from './../../components/common/BaseListDetailsPage';
-import AddSessionForm from './../../components/admin/AddSessionForm';
-import { Session } from './../../interfaces/session';
-import { fetchSessions, addSession, updateSession } from './../../services/sessionService';
-import { getSessionFieldConfig } from './../../config/fieldConfigs';
+import BaseList from '../../../components/common/BaseList';
+import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
+import AddSessionForm from '../../../components/admin/AddSessionForm';
+import { Session } from '../../../interfaces/session';
+import { fetchSessions, addSession, updateSession } from '../../../services/sessionService';
+import { getSessionFieldConfig } from '../../../config/fieldConfigs';
 
 const SessionsPage = () => {
   const [sessions, setSessions] = useState<Session[] | null>(null);
