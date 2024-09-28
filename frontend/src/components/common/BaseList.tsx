@@ -19,7 +19,7 @@ const BaseList = <T,>({
   renderItem,
   section,
   getKey,
-  onAddClient,  // onAddClient is passed from ClientsPage
+  onAddClient,
 }: BaseListProps<T>) => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', px: 2 }}>
