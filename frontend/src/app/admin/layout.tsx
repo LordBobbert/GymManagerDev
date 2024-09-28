@@ -5,13 +5,13 @@ import { Box } from '@mui/material';
 
 interface AdminLayoutProps {
   children: ReactNode;
-  role: 'admin' | 'trainer' | 'client';  // Role passed down to determine the menu
+  role: 'admin' | 'trainer' | 'client';  // Define the role as part of the props
 }
 
-const AdminLayout = ({ children, role }: AdminLayoutProps) => {
+const AdminLayout: React.FC<AdminLayoutProps> = ({ children, role }) => {
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
-      <AppBarMenu role={role} />  {/* Pass down the role prop */}
+      <AppBarMenu role={role} />  {/* Pass the role prop to AppBarMenu */}
       <Box
         component="main"
         sx={{
@@ -21,7 +21,7 @@ const AdminLayout = ({ children, role }: AdminLayoutProps) => {
           backgroundColor: '#f4f4f4',
         }}
       >
-        {children}  {/* Child pages are rendered here */}
+        {children}  {/* This renders the child pages */}
       </Box>
     </Box>
   );
