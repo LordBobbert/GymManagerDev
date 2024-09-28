@@ -3,6 +3,7 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';  // Import the useRouter hook
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Box, Tooltip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
@@ -17,6 +18,7 @@ interface AppBarMenuProps {
 
 const AppBarMenu = ({ role }: AppBarMenuProps) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const router = useRouter();  // Initialize the router hook
 
   // Define role-specific menu items based on the role
   const adminMenuItems = [
@@ -68,26 +70,36 @@ const AppBarMenu = ({ role }: AppBarMenuProps) => {
           width: isDrawerOpen ? 240 : 60,
           "& .MuiDrawer-paper": {
             width: isDrawerOpen ? 240 : 60,
-            marginTop: '64px',
+            marginTop: '64px',  // Adjust for the AppBar height
             height: `calc(100% - 64px)`,
             overflowX: 'hidden',
             transition: 'width 0.3s',
+            backgroundColor: '#f8f9fa',  // Light gray background
+            boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
           },
         }}
       >
         <Box role="presentation" sx={{ display: 'flex', flexDirection: 'column', alignItems: isDrawerOpen ? 'flex-start' : 'center' }}>
-          <List>
+          <List sx={{ width: '100%' }}>
             {menuItems.map((item, index) => (
-              // Disable prefetching if you want to avoid unnecessary preloading
               <Link href={item.href} key={index} prefetch={false} passHref>
                 <Tooltip title={isDrawerOpen ? '' : item.text} placement="right">
-                  <ListItemButton>
-                    <ListItemIcon>{item.icon}</ListItemIcon>
-                    {isDrawerOpen && <ListItemText primary={item.text} />}
+                  <ListItemButton
+                    sx={{
+                      padding: '10px 20px',
+                      borderRadius: '8px',
+                      margin: '5px 10px',
+                      '&:hover': {
+                        backgroundColor: '#eceff1',
+                      },
+                      backgroundColor: router.pathname === item.href ? '#e3f2fd' : 'inherit',  // Use the router object
+                    }}
+                  >
+                    <ListItemIcon sx={{ color: '#546e7a', minWidth: '40px' }}>{item.icon}</ListItemIcon>
+                    {isDrawerOpen && <ListItemText primary={item.text} primaryTypographyProps={{ fontWeight: 500, color: '#37474f' }} />}
                   </ListItemButton>
                 </Tooltip>
               </Link>
-
             ))}
           </List>
         </Box>
