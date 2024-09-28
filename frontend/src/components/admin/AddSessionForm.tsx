@@ -9,7 +9,6 @@ import {
     Button,
     Box,
     TextField,
-    CircularProgress
 } from '@mui/material';
 import { Session } from '../../interfaces/session';
 
