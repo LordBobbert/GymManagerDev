@@ -1,81 +1,92 @@
-// File: components/auth/LoginForm.tsx
+// File: src/components/auth/LoginForm.tsx
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button, TextField, Box } from '@mui/material';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { TextField, Button, Typography, Box, IconButton, InputAdornment } from '@mui/material';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-interface LoginFormData {
-  username: string;
-  password: string;
-}
-
-interface LoginFormProps {
-  onSubmit: (data: LoginFormData) => void;
-  error?: string | null;
-}
-
-const loginSchema = Yup.object().shape({
-  username: Yup.string().required("Username is required"),
-  password: Yup.string().min(8, "Password must be at least 8 characters").required("Password is required"),
+// Define the validation schema using Yup
+const validationSchema = Yup.object({
+  email: Yup.string().email('Invalid email address').required('Email is required'),
+  password: Yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
 });
 
-const LoginForm = ({ onSubmit, error }: LoginFormProps) => {
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
-    resolver: yupResolver(loginSchema),
-  });
+interface LoginFormProps {
+  onError?: (error: string) => void;
+}
 
-  const [showPassword, setShowPassword] = useState(false);
+const LoginForm: React.FC<LoginFormProps> = ({ onError }) => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (values: { email: string; password: string }) => {
+    setLoading(true);
+    onError?.(''); // Clear any previous error messages
+
+    const result = await signIn('credentials', {
+      redirect: false,
+      email: values.email,
+      password: values.password,
+    });
+
+    setLoading(false);
+
+    if (result?.error) {
+      onError?.('Invalid email or password');
+    } else {
+      router.push('/admin/dashboard'); // Redirect on successful login
+    }
+  };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
-      <TextField
-        label="Username"
-        fullWidth
-        margin="normal"
-        {...register("username")}
-        error={!!errors.username}
-        helperText={errors.username?.message}
-      />
-
-      <TextField
-        label="Password"
-        fullWidth
-        margin="normal"
-        type={showPassword ? "text" : "password"}
-        {...register("password")}
-        error={!!errors.password}
-        helperText={errors.password?.message}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          )
-        }}
-      />
-
-      {error && (
-        <Typography color="error" variant="body2">
-          {error}
-        </Typography>
+    <Formik
+      initialValues={{ email: '', password: '' }}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+    >
+      {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
+        <Box component={Form} onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Email"
+            name="email"
+            type="email"
+            value={values.email}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.email && Boolean(errors.email)}
+            helperText={touched.email && errors.email}
+            required
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Password"
+            name="password"
+            type="password"
+            value={values.password}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.password && Boolean(errors.password)}
+            helperText={touched.password && errors.password}
+            required
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            disabled={loading}
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
+          </Button>
+        </Box>
       )}
-
-      <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-        color="primary"
-        sx={{ mt: 2 }}
-      >
-        Login
-      </Button>
-    </Box>
+    </Formik>
   );
 };
 
