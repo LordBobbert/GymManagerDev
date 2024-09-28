@@ -9,7 +9,6 @@ import {
     TextField,
     Select,
     MenuItem,
-    CircularProgress,
     InputLabel
 } from '@mui/material';
 import { Session } from '../../interfaces/session';
