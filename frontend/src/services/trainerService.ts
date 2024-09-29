@@ -2,6 +2,7 @@
 
 import { Trainer } from '../interfaces/trainer';
 
+// File: src/services/trainerService.ts
 export const fetchTrainers = async (): Promise<Trainer[]> => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/trainers/`, {
     method: 'GET',
@@ -14,6 +15,7 @@ export const fetchTrainers = async (): Promise<Trainer[]> => {
 
   return await res.json();
 };
+
 
 export const addTrainer = async (newTrainer: Omit<Trainer, 'id'>): Promise<Trainer> => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/trainers/`, {

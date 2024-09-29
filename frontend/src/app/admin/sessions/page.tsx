@@ -1,42 +1,45 @@
+// File: src/app/admin/sessions/page.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Card,
   CardContent,
-  Typography,
-  TextField,
-  Button,
-  CircularProgress,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
+  Typography,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
 } from "@mui/material";
+import { fetchSessions, updateSession } from "@/services/sessionService";
+import { fetchClients } from "@/services/clientService";
+import { fetchTrainers } from "@/services/trainerService";
 import { Session } from "@/interfaces/session";
-import { fetchSessions } from "@/services/sessionService";
+import { Trainer } from "@/interfaces/trainer";
 
 const SessionsPage = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedTrainerId, setSelectedTrainerId] = useState<number | null>(null);
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setLoading(true);
     const loadData = async () => {
       try {
-        const sessionsData = await fetchSessions();
+        const [sessionsData, trainersData] = await Promise.all([fetchSessions(), fetchTrainers()]);
         setSessions(sessionsData);
-        setLoading(false);
+        setTrainers(trainersData);
       } catch (err) {
-        setError("Failed to load sessions");
-        setLoading(false);
+        console.error("Error fetching data", err);
       }
     };
     loadData();
@@ -44,35 +47,39 @@ const SessionsPage = () => {
 
   const handleSessionSelect = (session: Session) => {
     setSelectedSession(session);
-    setIsEditing(false); // Ensure the form is in view-only mode initially
-  };
-
-  const handleEditClick = () => {
-    setIsEditing(true); // Switch to editing mode when the Edit button is clicked
+    setSelectedTrainerId(session.trainer?.id || null);  // Initialize selectedTrainerId with the current session trainer
   };
 
   const handleSaveClick = async () => {
-    // Handle save logic here, such as updating the session
-    setIsEditing(false); // Return to view-only mode after saving
-  };
+    if (selectedSession && selectedTrainerId !== null) {
+      try {
+        const updatedSession: Partial<Session> = {
+          trainer: { id: selectedTrainerId } as Trainer,  // Ensure the trainer ID is correctly passed
+          id: selectedSession.id,
+          client: selectedSession.client,
+          session_type: selectedSession.session_type,
+          date: selectedSession.date,
+          notes: selectedSession.notes,
+        };
 
-  const handleCancelClick = () => {
-    setIsEditing(false); // Return to view-only mode if cancel is clicked
+        await updateSession(selectedSession.id, updatedSession);
+        setIsEditing(false);  // Return to view-only mode after saving
+      } catch (err) {
+        setError("Failed to update session");
+      }
+    }
   };
-
-  if (loading) return <CircularProgress />;
-  if (error) return <Typography variant="h6">{error}</Typography>;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
       {/* Session List - 25% width */}
       <Box sx={{ flex: 1 }}>
-        <TableContainer component={Paper}>
+        <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Date</TableCell>
-                <TableCell>Session Type</TableCell>
+                <TableCell>Type</TableCell>
                 <TableCell>Client</TableCell>
               </TableRow>
             </TableHead>
@@ -86,11 +93,7 @@ const SessionsPage = () => {
                 >
                   <TableCell>{session.date}</TableCell>
                   <TableCell>{session.session_type}</TableCell>
-                  <TableCell>
-                    {session.client?.user?.first_name
-                      ? `${session.client.user.first_name} ${session.client.user.last_name}`
-                      : "No Client"}
-                  </TableCell>
+                  <TableCell>{session.client?.user.first_name} {session.client?.user.last_name}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -107,66 +110,66 @@ const SessionsPage = () => {
                 {isEditing ? "Edit Session Details" : "Session Details"}
               </Typography>
 
-              <TextField
-                label="Date"
-                value={selectedSession.date}
-                fullWidth
-                disabled={!isEditing}
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                label="Session Type"
-                value={selectedSession.session_type}
-                fullWidth
-                disabled={!isEditing}
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                label="Client"
-                value={
-                  selectedSession.client?.user?.first_name
-                    ? `${selectedSession.client.user.first_name} ${selectedSession.client.user.last_name}`
-                    : "No Client"
-                }
-                fullWidth
-                disabled
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                label="Trainer"
-                value={
-                  selectedSession.trainer?.user?.first_name
-                    ? `${selectedSession.trainer.user.first_name} ${selectedSession.trainer.user.last_name}`
-                    : "No Trainer"
-                }
-                fullWidth
-                disabled
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                label="Notes"
-                value={selectedSession.notes || ""}
-                fullWidth
-                multiline
-                rows={4}
-                disabled={!isEditing}
-              />
-
               {isEditing ? (
-                <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-                  <Button variant="contained" onClick={handleSaveClick}>
+                <>
+                  <TextField
+                    label="Date"
+                    value={selectedSession.date}
+                    fullWidth
+                    sx={{ mb: 2 }}
+                    onChange={(e) => setSelectedSession({ ...selectedSession, date: e.target.value })}
+                  />
+                  <TextField
+                    label="Session Type"
+                    value={selectedSession.session_type}
+                    fullWidth
+                    sx={{ mb: 2 }}
+                    onChange={(e) => setSelectedSession({ ...selectedSession, session_type: e.target.value })}
+                  />
+                  <TextField
+                    label="Notes"
+                    value={selectedSession.notes || ""}
+                    fullWidth
+                    sx={{ mb: 2 }}
+                    onChange={(e) => setSelectedSession({ ...selectedSession, notes: e.target.value })}
+                  />
+
+                  <Select
+                    value={selectedTrainerId || ""}
+                    onChange={(e) => setSelectedTrainerId(Number(e.target.value))}
+                    fullWidth
+                    sx={{ mb: 2 }}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {trainers.map((trainer) => (
+                      <MenuItem key={trainer.id} value={trainer.id}>
+                        {trainer.user.first_name} {trainer.user.last_name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+
+                  <Button variant="contained" onClick={handleSaveClick} sx={{ mr: 2 }}>
                     Save
                   </Button>
-                  <Button variant="outlined" onClick={handleCancelClick}>
+                  <Button variant="outlined" onClick={() => setIsEditing(false)}>
                     Cancel
                   </Button>
-                </Box>
+                </>
               ) : (
-                <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-                  <Button variant="contained" onClick={handleEditClick}>
+                <>
+                  <Typography>Date: {selectedSession.date}</Typography>
+                  <Typography>Type: {selectedSession.session_type}</Typography>
+                  <Typography>Notes: {selectedSession.notes}</Typography>
+                  <Typography>
+                    Trainer: {selectedSession.trainer?.user.first_name}{" "}
+                    {selectedSession.trainer?.user.last_name}
+                  </Typography>
+                  <Button variant="contained" onClick={() => setIsEditing(true)}>
                     Edit
                   </Button>
-                </Box>
+                </>
               )}
             </CardContent>
           </Card>
