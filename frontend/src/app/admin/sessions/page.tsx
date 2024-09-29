@@ -19,10 +19,6 @@ import {
 } from "@mui/material";
 import { Session } from "@/interfaces/session";
 import { fetchSessions } from "@/services/sessionService";
-import { Client } from "@/interfaces/client";
-import { Trainer } from "@/interfaces/trainer";
-import { fetchClients } from "@/services/clientService";
-import { fetchTrainers } from "@/services/trainerService";
 
 const SessionsPage = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -30,24 +26,16 @@ const SessionsPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [clients, setClients] = useState<Client[]>([]);
-  const [trainers, setTrainers] = useState<Trainer[]>([]);
 
   useEffect(() => {
     setLoading(true);
     const loadData = async () => {
       try {
-        const [sessionsData, clientsData, trainersData] = await Promise.all([
-          fetchSessions(),
-          fetchClients(),
-          fetchTrainers(),
-        ]);
+        const sessionsData = await fetchSessions();
         setSessions(sessionsData);
-        setClients(clientsData);
-        setTrainers(trainersData);
         setLoading(false);
       } catch (err) {
-        setError("Failed to load sessions, clients, or trainers");
+        setError("Failed to load sessions");
         setLoading(false);
       }
     };
