@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 from user_management.models import User, ClientProfile, TrainerProfile
 from user_management.serializers import UserSerializer
 from user_management.serializers.client_serializers import ClientProfileSerializer
@@ -69,8 +70,8 @@ class UserViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'], url_path='trainers')
     def trainers(self, request):
-        # Filter users who have the 'trainer' role
-        trainers = User.objects.filter(roles__name='trainer')
+        # Filter users who have the 'trainer' role, regardless of other roles they may have
+        trainers = User.objects.filter(Q(roles__name='trainer')).distinct()
         serializer = self.get_serializer(trainers, many=True)
         return Response(serializer.data)
 
