@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card, CardContent, Grid } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card, CardContent } from '@mui/material';
 import { Session } from '../../../interfaces/session';
 import { fetchSessions } from '../../../services/sessionService';
 
