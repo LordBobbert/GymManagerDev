@@ -19,7 +19,6 @@ import {
   MenuItem,
 } from "@mui/material";
 import { fetchSessions, updateSession } from "@/services/sessionService";
-import { fetchClients } from "@/services/clientService";
 import { fetchTrainers } from "@/services/trainerService";
 import { Session } from "@/interfaces/session";
 import { Trainer } from "@/interfaces/trainer";
@@ -30,7 +29,6 @@ const SessionsPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedTrainerId, setSelectedTrainerId] = useState<number | null>(null);
   const [trainers, setTrainers] = useState<Trainer[]>([]);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -65,7 +63,7 @@ const SessionsPage = () => {
         await updateSession(selectedSession.id, updatedSession);
         setIsEditing(false);  // Return to view-only mode after saving
       } catch (err) {
-        setError("Failed to update session");
+        console.error("Failed to update session", err);
       }
     }
   };
