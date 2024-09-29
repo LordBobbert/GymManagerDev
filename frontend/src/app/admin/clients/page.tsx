@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, IconButton, Card, CardContent, Grid, CircularProgress } from '@mui/material';
+import { Box, Typography, IconButton, Card, CardContent, Grid } from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -15,13 +15,15 @@ import { fetchClients, addClient, updateClient, fetchClientSessions, fetchClient
 import { getClientFieldConfig } from '../../../config/fieldConfigs';
 import { Trainer } from '../../../interfaces/trainer';
 import { fetchTrainers } from '../../../services/trainerService';
+import { Session } from '../../../interfaces/session';
+import { Payment } from '../../../interfaces/payment'; // Make sure this exists
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [trainers, setTrainers] = useState<Trainer[]>([]);
-  const [sessions, setSessions] = useState([]);
-  const [payments, setPayments] = useState([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddClientOpen, setIsAddClientOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +58,7 @@ const ClientsPage = () => {
   const handleClientSave = async (updatedFields: Partial<Client>) => {
     try {
       if (selectedClient) {
-        const response = await updateClient(selectedClient.id, updatedFields);
+        await updateClient(selectedClient.id, updatedFields);
         const updatedClients = await fetchClients();
         setClients(updatedClients);
         setSelectedClient(null);
@@ -142,9 +144,9 @@ const ClientsPage = () => {
                     Sessions
                   </Typography>
                   {sessions.length > 0 ? (
-                    sessions.map((session: any) => (
+                    sessions.map((session: Session) => (
                       <Typography key={session.id}>
-                        {session.date} - {session.session_type} with {session.trainer.user.first_name} {session.trainer.user.last_name}
+                        {session.date} - {session.session_type} with {session.trainer?.user.first_name} {session.trainer?.user.last_name}
                       </Typography>
                     ))
                   ) : (
@@ -161,7 +163,7 @@ const ClientsPage = () => {
                     Payments
                   </Typography>
                   {payments.length > 0 ? (
-                    payments.map((payment: any) => (
+                    payments.map((payment: Payment) => (
                       <Typography key={payment.id}>
                         {payment.date} - ${payment.amount} {payment.status}
                       </Typography>
