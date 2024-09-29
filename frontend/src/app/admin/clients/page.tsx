@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, IconButton } from '@mui/material';
+import { Box, Typography, IconButton, Card, CardContent, Grid, CircularProgress } from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -11,7 +11,7 @@ import BaseList from '../../../components/common/BaseList';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
 import AddClientForm from '../../../components/admin/AddClientForm';
 import { Client } from '../../../interfaces/client';
-import { fetchClients, addClient, updateClient } from '../../../services/clientService';
+import { fetchClients, addClient, updateClient, fetchClientSessions, fetchClientPayments } from '../../../services/clientService';
 import { getClientFieldConfig } from '../../../config/fieldConfigs';
 import { Trainer } from '../../../interfaces/trainer';
 import { fetchTrainers } from '../../../services/trainerService';
@@ -20,6 +20,8 @@ const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [trainers, setTrainers] = useState<Trainer[]>([]);
+  const [sessions, setSessions] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddClientOpen, setIsAddClientOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,17 +43,20 @@ const ClientsPage = () => {
   }, []);
 
   const handleClientSelect = (client: Client) => {
-    setSelectedClient(null); 
+    setSelectedClient(null);
     setTimeout(() => {
       setSelectedClient(client);
-    }, 0); 
+
+      // Fetch sessions and payments for the selected client
+      fetchClientSessions(client.id).then(setSessions).catch(console.error);
+      fetchClientPayments(client.id).then(setPayments).catch(console.error);
+    }, 0);
   };
 
   const handleClientSave = async (updatedFields: Partial<Client>) => {
     try {
       if (selectedClient) {
         const response = await updateClient(selectedClient.id, updatedFields);
-        console.log('Client updated successfully', response);
         const updatedClients = await fetchClients();
         setClients(updatedClients);
         setSelectedClient(null);
@@ -63,9 +68,8 @@ const ClientsPage = () => {
 
   const handleAddClientSubmit = async (newClient: Omit<Client, 'id'>) => {
     try {
-      await addClient(newClient); 
-      console.log('Client added successfully');
-      setIsAddClientOpen(false); 
+      await addClient(newClient);
+      setIsAddClientOpen(false);
       const updatedClients = await fetchClients();
       setClients(updatedClients);
     } catch (error) {
@@ -128,6 +132,47 @@ const ClientsPage = () => {
             fieldConfig={getClientFieldConfig(trainers)}
             onSave={handleClientSave}
           />
+
+          {/* Sessions and Payments Cards */}
+          <Grid container spacing={2} sx={{ mt: 4 }}>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Sessions
+                  </Typography>
+                  {sessions.length > 0 ? (
+                    sessions.map((session: any) => (
+                      <Typography key={session.id}>
+                        {session.date} - {session.session_type} with {session.trainer.user.first_name} {session.trainer.user.last_name}
+                      </Typography>
+                    ))
+                  ) : (
+                    <Typography>No sessions available.</Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Payments
+                  </Typography>
+                  {payments.length > 0 ? (
+                    payments.map((payment: any) => (
+                      <Typography key={payment.id}>
+                        {payment.date} - ${payment.amount} {payment.status}
+                      </Typography>
+                    ))
+                  ) : (
+                    <Typography>No payments available.</Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </div>
       )}
 

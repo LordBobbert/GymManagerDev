@@ -45,3 +45,15 @@ export const updateClient = async (id: number, updatedFields: Partial<Client>): 
 
   return response.json();
 };
+
+export const fetchClientSessions = async (clientId: number) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/sessions?client_id=${clientId}`);
+  if (!res.ok) throw new Error('Failed to fetch sessions');
+  return await res.json();
+};
+
+export const fetchClientPayments = async (clientId: number) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payments?client_id=${clientId}`);
+  if (!res.ok) throw new Error('Failed to fetch payments');
+  return await res.json();
+};
