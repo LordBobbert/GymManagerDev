@@ -50,11 +50,11 @@ export const updateClient = async (id: number, updatedFields: Partial<Client>): 
 export const fetchClientSessions = async (clientId: number) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/training-sessions/sessions?client_id=${clientId}`, {
     method: 'GET',
-    credentials: 'include',  // Automatically include cookies
+    credentials: 'include',  // Ensure cookies are included
   });
 
   if (!res.ok) {
-    throw new Error('Failed to fetch sessions');
+    throw new Error('Failed to fetch sessions for client');
   }
 
   return await res.json();
