@@ -46,14 +46,31 @@ export const updateClient = async (id: number, updatedFields: Partial<Client>): 
   return response.json();
 };
 
+// Fetch Client Sessions
 export const fetchClientSessions = async (clientId: number) => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/training-sessions/sessions?client_id=${clientId}`);
-  if (!res.ok) throw new Error('Failed to fetch sessions');
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/training-sessions/sessions?client_id=${clientId}`, {
+    method: 'GET',
+    credentials: 'include',  // Automatically include cookies
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch sessions');
+  }
+
   return await res.json();
 };
 
+// Fetch Client Payments
 export const fetchClientPayments = async (clientId: number) => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payments?client_id=${clientId}`);
-  if (!res.ok) throw new Error('Failed to fetch payments');
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payments?client_id=${clientId}`, {
+    method: 'GET',
+    credentials: 'include',  // Automatically include cookies
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch payments');
+  }
+
   return await res.json();
 };
+
