@@ -1,147 +1,192 @@
-// File: src/app/admin/sessions/page.tsx
+// File: src/app/admin/clients/page.tsx
 
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Button } from '@mui/material';
+import { Box, Typography, Card, CardContent, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import BaseList from '../../../components/common/BaseList';
+import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
+import AddClientForm from '../../../components/admin/AddClientForm';
+import { Client } from '../../../interfaces/client';
+import { fetchClients, addClient, updateClient, fetchClientSessions, fetchClientPayments } from '../../../services/clientService';
+import { getClientFieldConfig } from '../../../config/fieldConfigs';
+import { Trainer } from '../../../interfaces/trainer';
+import { fetchTrainers } from '../../../services/trainerService';
 import { Session } from '../../../interfaces/session';
-import { fetchSessions, updateSession } from '../../../services/sessionService';
+import { Payment } from '../../../interfaces/payment';
 
-const SessionsPage = () => {
+const ClientsPage = () => {
+  const [clients, setClients] = useState<Client[] | null>(null);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [updatedSessionData, setUpdatedSessionData] = useState<Partial<Session>>({});
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isAddClientOpen, setIsAddClientOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchSessions()
-      .then((data) => setSessions(data))
-      .catch((error) => console.error('Failed to fetch sessions:', error));
+    fetchClients()
+      .then((data) => setClients(data))
+      .catch(() => setError('Failed to load clients.'));
+
+    fetchTrainers()
+      .then((data) => {
+        setTrainers(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Failed to load trainers.');
+        setLoading(false);
+      });
   }, []);
 
-  const handleSessionSelect = (session: Session) => {
-    setSelectedSession(session);
-    setUpdatedSessionData(session); // Set initial values for editing
-    setIsEditing(false); // Ensure editing is disabled when selecting a session
+  const handleClientSelect = (client: Client) => {
+    setSelectedClient(null);
+    setTimeout(() => {
+      setSelectedClient(client);
+
+      // Fetch sessions and payments for the selected client
+      fetchClientSessions(client.id).then(setSessions).catch(console.error);
+      fetchClientPayments(client.id).then(setPayments).catch(console.error);
+    }, 0);
   };
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
-  const handleCancelClick = () => {
-    setIsEditing(false);
-    setUpdatedSessionData(selectedSession!); // Reset the form to the original session data
-  };
-
-  const handleSaveClick = async () => {
-    if (selectedSession && updatedSessionData) {
-      try {
-        await updateSession(selectedSession.id, updatedSessionData);
-        setSessions((prevSessions) =>
-          prevSessions.map((session) =>
-            session.id === selectedSession.id ? { ...session, ...updatedSessionData } : session
-          )
-        );
-        setIsEditing(false);
-      } catch (error) {
-        console.error('Failed to update session:', error);
+  const handleClientSave = async (updatedFields: Partial<Client>) => {
+    try {
+      if (selectedClient) {
+        await updateClient(selectedClient.id, updatedFields);
+        const updatedClients = await fetchClients();
+        setClients(updatedClients);
+        setSelectedClient(null);
       }
+    } catch (error) {
+      console.error('Error updating client:', error);
     }
   };
 
-  const handleFieldChange = (field: keyof Session, value: string) => {
-    setUpdatedSessionData((prevData) => ({
-      ...prevData,
-      [field]: value,
-    }));
+  const handleAddClientSubmit = async (newClient: Omit<Client, 'id'>) => {
+    try {
+      await addClient(newClient);
+      setIsAddClientOpen(false);
+      const updatedClients = await fetchClients();
+      setClients(updatedClients);
+    } catch (error) {
+      console.error('Error adding client:', error);
+    }
   };
 
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  if (!clients) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <Box sx={{ display: 'flex', gap: '2rem', height: '100%' }}>
-      {/* Session List (Table) - 25% width */}
-      <Box sx={{ flex: 1 }}>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Date</TableCell>
-                <TableCell>Type</TableCell>
-                <TableCell>Client</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {sessions.map((session) => (
-                <TableRow key={session.id} onClick={() => handleSessionSelect(session)} hover sx={{ cursor: 'pointer' }}>
-                  <TableCell>{session.date}</TableCell>
-                  <TableCell>{session.session_type}</TableCell>
-                  <TableCell>{session.client?.user.first_name} {session.client?.user.last_name}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+    <div style={{ display: 'flex', gap: '2rem' }}>
+      {/* Left panel: BaseList */}
+      <div style={{ flex: 1 }}>
+        <BaseList<Client>
+          data={clients}
+          section="clients"
+          getKey={(client) => client.id}
+          onSelect={handleClientSelect}
+          renderItem={(client: Client) => (
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              {/* Client Info */}
+              <Box>
+                <Typography variant="h6">
+                  {client.user.first_name} {client.user.last_name}
+                </Typography>
+                <Typography variant="body2">{client.user.email}</Typography>
+                <Typography variant="body2">{client.user.phone_number}</Typography>
+              </Box>
+            </Box>
+          )}
+          onAddClient={() => setIsAddClientOpen(true)}
+        />
+      </div>
 
-      {/* Session Details - 75% width */}
-      {selectedSession && (
-        <Box sx={{ flex: 3 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Session Details
-              </Typography>
+      {/* Right panel: BaseListDetailsPage */}
+      {selectedClient && (
+        <div style={{ flex: 3 }}>
+          <BaseListDetailsPage
+            key={selectedClient.id}
+            data={selectedClient}
+            fieldConfig={getClientFieldConfig(trainers)}
+            onSave={handleClientSave}
+          />
 
-              {isEditing ? (
-                <>
-                  <TextField
-                    label="Date"
-                    value={updatedSessionData.date || ''}
-                    onChange={(e) => handleFieldChange('date', e.target.value)}
-                    fullWidth
-                    margin="normal"
-                  />
-                  <TextField
-                    label="Session Type"
-                    value={updatedSessionData.session_type || ''}
-                    onChange={(e) => handleFieldChange('session_type', e.target.value)}
-                    fullWidth
-                    margin="normal"
-                  />
-                  <TextField
-                    label="Notes"
-                    value={updatedSessionData.notes || ''}
-                    onChange={(e) => handleFieldChange('notes', e.target.value)}
-                    fullWidth
-                    margin="normal"
-                  />
-                  <Box sx={{ display: 'flex', gap: 2, marginTop: 2 }}>
-                    <Button variant="contained" color="primary" onClick={handleSaveClick}>
-                      Save
-                    </Button>
-                    <Button variant="outlined" onClick={handleCancelClick}>
-                      Cancel
-                    </Button>
-                  </Box>
-                </>
-              ) : (
-                <>
-                  <Typography><strong>Date:</strong> {selectedSession.date}</Typography>
-                  <Typography><strong>Type:</strong> {selectedSession.session_type}</Typography>
-                  <Typography><strong>Client:</strong> {selectedSession.client?.user.first_name} {selectedSession.client?.user.last_name}</Typography>
-                  <Typography><strong>Trainer:</strong> {selectedSession.trainer?.user.first_name} {selectedSession.trainer?.user.last_name}</Typography>
-                  <Typography><strong>Notes:</strong> {selectedSession.notes || 'No notes provided'}</Typography>
-                  <Button sx={{ marginTop: 2 }} variant="contained" onClick={handleEditClick}>
-                    Edit
-                  </Button>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </Box>
+          {/* Sessions and Payments Cards */}
+          <Grid container spacing={2} sx={{ mt: 4 }}>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Sessions for {selectedClient.user.first_name} {selectedClient.user.last_name}
+                  </Typography>
+                  {sessions.length > 0 ? (
+                    <TableContainer component={Paper}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Date</TableCell>
+                            <TableCell>Type</TableCell>
+                            <TableCell>Trainer</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {sessions.map((session: Session) => (
+                            <TableRow key={session.id}>
+                              <TableCell>{session.date}</TableCell>
+                              <TableCell>{session.session_type}</TableCell>
+                              <TableCell>{session.trainer?.user.first_name} {session.trainer?.user.last_name}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  ) : (
+                    <Typography>No sessions available for this client.</Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Payments for {selectedClient.user.first_name} {selectedClient.user.last_name}
+                  </Typography>
+                  {payments.length > 0 ? (
+                    payments.map((payment: Payment) => (
+                      <Typography key={payment.id}>
+                        {payment.date} - ${payment.amount} {payment.status}
+                      </Typography>
+                    ))
+                  ) : (
+                    <Typography>No payments available for this client.</Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </div>
       )}
-    </Box>
+
+      {/* Add Client Form Modal */}
+      <AddClientForm
+        open={isAddClientOpen}
+        onClose={() => setIsAddClientOpen(false)}
+        onSubmit={handleAddClientSubmit}
+        trainers={trainers}
+        loading={loading}
+      />
+    </div>
   );
 };
 
-export default SessionsPage;
+export default ClientsPage;
