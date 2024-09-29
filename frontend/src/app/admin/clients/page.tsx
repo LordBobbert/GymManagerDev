@@ -3,10 +3,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, IconButton, Card, CardContent, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import PhoneIcon from '@mui/icons-material/Phone';
-import EmailIcon from '@mui/icons-material/Email';
-import ChatIcon from '@mui/icons-material/Chat';
+import { Box, Typography, Card, CardContent, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import BaseList from '../../../components/common/BaseList';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
 import AddClientForm from '../../../components/admin/AddClientForm';
@@ -106,19 +103,6 @@ const ClientsPage = () => {
                 <Typography variant="body2">{client.user.email}</Typography>
                 <Typography variant="body2">{client.user.phone_number}</Typography>
               </Box>
-
-              {/* Action Icons */}
-              <Box>
-                <IconButton aria-label="call" onClick={() => window.open(`tel:${client.user.phone_number}`)}>
-                  <PhoneIcon />
-                </IconButton>
-                <IconButton aria-label="email" onClick={() => window.open(`mailto:${client.user.email}`)}>
-                  <EmailIcon />
-                </IconButton>
-                <IconButton aria-label="text" onClick={() => window.open(`sms:${client.user.phone_number}`)}>
-                  <ChatIcon />
-                </IconButton>
-              </Box>
             </Box>
           )}
           onAddClient={() => setIsAddClientOpen(true)}
@@ -141,7 +125,7 @@ const ClientsPage = () => {
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
-                    Sessions
+                    Sessions for {selectedClient.user.first_name} {selectedClient.user.last_name}
                   </Typography>
                   {sessions.length > 0 ? (
                     <TableContainer component={Paper}>
@@ -165,7 +149,7 @@ const ClientsPage = () => {
                       </Table>
                     </TableContainer>
                   ) : (
-                    <Typography>No sessions available.</Typography>
+                    <Typography>No sessions available for this client.</Typography>
                   )}
                 </CardContent>
               </Card>
@@ -175,7 +159,7 @@ const ClientsPage = () => {
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
-                    Payments
+                    Payments for {selectedClient.user.first_name} {selectedClient.user.last_name}
                   </Typography>
                   {payments.length > 0 ? (
                     payments.map((payment: Payment) => (
@@ -184,7 +168,7 @@ const ClientsPage = () => {
                       </Typography>
                     ))
                   ) : (
-                    <Typography>No payments available.</Typography>
+                    <Typography>No payments available for this client.</Typography>
                   )}
                 </CardContent>
               </Card>
