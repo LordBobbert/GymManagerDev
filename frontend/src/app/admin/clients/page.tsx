@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, IconButton, Card, CardContent, Grid } from '@mui/material';
+import { Box, Typography, IconButton, Card, CardContent, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -16,7 +16,7 @@ import { getClientFieldConfig } from '../../../config/fieldConfigs';
 import { Trainer } from '../../../interfaces/trainer';
 import { fetchTrainers } from '../../../services/trainerService';
 import { Session } from '../../../interfaces/session';
-import { Payment } from '../../../interfaces/payment'; // Make sure this exists
+import { Payment } from '../../../interfaces/payment';
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
@@ -144,11 +144,26 @@ const ClientsPage = () => {
                     Sessions
                   </Typography>
                   {sessions.length > 0 ? (
-                    sessions.map((session: Session) => (
-                      <Typography key={session.id}>
-                        {session.date} - {session.session_type} with {session.trainer?.user.first_name} {session.trainer?.user.last_name}
-                      </Typography>
-                    ))
+                    <TableContainer component={Paper}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Date</TableCell>
+                            <TableCell>Type</TableCell>
+                            <TableCell>Trainer</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {sessions.map((session: Session) => (
+                            <TableRow key={session.id}>
+                              <TableCell>{session.date}</TableCell>
+                              <TableCell>{session.session_type}</TableCell>
+                              <TableCell>{session.trainer?.user.first_name} {session.trainer?.user.last_name}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
                   ) : (
                     <Typography>No sessions available.</Typography>
                   )}
