@@ -3,7 +3,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import {
   Box,
   Paper,
@@ -21,19 +20,14 @@ import { Client } from "@/interfaces/client";
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const loadClients = async () => {
-      setLoading(true);
       try {
         const fetchedClients = await fetchClients();
         setClients(fetchedClients);
       } catch (err) {
         console.error("Failed to fetch clients.");
-      } finally {
-        setLoading(false);
       }
     };
     loadClients();
