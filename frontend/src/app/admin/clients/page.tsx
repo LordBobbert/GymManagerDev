@@ -24,7 +24,6 @@ const ClientsPage = () => {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadClients = async () => {
@@ -32,8 +31,7 @@ const ClientsPage = () => {
         const fetchedClients = await fetchClients();
         setClients(fetchedClients);
       } catch (err) {
-        console.error("Failed to fetch clients.");
-        setError("Failed to fetch clients."); // Optional error state handling
+        console.error("Failed to fetch clients."); // Error logging instead of error state
       }
     };
     loadClients();
@@ -46,8 +44,7 @@ const ClientsPage = () => {
       const fetchedSessions = await fetchClientSessions(client.id);
       setSessions(fetchedSessions);
     } catch (err) {
-      console.error("Failed to fetch sessions.");
-      setError("Failed to fetch sessions."); // Optional error state handling
+      console.error("Failed to fetch sessions."); // Error logging instead of error state
     }
   };
 
