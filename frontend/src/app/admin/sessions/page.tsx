@@ -12,78 +12,74 @@ import {
   Typography,
   Box,
   Button,
-  CircularProgress,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fetchSessions, updateSession } from "@/services/sessionService";
-import { fetchClients } from "@/services/clientService";
 import { fetchTrainers } from "@/services/trainerService";
 import { Session } from "@/interfaces/session";
-import { Client } from "@/interfaces/client";
 import { Trainer } from "@/interfaces/trainer";
 
 const SessionsPage = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
-  const [clients, setClients] = useState<Client[]>([]);
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedTrainerId, setSelectedTrainerId] = useState<number | null>(
     null
   );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // Fetch all data when the component loads
   useEffect(() => {
-    const loadData = async () => {
+    const loadSessions = async () => {
       try {
-        const [fetchedSessions, fetchedClients, fetchedTrainers] =
-          await Promise.all([fetchSessions(), fetchClients(), fetchTrainers()]);
+        const fetchedSessions = await fetchSessions();
         setSessions(fetchedSessions);
-        setClients(fetchedClients);
-        setTrainers(fetchedTrainers);
       } catch (error) {
-        console.error("Failed to fetch data:", error);
-        setError("Failed to load data.");
-      } finally {
-        setLoading(false);
+        console.error("Failed to fetch sessions:", error);
       }
     };
 
-    loadData();
+    const loadTrainers = async () => {
+      try {
+        const fetchedTrainers = await fetchTrainers();
+        setTrainers(fetchedTrainers);
+      } catch (error) {
+        console.error("Failed to fetch trainers:", error);
+      }
+    };
+
+    loadSessions();
+    loadTrainers();
   }, []);
 
   const handleSessionSelect = (session: Session) => {
     setSelectedSession(session);
-    setIsEditing(false); // Initially in view-only mode
-    setSelectedTrainerId(session.trainer?.id || null); // Set trainer ID
+    setIsEditing(false); // Start in view-only mode initially
+    setSelectedTrainerId(session.trainer?.id || null); // Set the trainer to the current trainer
   };
 
   const handleSave = async () => {
     if (selectedSession) {
       try {
         const updatedSession = {
-          ...selectedSession,
           trainer: selectedTrainerId
-            ? { id: selectedTrainerId }
-            : selectedSession.trainer, // Preserve the existing trainer if unchanged
+            ? { id: selectedTrainerId } // Only send the ID of the trainer
+            : selectedSession.trainer, // Keep the existing trainer if no change
+          id: selectedSession.id,
+          client: selectedSession.client, // Assuming client remains the same
+          session_type: selectedSession.session_type,
+          date: selectedSession.date,
+          notes: selectedSession.notes,
         };
         await updateSession(selectedSession.id, updatedSession);
-        setIsEditing(false); // Switch back to view-only mode after saving
+        setIsEditing(false); // Return to view-only mode after saving
       } catch (err) {
-        setError("Failed to update session");
+        console.error("Failed to update session");
       }
     }
   };
 
-  if (loading) {
-    return <CircularProgress />;
-  }
-
   return (
     <Box sx={{ display: "flex", padding: 2 }}>
-      {/* Sessions List Table */}
       <TableContainer component={Paper} sx={{ flex: 1, mr: 2 }}>
         <Table>
           <TableHead>
@@ -109,12 +105,8 @@ const SessionsPage = () => {
                   {session.client?.user.last_name}
                 </TableCell>
                 <TableCell>
-                  {/* Check if trainer exists and has a user before accessing */}
                   {session.trainer && "user" in session.trainer ? (
-                    <>
-                      {session.trainer.user.first_name}{" "}
-                      {session.trainer.user.last_name}
-                    </>
+                    `${session.trainer.user.first_name} ${session.trainer.user.last_name}`
                   ) : (
                     "Trainer Not Assigned"
                   )}
@@ -125,30 +117,25 @@ const SessionsPage = () => {
         </Table>
       </TableContainer>
 
-      {/* Session Details */}
+      {/* Session Details - 75% width */}
       {selectedSession && (
-        <Box sx={{ flex: 2 }}>
+        <Box sx={{ flex: 3 }}>
           <Paper sx={{ padding: 2 }}>
             <Typography variant="h6" gutterBottom>
               {isEditing ? "Edit Session Details" : "Session Details"}
             </Typography>
 
-            {/* Session Type */}
             <TextField
               label="Session Type"
               value={selectedSession.session_type}
               fullWidth
               disabled={!isEditing}
               onChange={(e) =>
-                setSelectedSession((prev) => ({
-                  ...prev!,
-                  session_type: e.target.value,
-                }))
+                setSelectedSession((prev) => (prev ? { ...prev, session_type: e.target.value } : prev))
               }
               sx={{ mb: 2 }}
             />
 
-            {/* Date */}
             <TextField
               label="Date"
               type="datetime-local"
@@ -156,22 +143,16 @@ const SessionsPage = () => {
               fullWidth
               disabled={!isEditing}
               onChange={(e) =>
-                setSelectedSession((prev) => ({
-                  ...prev!,
-                  date: e.target.value,
-                }))
+                setSelectedSession((prev) => (prev ? { ...prev, date: e.target.value } : prev))
               }
               sx={{ mb: 2 }}
             />
 
-            {/* Trainer */}
             <TextField
               label="Trainer"
               select
               fullWidth
-              SelectProps={{
-                native: true,
-              }}
+              SelectProps={{ native: true }}
               value={selectedTrainerId || ""}
               onChange={(e) => setSelectedTrainerId(Number(e.target.value))}
               disabled={!isEditing}
@@ -180,7 +161,7 @@ const SessionsPage = () => {
               <option value="">Select Trainer</option>
               {trainers.map((trainer) => (
                 <option key={trainer.id} value={trainer.id}>
-                  {trainer.user.first_name} {trainer.user.last_name}
+                  {trainer.user?.first_name} {trainer.user?.last_name}
                 </option>
               ))}
             </TextField>

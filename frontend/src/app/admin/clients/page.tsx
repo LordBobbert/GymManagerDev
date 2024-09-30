@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import {
   Box,
   Paper,
@@ -27,15 +26,14 @@ const ClientsPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const router = useRouter();
-
   useEffect(() => {
     const loadClients = async () => {
       try {
         const fetchedClients = await fetchClients();
         setClients(fetchedClients);
       } catch (err) {
-        setError("Failed to fetch clients.");
+        console.error("Failed to fetch clients.");
+        setError("Failed to fetch clients."); // Optional error state handling
       }
     };
     loadClients();
@@ -48,7 +46,8 @@ const ClientsPage = () => {
       const fetchedSessions = await fetchClientSessions(client.id);
       setSessions(fetchedSessions);
     } catch (err) {
-      setError("Failed to fetch sessions.");
+      console.error("Failed to fetch sessions.");
+      setError("Failed to fetch sessions."); // Optional error state handling
     }
   };
 
