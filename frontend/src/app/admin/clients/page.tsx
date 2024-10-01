@@ -3,14 +3,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Paper, TextField, Typography, Button } from "@mui/material";
+import { Box, Paper, Typography, IconButton, List, ListItemButton, ListItemText } from "@mui/material";
+import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from '@mui/icons-material/Email';
+import SmsIcon from '@mui/icons-material/Sms';
 import { fetchClients } from "@/services/clientService";
 import { Client } from "@/interfaces/client";
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const loadClients = async () => {
@@ -26,12 +28,6 @@ const ClientsPage = () => {
 
   const handleClientSelect = (client: Client) => {
     setSelectedClient(client);
-    setIsEditing(false);
-  };
-
-  const handleSave = async () => {
-    // Add save logic for updating client details
-    setIsEditing(false);
   };
 
   return (
@@ -41,22 +37,32 @@ const ClientsPage = () => {
           <Typography variant="h6" gutterBottom>
             Clients List
           </Typography>
-          <ul>
+          <List>
             {clients.map((client) => (
-              <li
+              <ListItemButton
                 key={client.id}
                 onClick={() => handleClientSelect(client)}
-                style={{
-                  cursor: "pointer",
-                  marginBottom: "10px",
-                  fontWeight:
-                    selectedClient?.id === client.id ? "bold" : "normal",
-                }}
+                selected={selectedClient?.id === client.id}
               >
-                {client.user.first_name} {client.user.last_name}
-              </li>
+                <ListItemText
+                  primary={`${client.user.first_name} ${client.user.last_name}`}
+                  secondary={client.user.email}
+                />
+                {/* Phone Icon */}
+                <IconButton edge="end" aria-label="call" onClick={() => alert(`Calling ${client.user.phone_number}`)}>
+                  <PhoneIcon />
+                </IconButton>
+                {/* Email Icon */}
+                <IconButton edge="end" aria-label="email" onClick={() => alert(`Emailing ${client.user.email}`)}>
+                  <EmailIcon />
+                </IconButton>
+                {/* Text Icon */}
+                <IconButton edge="end" aria-label="text" onClick={() => alert(`Texting ${client.user.phone_number}`)}>
+                  <SmsIcon />
+                </IconButton>
+              </ListItemButton>
             ))}
-          </ul>
+          </List>
         </Paper>
       </Box>
 
@@ -64,60 +70,18 @@ const ClientsPage = () => {
         <Box sx={{ width: "70%" }}>
           <Paper sx={{ padding: 2 }}>
             <Typography variant="h6" gutterBottom>
-              {isEditing ? "Edit Client Details" : "Client Details"}
+              Client Details
             </Typography>
 
-            <TextField
-              label="First Name"
-              value={selectedClient.user.first_name}
-              fullWidth
-              disabled={!isEditing}
-              sx={{ mb: 2 }}
-            />
-
-            <TextField
-              label="Last Name"
-              value={selectedClient.user.last_name}
-              fullWidth
-              disabled={!isEditing}
-              sx={{ mb: 2 }}
-            />
-
-            <TextField
-              label="Email"
-              value={selectedClient.user.email}
-              fullWidth
-              disabled={!isEditing}
-              sx={{ mb: 2 }}
-            />
-
-            <TextField
-              label="Phone Number"
-              value={selectedClient.user.phone_number}
-              fullWidth
-              disabled={!isEditing}
-              sx={{ mb: 2 }}
-            />
-
-            {isEditing ? (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSave}
-                sx={{ mt: 2 }}
-              >
-                Save
-              </Button>
-            ) : (
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => setIsEditing(true)}
-                sx={{ mt: 2 }}
-              >
-                Edit
-              </Button>
-            )}
+            <Typography variant="body1" gutterBottom>
+              Name: {selectedClient.user.first_name} {selectedClient.user.last_name}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Email: {selectedClient.user.email}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Phone: {selectedClient.user.phone_number}
+            </Typography>
           </Paper>
         </Box>
       )}
