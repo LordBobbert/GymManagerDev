@@ -92,8 +92,8 @@ const ClientsPage = () => {
               {isEditing ? "Edit Client Details" : "Client Details"}
             </Typography>
 
-            {/* Render fields for editing or viewing */}
             <Grid container spacing={2}>
+              {/* User Details */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="First Name"
@@ -110,24 +110,15 @@ const ClientsPage = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="Last Name"
-                  value={selectedClient?.user?.last_name || ""}
+                  value={selectedClient.user?.last_name || ""}
                   fullWidth
                   disabled={!isEditing}
                   onChange={(e) =>
                     setSelectedClient((prev) =>
-                      prev
-                        ? {
-                          ...prev,
-                          user: {
-                            ...prev.user,
-                            last_name: e.target.value,  // Update the last name while preserving the rest of the user properties
-                          },
-                        }
-                        : prev  // Keep the previous state if prev is null
+                      prev ? { ...prev, user: { ...prev.user, last_name: e.target.value } } : prev
                     )
                   }
                 />
-
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -155,7 +146,35 @@ const ClientsPage = () => {
                   }
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Gender"
+                  value={selectedClient.user?.gender || ""}
+                  fullWidth
+                  disabled={!isEditing}
+                  onChange={(e) =>
+                    setSelectedClient((prev) =>
+                      prev ? { ...prev, user: { ...prev.user, gender: e.target.value as "male" | "female" } } : prev
+                    )
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Birthday"
+                  value={selectedClient.user?.birthday || ""}
+                  fullWidth
+                  disabled={!isEditing}
+                  onChange={(e) =>
+                    setSelectedClient((prev) =>
+                      prev ? { ...prev, user: { ...prev.user, birthday: e.target.value } } : prev
+                    )
+                  }
+                />
+              </Grid>
+
+              {/* Client Specific Fields */}
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Training Status"
                   value={selectedClient?.training_status || ""}
@@ -175,9 +194,8 @@ const ClientsPage = () => {
                     )
                   }
                 />
-
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Personal Training Rate"
                   value={selectedClient.personal_training_rate || ""}
@@ -186,6 +204,34 @@ const ClientsPage = () => {
                   onChange={(e) =>
                     setSelectedClient((prev) =>
                       prev ? { ...prev, personal_training_rate: parseFloat(e.target.value) } : prev
+                    )
+                  }
+                />
+              </Grid>
+
+              {/* Emergency Contact Information */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Emergency Contact Name"
+                  value={selectedClient.emergency_contact_name || ""}
+                  fullWidth
+                  disabled={!isEditing}
+                  onChange={(e) =>
+                    setSelectedClient((prev) =>
+                      prev ? { ...prev, emergency_contact_name: e.target.value } : prev
+                    )
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Emergency Contact Phone"
+                  value={selectedClient.emergency_contact_phone || ""}
+                  fullWidth
+                  disabled={!isEditing}
+                  onChange={(e) =>
+                    setSelectedClient((prev) =>
+                      prev ? { ...prev, emergency_contact_phone: e.target.value } : prev
                     )
                   }
                 />
