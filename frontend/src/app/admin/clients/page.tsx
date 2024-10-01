@@ -9,6 +9,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import SmsIcon from '@mui/icons-material/Sms';
 import { fetchClients } from "@/services/clientService";
 import { Client } from "@/interfaces/client";
+import { Trainer } from "@/interfaces/trainer";
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -96,6 +97,19 @@ const ClientsPage = () => {
               {/* User Details */}
               <Grid item xs={12} sm={6}>
                 <TextField
+                  label="Username"
+                  value={selectedClient.user?.username || ""}
+                  fullWidth
+                  disabled={!isEditing}
+                  onChange={(e) =>
+                    setSelectedClient((prev) =>
+                      prev ? { ...prev, user: { ...prev.user, username: e.target.value } } : prev
+                    )
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
                   label="First Name"
                   value={selectedClient.user?.first_name || ""}
                   fullWidth
@@ -172,6 +186,14 @@ const ClientsPage = () => {
                   }
                 />
               </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Roles"
+                  value={selectedClient.user?.roles.map(role => role.name).join(", ") || ""}
+                  fullWidth
+                  disabled
+                />
+              </Grid>
 
               {/* Client Specific Fields */}
               <Grid item xs={12} sm={6}>
@@ -194,6 +216,7 @@ const ClientsPage = () => {
                     )
                   }
                 />
+
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -206,6 +229,18 @@ const ClientsPage = () => {
                       prev ? { ...prev, personal_training_rate: parseFloat(e.target.value) } : prev
                     )
                   }
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Trainer"
+                  value={
+                    selectedClient.trainer
+                      ? `${selectedClient.trainer.user.first_name} ${selectedClient.trainer.user.last_name}`
+                      : "No Trainer Assigned"
+                  }
+                  fullWidth
+                  disabled
                 />
               </Grid>
 
