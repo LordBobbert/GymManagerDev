@@ -73,6 +73,7 @@ const ClientsPage = () => {
               Client Details
             </Typography>
 
+            {/* User Details */}
             <Typography variant="body1" gutterBottom>
               Name: {selectedClient.user.first_name} {selectedClient.user.last_name}
             </Typography>
@@ -80,7 +81,44 @@ const ClientsPage = () => {
               Email: {selectedClient.user.email}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              Phone: {selectedClient.user.phone_number}
+              Phone: {selectedClient.user.phone_number ?? 'N/A'}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Gender: {selectedClient.user.gender ?? 'N/A'}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Birthday: {selectedClient.user.birthday ?? 'N/A'}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Roles: {selectedClient.user.roles.map(role => role.name).join(', ')}
+            </Typography>
+
+            {/* Client Specific Details */}
+            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+              Client Info
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Training Status: {selectedClient.training_status}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Rate Type: {selectedClient.rate_type}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Personal Training Rate: {selectedClient.personal_training_rate ? `$${selectedClient.personal_training_rate}` : 'N/A'}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Trainer: {selectedClient.trainer ? `${selectedClient.trainer.user.first_name} ${selectedClient.trainer.user.last_name}` : 'No Trainer Assigned'}
+            </Typography>
+
+            {/* Emergency Contact Details */}
+            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+              Emergency Contact
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Name: {selectedClient.emergency_contact_name ?? 'N/A'}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Phone: {selectedClient.emergency_contact_phone ?? 'N/A'}
             </Typography>
           </Paper>
         </Box>
