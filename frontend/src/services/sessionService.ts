@@ -30,18 +30,15 @@ export const addSession = async (newSession: Omit<Session, 'id'>): Promise<Sessi
 };
 
 export const updateSession = async (id: number, updatedSession: Partial<Session>): Promise<Session> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/training-sessions/sessions/${id}/`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/training-sessions/sessions/${id}/`, {
     method: 'PATCH',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(updatedSession),
-    credentials: 'include',
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to update session');
-  }
-
-  return await res.json();
+  if (!response.ok) throw new Error('Failed to update session');
+  return response.json();
 };

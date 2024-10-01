@@ -13,7 +13,3 @@ export interface Trainer {
 export interface TrainerProfileProps {
     trainer: Trainer | null; // Allow null values for the client
 }
-
-export interface PartialTrainer {
-    id: number;
-  }

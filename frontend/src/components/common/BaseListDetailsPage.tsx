@@ -1,88 +1,82 @@
 // File: src/components/common/BaseListDetailsPage.tsx
 
 import React, { useState } from 'react';
-import { Box, TextField, Select, MenuItem, InputLabel, Button, Grid } from '@mui/material';
-import { FieldConfig } from '../../interfaces/FieldConfig';
-import { getNestedValue, setNestedValue } from '../../utils/nestedUtils';
+import { Box, TextField, Typography, Button, Grid } from '@mui/material';
 
 interface BaseListDetailsPageProps<T> {
   data: T;
-  fieldConfig: FieldConfig<T>[];
-  onSave: (updatedItem: Partial<T>) => void;  // Send partial updates
+  fieldConfig: { label: string; field: keyof T; type?: string; options?: any[] }[];
+  onSave: (updatedFields: Partial<T>) => Promise<void>;
 }
 
-const BaseListDetailsPage = <T,>({
-  data,
-  fieldConfig,
-  onSave,
-}: BaseListDetailsPageProps<T>) => {
-  const [formData, setFormData] = useState<T>(data);
-  const [modifiedData, setModifiedData] = useState<Partial<T>>({});  // Track modified fields
-  const [isEditing, setIsEditing] = useState<boolean>(false);  // Track edit state
+const BaseListDetailsPage = <T,>({ data, fieldConfig, onSave }: BaseListDetailsPageProps<T>) => {
+  const [formData, setFormData] = useState<Partial<T>>(data);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (key: string, value: unknown) => {
-    setFormData((prev) => setNestedValue(prev, key, value));
-    setModifiedData((prev) => setNestedValue(prev, key, value));  // Track changes
+  const handleChange = (field: keyof T, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    onSave(modifiedData);  // Send only the modified data
-    setIsEditing(false);  // Exit edit mode after saving
+  const handleSave = async () => {
+    try {
+      await onSave(formData);
+      setIsEditing(false);
+    } catch (error) {
+      setError('Failed to save changes.');
+    }
   };
 
   return (
     <Box>
+      <Typography variant="h6" gutterBottom>
+        {isEditing ? 'Edit Details' : 'Details'}
+      </Typography>
+      
       <Grid container spacing={2}>
-        {fieldConfig.map(({ label, key, type, options }) => {
-          const value = getNestedValue(formData, key as string) || '';
-
-          return (
-            <Grid item xs={12} sm={6} key={String(key)}>
-              {type === 'select' && options ? (
-                <>
-                  <InputLabel>{label}</InputLabel>
-                  <Select
-                    value={value}
-                    onChange={(e) => handleChange(key as string, e.target.value)}
-                    fullWidth
-                    disabled={!isEditing}  // Disable selection if not editing
-                  >
-                    {options.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </>
-              ) : (
-                <TextField
-                  label={label}
-                  type={type}
-                  value={value}
-                  onChange={(e) => handleChange(key as string, e.target.value)}
-                  fullWidth
-                  InputProps={{
-                    readOnly: !isEditing,  // Make the field read-only when not editing
-                  }}
-                />
-              )}
-            </Grid>
-          );
-        })}
+        {fieldConfig.map((config) => (
+          <Grid item xs={12} md={6} key={config.field as string}>
+            <TextField
+              label={config.label}
+              value={(formData[config.field] as any) || ''}
+              onChange={(e) => handleChange(config.field, e.target.value)}
+              disabled={!isEditing}
+              fullWidth
+              select={config.type === 'select'}
+              type={config.type || 'text'}
+              SelectProps={{
+                native: true,
+              }}
+            >
+              {config.type === 'select' && config.options && config.options.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
+          </Grid>
+        ))}
       </Grid>
 
-      <Box display="flex" justifyContent="space-between" mt={2}>
+      {error && <Typography color="error">{error}</Typography>}
+
+      <Box mt={2}>
         {isEditing ? (
           <>
-            <Button variant="outlined" onClick={() => setIsEditing(false)}>
-              Cancel
-            </Button>
-            <Button variant="contained" onClick={handleSave}>
+            <Button variant="contained" color="primary" onClick={handleSave}>
               Save
+            </Button>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => setIsEditing(false)}
+              sx={{ ml: 2 }}
+            >
+              Cancel
             </Button>
           </>
         ) : (
-          <Button variant="contained" onClick={() => setIsEditing(true)}>
+          <Button variant="contained" color="secondary" onClick={() => setIsEditing(true)}>
             Edit
           </Button>
         )}
