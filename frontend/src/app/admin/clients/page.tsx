@@ -131,7 +131,7 @@ const ClientsPage = () => {
               Personal Training Rate: {selectedClient.personal_training_rate ? `$${selectedClient.personal_training_rate}` : 'N/A'}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              Trainer: {selectedClient.trainer ? `${selectedClient.trainer.user.first_name} ${selectedClient.trainer.user.last_name}` : 'No Trainer Assigned'}
+              Trainer: {selectedClient.trainer && selectedClient.trainer.user ? `${selectedClient.trainer.user.first_name} ${selectedClient.trainer.user.last_name}` : 'No Trainer Assigned'}
             </Typography>
 
             {/* Emergency Contact Details */}
