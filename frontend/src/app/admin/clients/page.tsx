@@ -44,20 +44,36 @@ const ClientsPage = () => {
                 onClick={() => handleClientSelect(client)}
                 selected={selectedClient?.id === client.id}
               >
+                {/* Safely check if user exists before accessing properties */}
                 <ListItemText
-                  primary={`${client.user.first_name} ${client.user.last_name}`}
-                  secondary={client.user.email}
+                  primary={client.user ? `${client.user.first_name} ${client.user.last_name}` : "Unknown User"}
+                  secondary={client.user?.email || "No email available"}
                 />
                 {/* Phone Icon */}
-                <IconButton edge="end" aria-label="call" onClick={() => alert(`Calling ${client.user.phone_number}`)}>
+                <IconButton
+                  edge="end"
+                  aria-label="call"
+                  onClick={() => client.user?.phone_number && alert(`Calling ${client.user.phone_number}`)}
+                  disabled={!client.user?.phone_number} // Disable button if phone number is not available
+                >
                   <PhoneIcon />
                 </IconButton>
                 {/* Email Icon */}
-                <IconButton edge="end" aria-label="email" onClick={() => alert(`Emailing ${client.user.email}`)}>
+                <IconButton
+                  edge="end"
+                  aria-label="email"
+                  onClick={() => client.user?.email && alert(`Emailing ${client.user.email}`)}
+                  disabled={!client.user?.email} // Disable button if email is not available
+                >
                   <EmailIcon />
                 </IconButton>
                 {/* Text Icon */}
-                <IconButton edge="end" aria-label="text" onClick={() => alert(`Texting ${client.user.phone_number}`)}>
+                <IconButton
+                  edge="end"
+                  aria-label="text"
+                  onClick={() => client.user?.phone_number && alert(`Texting ${client.user.phone_number}`)}
+                  disabled={!client.user?.phone_number} // Disable button if phone number is not available
+                >
                   <SmsIcon />
                 </IconButton>
               </ListItemButton>
@@ -73,25 +89,33 @@ const ClientsPage = () => {
               Client Details
             </Typography>
 
-            {/* User Details */}
-            <Typography variant="body1" gutterBottom>
-              Name: {selectedClient.user.first_name} {selectedClient.user.last_name}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              Email: {selectedClient.user.email}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              Phone: {selectedClient.user.phone_number ?? 'N/A'}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              Gender: {selectedClient.user.gender ?? 'N/A'}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              Birthday: {selectedClient.user.birthday ?? 'N/A'}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              Roles: {selectedClient.user.roles.map(role => role.name).join(', ')}
-            </Typography>
+            {/* Safely check if user exists before accessing properties */}
+            {selectedClient.user ? (
+              <>
+                <Typography variant="body1" gutterBottom>
+                  Name: {selectedClient.user.first_name} {selectedClient.user.last_name}
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  Email: {selectedClient.user.email}
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  Phone: {selectedClient.user.phone_number ?? 'N/A'}
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  Gender: {selectedClient.user.gender ?? 'N/A'}
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  Birthday: {selectedClient.user.birthday ?? 'N/A'}
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  Roles: {selectedClient.user.roles.map(role => role.name).join(', ')}
+                </Typography>
+              </>
+            ) : (
+              <Typography variant="body1" color="error">
+                User data is not available
+              </Typography>
+            )}
 
             {/* Client Specific Details */}
             <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
