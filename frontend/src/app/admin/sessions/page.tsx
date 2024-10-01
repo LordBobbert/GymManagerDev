@@ -142,7 +142,7 @@ const SessionsPage = () => {
             <TextField
               label="Date"
               type="datetime-local"
-              value={selectedSession.date}
+              value={selectedSession.date.slice(0, 16)}  // Strip seconds and timezone for input
               fullWidth
               disabled={!isEditing}
               onChange={(e) =>
