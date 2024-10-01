@@ -1,32 +1,37 @@
+// File: src/app/admin/sessions/page.tsx
+
 "use client";
 
+import { useState, useEffect } from "react";
 import {
+  Box,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  TextField,
   Typography,
-  Box,
+  TextField,
   Button,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 import { fetchSessions, updateSession } from "@/services/sessionService";
 import { fetchTrainers } from "@/services/trainerService";
 import { Session } from "@/interfaces/session";
 import { Trainer } from "@/interfaces/trainer";
+
+// Type guard to check if the trainer has the `user` property
+const isFullTrainer = (trainer: Trainer | { id: number }): trainer is Trainer => {
+  return (trainer as Trainer).user !== undefined;
+};
 
 const SessionsPage = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedTrainerId, setSelectedTrainerId] = useState<number | null>(
-    null
-  );
+  const [selectedTrainerId, setSelectedTrainerId] = useState<number | null>(null);
 
   useEffect(() => {
     const loadSessions = async () => {
@@ -53,27 +58,25 @@ const SessionsPage = () => {
 
   const handleSessionSelect = (session: Session) => {
     setSelectedSession(session);
-    setIsEditing(false); // Start in view-only mode initially
-    setSelectedTrainerId(session.trainer?.id || null); // Set the trainer to the current trainer
+    setIsEditing(false);
+    setSelectedTrainerId(session.trainer?.id || null);
   };
 
   const handleSave = async () => {
     if (selectedSession) {
       try {
         const updatedSession = {
-          trainer: selectedTrainerId
-            ? { id: selectedTrainerId } // Only send the ID of the trainer
-            : selectedSession.trainer, // Keep the existing trainer if no change
+          trainer: selectedTrainerId ? { id: selectedTrainerId } : selectedSession.trainer,
           id: selectedSession.id,
-          client: selectedSession.client, // Assuming client remains the same
+          client: selectedSession.client,
           session_type: selectedSession.session_type,
           date: selectedSession.date,
           notes: selectedSession.notes,
         };
         await updateSession(selectedSession.id, updatedSession);
-        setIsEditing(false); // Return to view-only mode after saving
+        setIsEditing(false);
       } catch (err) {
-        console.error("Failed to update session");
+        console.error("Failed to update session:", err);
       }
     }
   };
@@ -101,11 +104,10 @@ const SessionsPage = () => {
                 <TableCell>{session.date}</TableCell>
                 <TableCell>{session.session_type}</TableCell>
                 <TableCell>
-                  {session.client?.user.first_name}{" "}
-                  {session.client?.user.last_name}
+                  {session.client?.user?.first_name ?? "No Client"}
                 </TableCell>
                 <TableCell>
-                  {session.trainer && "user" in session.trainer ? (
+                  {session.trainer && isFullTrainer(session.trainer) ? (
                     `${session.trainer.user.first_name} ${session.trainer.user.last_name}`
                   ) : (
                     "Trainer Not Assigned"
@@ -117,7 +119,6 @@ const SessionsPage = () => {
         </Table>
       </TableContainer>
 
-      {/* Session Details - 75% width */}
       {selectedSession && (
         <Box sx={{ flex: 3 }}>
           <Paper sx={{ padding: 2 }}>
@@ -131,7 +132,9 @@ const SessionsPage = () => {
               fullWidth
               disabled={!isEditing}
               onChange={(e) =>
-                setSelectedSession((prev) => (prev ? { ...prev, session_type: e.target.value } : prev))
+                setSelectedSession((prev) =>
+                  prev ? { ...prev, session_type: e.target.value } : prev
+                )
               }
               sx={{ mb: 2 }}
             />
@@ -143,7 +146,9 @@ const SessionsPage = () => {
               fullWidth
               disabled={!isEditing}
               onChange={(e) =>
-                setSelectedSession((prev) => (prev ? { ...prev, date: e.target.value } : prev))
+                setSelectedSession((prev) =>
+                  prev ? { ...prev, date: e.target.value } : prev
+                )
               }
               sx={{ mb: 2 }}
             />

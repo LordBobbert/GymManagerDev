@@ -16,13 +16,13 @@ const BaseListDetailsPage = <T,>({
   fieldConfig,
   onSave,
 }: BaseListDetailsPageProps<T>) => {
-  const [formData, setFormData] = useState<T>(data);
+  const [formData, setFormData] = useState<Partial<T>>(data);  // Set initial state as Partial<T>
   const [modifiedData, setModifiedData] = useState<Partial<T>>({});  // Track modified fields
   const [isEditing, setIsEditing] = useState<boolean>(false);  // Track edit state
 
   const handleChange = (key: string, value: unknown) => {
-    setFormData((prev) => setNestedValue(prev, key, value));
-    setModifiedData((prev) => setNestedValue(prev, key, value));  // Track changes
+    setFormData((prev) => setNestedValue({ ...prev }, key, value));  // Use spread operator to maintain the shape of 'T'
+    setModifiedData((prev) => setNestedValue({ ...prev }, key, value));  // Track changes
   };
 
   const handleSave = () => {
@@ -34,7 +34,7 @@ const BaseListDetailsPage = <T,>({
     <Box>
       <Grid container spacing={2}>
         {fieldConfig.map(({ label, key, type, options }) => {
-          const value = getNestedValue(formData, key as string) || '';
+          const value = getNestedValue(formData || {}, key as string) || '';
 
           return (
             <Grid item xs={12} sm={6} key={String(key)}>
