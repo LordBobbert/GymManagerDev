@@ -9,6 +9,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import SmsIcon from '@mui/icons-material/Sms';
 import { fetchClients } from "@/services/clientService";
 import { Client } from "@/interfaces/client";
+import { Trainer } from "@/interfaces/trainer";
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -198,24 +199,15 @@ const ClientsPage = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="Training Status"
-                  value={selectedClient?.training_status || ""}
+                  value={selectedClient.training_status || ""}
                   fullWidth
                   disabled={!isEditing}
                   onChange={(e) =>
                     setSelectedClient((prev) =>
-                      prev
-                        ? {
-                          ...prev,
-                          user: {
-                            ...prev.user,
-                            training_status: e.target.value,  // Update the last name while preserving the rest of the user properties
-                          },
-                        }
-                        : prev  // Keep the previous state if prev is null
+                      prev ? { ...prev, personal_training_rate: parseFloat(e.target.value) } : prev
                     )
                   }
                 />
-
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
