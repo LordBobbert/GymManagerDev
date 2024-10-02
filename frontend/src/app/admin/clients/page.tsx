@@ -51,6 +51,7 @@ const ClientsPage = () => {
                 onClick={() => handleClientSelect(client)}
                 selected={selectedClient?.id === client.id}
               >
+                {/* Safeguard the access to client.user to prevent runtime errors */}
                 <ListItemText
                   primary={client.user ? `${client.user.first_name} ${client.user.last_name}` : "Unknown User"}
                   secondary={client.user?.email || "No email available"}
@@ -93,7 +94,7 @@ const ClientsPage = () => {
             </Typography>
 
             <Grid container spacing={2}>
-              {/* User Details */}
+              {/* Safeguard all fields */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="Username"
@@ -102,7 +103,9 @@ const ClientsPage = () => {
                   disabled={!isEditing}
                   onChange={(e) =>
                     setSelectedClient((prev) =>
-                      prev ? { ...prev, user: { ...prev.user, username: e.target.value } } : prev
+                      prev
+                        ? { ...prev, user: { ...prev.user, username: e.target.value } }
+                        : prev
                     )
                   }
                 />
@@ -115,7 +118,9 @@ const ClientsPage = () => {
                   disabled={!isEditing}
                   onChange={(e) =>
                     setSelectedClient((prev) =>
-                      prev ? { ...prev, user: { ...prev.user, first_name: e.target.value } } : prev
+                      prev
+                        ? { ...prev, user: { ...prev.user, first_name: e.target.value } }
+                        : prev
                     )
                   }
                 />
@@ -128,7 +133,9 @@ const ClientsPage = () => {
                   disabled={!isEditing}
                   onChange={(e) =>
                     setSelectedClient((prev) =>
-                      prev ? { ...prev, user: { ...prev.user, last_name: e.target.value } } : prev
+                      prev
+                        ? { ...prev, user: { ...prev.user, last_name: e.target.value } }
+                        : prev
                     )
                   }
                 />
@@ -141,7 +148,9 @@ const ClientsPage = () => {
                   disabled={!isEditing}
                   onChange={(e) =>
                     setSelectedClient((prev) =>
-                      prev ? { ...prev, user: { ...prev.user, email: e.target.value } } : prev
+                      prev
+                        ? { ...prev, user: { ...prev.user, email: e.target.value } }
+                        : prev
                     )
                   }
                 />
@@ -154,7 +163,9 @@ const ClientsPage = () => {
                   disabled={!isEditing}
                   onChange={(e) =>
                     setSelectedClient((prev) =>
-                      prev ? { ...prev, user: { ...prev.user, phone_number: e.target.value } } : prev
+                      prev
+                        ? { ...prev, user: { ...prev.user, phone_number: e.target.value } }
+                        : prev
                     )
                   }
                 />
@@ -167,7 +178,9 @@ const ClientsPage = () => {
                   disabled={!isEditing}
                   onChange={(e) =>
                     setSelectedClient((prev) =>
-                      prev ? { ...prev, user: { ...prev.user, gender: e.target.value as "male" | "female" } } : prev
+                      prev
+                        ? { ...prev, user: { ...prev.user, gender: e.target.value as "male" | "female" } }
+                        : prev
                     )
                   }
                 />
@@ -180,7 +193,9 @@ const ClientsPage = () => {
                   disabled={!isEditing}
                   onChange={(e) =>
                     setSelectedClient((prev) =>
-                      prev ? { ...prev, user: { ...prev.user, birthday: e.target.value } } : prev
+                      prev
+                        ? { ...prev, user: { ...prev.user, birthday: e.target.value } }
+                        : prev
                     )
                   }
                 />
@@ -188,7 +203,7 @@ const ClientsPage = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="Roles"
-                  value={selectedClient.user?.roles.map(role => role.name).join(", ") || ""}
+                  value={selectedClient.user?.roles?.map(role => role.name).join(", ") || ""}
                   fullWidth
                   disabled
                 />
@@ -203,7 +218,9 @@ const ClientsPage = () => {
                   disabled={!isEditing}
                   onChange={(e) =>
                     setSelectedClient((prev) =>
-                      prev ? { ...prev, personal_training_rate: parseFloat(e.target.value) } : prev
+                      prev
+                  ? { ...prev, personal_training_rate: parseFloat(e.target.value) }
+                  : prev
                     )
                   }
                 />
@@ -216,7 +233,9 @@ const ClientsPage = () => {
                   disabled={!isEditing}
                   onChange={(e) =>
                     setSelectedClient((prev) =>
-                      prev ? { ...prev, personal_training_rate: parseFloat(e.target.value) } : prev
+                      prev
+                        ? { ...prev, personal_training_rate: parseFloat(e.target.value) }
+                        : prev
                     )
                   }
                 />
@@ -243,7 +262,9 @@ const ClientsPage = () => {
                   disabled={!isEditing}
                   onChange={(e) =>
                     setSelectedClient((prev) =>
-                      prev ? { ...prev, emergency_contact_name: e.target.value } : prev
+                      prev
+                        ? { ...prev, emergency_contact_name: e.target.value }
+                        : prev
                     )
                   }
                 />
@@ -256,7 +277,9 @@ const ClientsPage = () => {
                   disabled={!isEditing}
                   onChange={(e) =>
                     setSelectedClient((prev) =>
-                      prev ? { ...prev, emergency_contact_phone: e.target.value } : prev
+                      prev
+                        ? { ...prev, emergency_contact_phone: e.target.value }
+                        : prev
                     )
                   }
                 />
