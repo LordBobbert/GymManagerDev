@@ -9,7 +9,6 @@ import EmailIcon from '@mui/icons-material/Email';
 import SmsIcon from '@mui/icons-material/Sms';
 import { fetchClients } from "@/services/clientService";
 import { Client } from "@/interfaces/client";
-import { Trainer } from "@/interfaces/trainer";
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[]>([]);
