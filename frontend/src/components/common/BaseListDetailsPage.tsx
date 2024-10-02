@@ -26,7 +26,9 @@ const BaseListDetailsPage = <T,>({
   };
 
   const handleSave = () => {
-    onSave(modifiedData);  // Send only the modified data
+    if (Object.keys(modifiedData).length > 0) {
+      onSave(modifiedData);  // Send only the modified data if changes were made
+    }
     setIsEditing(false);  // Exit edit mode after saving
   };
 
@@ -34,7 +36,7 @@ const BaseListDetailsPage = <T,>({
     <Box>
       <Grid container spacing={2}>
         {fieldConfig.map(({ label, key, type, options }) => {
-          const value = getNestedValue(formData || {}, key as string) || '';
+          const value = getNestedValue(formData || {}, key as string) || '';  // Safely access nested values
 
           return (
             <Grid item xs={12} sm={6} key={String(key)}>
@@ -57,7 +59,7 @@ const BaseListDetailsPage = <T,>({
               ) : (
                 <TextField
                   label={label}
-                  type={type}
+                  type={type || 'text'}  // Ensure type defaults to 'text' if not provided
                   value={value}
                   onChange={(e) => handleChange(key as string, e.target.value)}
                   fullWidth
@@ -77,7 +79,7 @@ const BaseListDetailsPage = <T,>({
             <Button variant="outlined" onClick={() => setIsEditing(false)}>
               Cancel
             </Button>
-            <Button variant="contained" onClick={handleSave}>
+            <Button variant="contained" onClick={handleSave} disabled={Object.keys(modifiedData).length === 0}>
               Save
             </Button>
           </>
