@@ -1,7 +1,7 @@
 // File: src/components/common/BaseListDetailsPage.tsx
 
 import React, { useState } from 'react';
-import { Box, Button, Grid } from '@mui/material';
+import { Box, Grid, TextField, Select, MenuItem, InputLabel, FormControl, Button, Paper } from '@mui/material';
 import { FieldConfig } from '../../interfaces/FieldConfig';
 import { getNestedValue, setNestedValue } from '../../utils/nestedUtils';
 
@@ -33,56 +33,49 @@ const BaseListDetailsPage = <T,>({
   };
 
   return (
-    <Box>
+    <Paper elevation={3} sx={{ padding: 3, marginLeft: 2, flexGrow: 1 }}>
       <Grid container spacing={2}>
         {fieldConfig.map(({ label, key, type, options }) => {
-          // Ensure that value is valid for input/select elements
-          // Ensure that value is valid for input/select elements
-          const value = getNestedValue(formData || {}, key as string);
-
-          // If the value is an object or invalid, convert it to an empty string
-          const inputValue = typeof value === 'string' || typeof value === 'number' || value === undefined
-            ? value
-            : '';  // Fallback to empty string if it's an invalid type
+          const value = getNestedValue(formData || {}, key as string) || '';  // Safely access nested values
 
           return (
             <Grid item xs={12} sm={6} key={String(key)}>
               {type === 'select' && options ? (
-                <>
-                  <label>{label}</label>
-                  <select
-                    value={inputValue}  // Use validated inputValue
+                <FormControl fullWidth>
+                  <InputLabel>{label}</InputLabel>
+                  <Select
+                    label={label}
+                    value={value}
                     onChange={(e) => handleChange(key as string, e.target.value)}
                     disabled={!isEditing}
                   >
                     {options.map((option) => (
-                      <option key={option.value} value={option.value}>
+                      <MenuItem key={option.value} value={option.value}>
                         {option.label}
-                      </option>
+                      </MenuItem>
                     ))}
-                  </select>
-                </>
+                  </Select>
+                </FormControl>
               ) : (
-                <input
-                  type={type}
-                  value={inputValue}  // Use validated inputValue
+                <TextField
+                  label={label}
+                  type={type || 'text'}
+                  value={value}
                   onChange={(e) => handleChange(key as string, e.target.value)}
-                  readOnly={!isEditing}
+                  fullWidth
+                  disabled={!isEditing}
                 />
               )}
             </Grid>
           );
-
-
-
         })}
       </Grid>
 
       {/* Buttons */}
-      <Box display="flex" justifyContent="space-between" mt={2}>
+      <Box display="flex" justifyContent="flex-end" mt={2}>
         {isEditing ? (
           <>
-            <Button variant="outlined" onClick={() => setIsEditing(false)}>
+            <Button variant="outlined" sx={{ mr: 2 }} onClick={() => setIsEditing(false)}>
               Cancel
             </Button>
             <Button variant="contained" onClick={handleSave} disabled={Object.keys(modifiedData).length === 0}>
@@ -90,12 +83,12 @@ const BaseListDetailsPage = <T,>({
             </Button>
           </>
         ) : (
-          <Button variant="contained" onClick={() => setIsEditing(true)}>
+          <Button variant="contained" color="primary" onClick={() => setIsEditing(true)}>
             Edit
           </Button>
         )}
       </Box>
-    </Box>
+    </Paper>
   );
 };
 
