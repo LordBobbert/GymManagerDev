@@ -36,7 +36,8 @@ const BaseListDetailsPage = <T,>({
     <Box>
       <Grid container spacing={2}>
         {fieldConfig.map(({ label, key, type, options }) => {
-         // Ensure that value is valid for input/select elements
+          // Ensure that value is valid for input/select elements
+          // Ensure that value is valid for input/select elements
           const value = getNestedValue(formData || {}, key as string);
 
           // If the value is an object or invalid, convert it to an empty string
@@ -71,6 +72,7 @@ const BaseListDetailsPage = <T,>({
               )}
             </Grid>
           );
+
 
 
         })}
