@@ -4,21 +4,22 @@
 
 import { useState, useEffect } from "react";
 import { Box, CircularProgress } from "@mui/material";
+import BaseList from "@/components/common/BaseList";
 import BaseListDetailsPage from "@/components/common/BaseListDetailsPage";
 import { fetchClients, updateClient } from "@/services/clientService";
-import { fetchTrainers } from "@/services/trainerService";  // Assuming there's a service to fetch trainers
+import { fetchTrainers } from "@/services/trainerService";
 import { Client } from "@/interfaces/client";
 import { Trainer } from "@/interfaces/trainer";
-import { getClientFieldConfig } from "@/config/fieldConfigs";  // Import the client field config
+import { getClientFieldConfig } from "@/config/fieldConfigs";
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[]>([]);
-  const [trainers, setTrainers] = useState<Trainer[]>([]);  // State for trainers
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [loadingTrainers, setLoadingTrainers] = useState<boolean>(true); // Trainer loading state
+  const [loadingTrainers, setLoadingTrainers] = useState<boolean>(true);
 
-  // Fetch clients when the component is mounted
+  // Fetch clients and trainers on component mount
   useEffect(() => {
     const loadClients = async () => {
       try {
@@ -30,11 +31,6 @@ const ClientsPage = () => {
       setLoading(false);
     };
 
-    loadClients();
-  }, []);
-
-  // Fetch trainers when the component is mounted
-  useEffect(() => {
     const loadTrainers = async () => {
       try {
         const fetchedTrainers = await fetchTrainers();
@@ -45,9 +41,11 @@ const ClientsPage = () => {
       setLoadingTrainers(false);
     };
 
+    loadClients();
     loadTrainers();
   }, []);
 
+  // Handle save for updating a client
   const handleSave = async (updatedClient: Partial<Client>) => {
     if (selectedClient) {
       try {
@@ -65,6 +63,7 @@ const ClientsPage = () => {
     }
   };
 
+  // Loading state
   if (loading || loadingTrainers) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -73,12 +72,33 @@ const ClientsPage = () => {
     );
   }
 
+  // Render ClientsPage
   return (
-    <BaseListDetailsPage<Client>
-      data={selectedClient || clients[0]}  // Initialize with the first client as a fallback
-      fieldConfig={getClientFieldConfig(trainers)}  // Pass trainers to the config
-      onSave={handleSave}
-    />
+    <Box sx={{ display: "flex", height: "100vh" }}>
+      {/* BaseList: Shows the list of clients */}
+      <BaseList<Client>
+        data={clients}
+        section="clients"
+        onSelect={setSelectedClient}
+        getKey={(client) => client.id}
+        renderItem={(client) => (
+          <>
+            {client.user.first_name} {client.user.last_name}
+            <br />
+            {client.user.email}
+          </>
+        )}
+      />
+
+      {/* BaseListDetailsPage: Shows the details of the selected client */}
+      {selectedClient && (
+        <BaseListDetailsPage<Client>
+          data={selectedClient}
+          fieldConfig={getClientFieldConfig(trainers)}
+          onSave={handleSave}
+        />
+      )}
+    </Box>
   );
 };
 
