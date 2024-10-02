@@ -1,7 +1,7 @@
 // File: src/components/common/BaseListDetailsPage.tsx
 
 import React, { useState } from 'react';
-import { Box, TextField, Select, MenuItem, InputLabel, Button, Grid } from '@mui/material';
+import { Box, Button, Grid } from '@mui/material';
 import { FieldConfig } from '../../interfaces/FieldConfig';
 import { getNestedValue, setNestedValue } from '../../utils/nestedUtils';
 
@@ -27,52 +27,56 @@ const BaseListDetailsPage = <T,>({
 
   const handleSave = () => {
     if (Object.keys(modifiedData).length > 0) {
-      onSave(modifiedData);  // Send only the modified data if changes were made
+      onSave(modifiedData);  // Send only the modified data
+      setIsEditing(false);  // Exit edit mode after saving
     }
-    setIsEditing(false);  // Exit edit mode after saving
   };
 
   return (
     <Box>
       <Grid container spacing={2}>
         {fieldConfig.map(({ label, key, type, options }) => {
-          const value = getNestedValue(formData || {}, key as string) || '';  // Safely access nested values
+         // Ensure that value is valid for input/select elements
+          const value = getNestedValue(formData || {}, key as string);
+
+          // If the value is an object or invalid, convert it to an empty string
+          const inputValue = typeof value === 'string' || typeof value === 'number' || value === undefined
+            ? value
+            : '';  // Fallback to empty string if it's an invalid type
 
           return (
             <Grid item xs={12} sm={6} key={String(key)}>
               {type === 'select' && options ? (
                 <>
-                  <InputLabel>{label}</InputLabel>
-                  <Select
-                    value={value}
+                  <label>{label}</label>
+                  <select
+                    value={inputValue}  // Use validated inputValue
                     onChange={(e) => handleChange(key as string, e.target.value)}
-                    fullWidth
-                    disabled={!isEditing}  // Disable selection if not editing
+                    disabled={!isEditing}
                   >
                     {options.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
+                      <option key={option.value} value={option.value}>
                         {option.label}
-                      </MenuItem>
+                      </option>
                     ))}
-                  </Select>
+                  </select>
                 </>
               ) : (
-                <TextField
-                  label={label}
-                  type={type || 'text'}  // Ensure type defaults to 'text' if not provided
-                  value={value}
+                <input
+                  type={type}
+                  value={inputValue}  // Use validated inputValue
                   onChange={(e) => handleChange(key as string, e.target.value)}
-                  fullWidth
-                  InputProps={{
-                    readOnly: !isEditing,  // Make the field read-only when not editing
-                  }}
+                  readOnly={!isEditing}
                 />
               )}
             </Grid>
           );
+
+
         })}
       </Grid>
 
+      {/* Buttons */}
       <Box display="flex" justifyContent="space-between" mt={2}>
         {isEditing ? (
           <>
