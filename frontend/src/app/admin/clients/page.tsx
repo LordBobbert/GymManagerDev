@@ -28,7 +28,7 @@ const ClientsPage = () => {
   }, []);
 
   const handleClientSelect = (client: Client) => {
-    setSelectedClient(client);
+    setSelectedClient(client || null);
     setIsEditing(false);  // Reset edit mode when selecting a new client
   };
 
@@ -37,8 +37,18 @@ const ClientsPage = () => {
     setIsEditing(false);  // Exit edit mode after saving
   };
 
+  // Return early if selectedClient is null or undefined
+  if (!selectedClient || !selectedClient.user) {
+    return (
+      <Box sx={{ padding: 2 }}>
+        <Typography variant="h6">No Client Selected</Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ display: "flex", padding: 2 }}>
+      {/* Client List */}
       <Box sx={{ width: "30%", mr: 3 }}>
         <Paper sx={{ padding: 2 }}>
           <Typography variant="h6" gutterBottom>
@@ -86,226 +96,227 @@ const ClientsPage = () => {
         </Paper>
       </Box>
 
-      {selectedClient && (
-        <Box sx={{ width: "70%" }}>
-          <Paper sx={{ padding: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              {isEditing ? "Edit Client Details" : "Client Details"}
-            </Typography>
+      {/* Client Details */}
+      <Box sx={{ width: "70%" }}>
+        <Paper sx={{ padding: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            {isEditing ? "Edit Client Details" : "Client Details"}
+          </Typography>
 
-            <Grid container spacing={2}>
-              {/* Safeguard all fields */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Username"
-                  value={selectedClient.user?.username || ""}
-                  fullWidth
-                  disabled={!isEditing}
-                  onChange={(e) =>
-                    setSelectedClient((prev) =>
-                      prev
-                        ? { ...prev, user: { ...prev.user, username: e.target.value } }
-                        : prev
-                    )
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="First Name"
-                  value={selectedClient.user?.first_name || ""}
-                  fullWidth
-                  disabled={!isEditing}
-                  onChange={(e) =>
-                    setSelectedClient((prev) =>
-                      prev
-                        ? { ...prev, user: { ...prev.user, first_name: e.target.value } }
-                        : prev
-                    )
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Last Name"
-                  value={selectedClient.user?.last_name || ""}
-                  fullWidth
-                  disabled={!isEditing}
-                  onChange={(e) =>
-                    setSelectedClient((prev) =>
-                      prev
-                        ? { ...prev, user: { ...prev.user, last_name: e.target.value } }
-                        : prev
-                    )
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Email"
-                  value={selectedClient.user?.email || ""}
-                  fullWidth
-                  disabled={!isEditing}
-                  onChange={(e) =>
-                    setSelectedClient((prev) =>
-                      prev
-                        ? { ...prev, user: { ...prev.user, email: e.target.value } }
-                        : prev
-                    )
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Phone"
-                  value={selectedClient.user?.phone_number || ""}
-                  fullWidth
-                  disabled={!isEditing}
-                  onChange={(e) =>
-                    setSelectedClient((prev) =>
-                      prev
-                        ? { ...prev, user: { ...prev.user, phone_number: e.target.value } }
-                        : prev
-                    )
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Gender"
-                  value={selectedClient.user?.gender || ""}
-                  fullWidth
-                  disabled={!isEditing}
-                  onChange={(e) =>
-                    setSelectedClient((prev) =>
-                      prev
-                        ? { ...prev, user: { ...prev.user, gender: e.target.value as "male" | "female" } }
-                        : prev
-                    )
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Birthday"
-                  value={selectedClient.user?.birthday || ""}
-                  fullWidth
-                  disabled={!isEditing}
-                  onChange={(e) =>
-                    setSelectedClient((prev) =>
-                      prev
-                        ? { ...prev, user: { ...prev.user, birthday: e.target.value } }
-                        : prev
-                    )
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Roles"
-                  value={selectedClient.user?.roles?.map(role => role.name).join(", ") || ""}
-                  fullWidth
-                  disabled
-                />
-              </Grid>
-
-              {/* Client Specific Fields */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Training Status"
-                  value={selectedClient.training_status || ""}
-                  fullWidth
-                  disabled={!isEditing}
-                  onChange={(e) =>
-                    setSelectedClient((prev) =>
-                      prev
-                  ? { ...prev, personal_training_rate: parseFloat(e.target.value) }
-                  : prev
-                    )
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Personal Training Rate"
-                  value={selectedClient.personal_training_rate || ""}
-                  fullWidth
-                  disabled={!isEditing}
-                  onChange={(e) =>
-                    setSelectedClient((prev) =>
-                      prev
-                        ? { ...prev, personal_training_rate: parseFloat(e.target.value) }
-                        : prev
-                    )
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Trainer"
-                  value={
-                    selectedClient.trainer
-                      ? `${selectedClient.trainer.user.first_name} ${selectedClient.trainer.user.last_name}`
-                      : "No Trainer Assigned"
-                  }
-                  fullWidth
-                  disabled
-                />
-              </Grid>
-
-              {/* Emergency Contact Information */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Emergency Contact Name"
-                  value={selectedClient.emergency_contact_name || ""}
-                  fullWidth
-                  disabled={!isEditing}
-                  onChange={(e) =>
-                    setSelectedClient((prev) =>
-                      prev
-                        ? { ...prev, emergency_contact_name: e.target.value }
-                        : prev
-                    )
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Emergency Contact Phone"
-                  value={selectedClient.emergency_contact_phone || ""}
-                  fullWidth
-                  disabled={!isEditing}
-                  onChange={(e) =>
-                    setSelectedClient((prev) =>
-                      prev
-                        ? { ...prev, emergency_contact_phone: e.target.value }
-                        : prev
-                    )
-                  }
-                />
-              </Grid>
+          <Grid container spacing={2}>
+            {/* User Details */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Username"
+                value={selectedClient.user.username || ""}
+                fullWidth
+                disabled={!isEditing}
+                onChange={(e) =>
+                  setSelectedClient((prev) =>
+                    prev
+                      ? { ...prev, user: { ...prev.user, username: e.target.value } }
+                      : prev
+                  )
+                }
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="First Name"
+                value={selectedClient.user.first_name || ""}
+                fullWidth
+                disabled={!isEditing}
+                onChange={(e) =>
+                  setSelectedClient((prev) =>
+                    prev
+                      ? { ...prev, user: { ...prev.user, first_name: e.target.value } }
+                      : prev
+                  )
+                }
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Last Name"
+                value={selectedClient.user.last_name || ""}
+                fullWidth
+                disabled={!isEditing}
+                onChange={(e) =>
+                  setSelectedClient((prev) =>
+                    prev
+                      ? { ...prev, user: { ...prev.user, last_name: e.target.value } }
+                      : prev
+                  )
+                }
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Email"
+                value={selectedClient.user.email || ""}
+                fullWidth
+                disabled={!isEditing}
+                onChange={(e) =>
+                  setSelectedClient((prev) =>
+                    prev
+                      ? { ...prev, user: { ...prev.user, email: e.target.value } }
+                      : prev
+                  )
+                }
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Phone"
+                value={selectedClient.user.phone_number || ""}
+                fullWidth
+                disabled={!isEditing}
+                onChange={(e) =>
+                  setSelectedClient((prev) =>
+                    prev
+                      ? { ...prev, user: { ...prev.user, phone_number: e.target.value } }
+                      : prev
+                  )
+                }
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Gender"
+                value={selectedClient.user.gender || ""}
+                fullWidth
+                disabled={!isEditing}
+                onChange={(e) =>
+                  setSelectedClient((prev) =>
+                    prev
+                      ? { ...prev, user: { ...prev.user, gender: e.target.value as "male" | "female" } }
+                      : prev
+                  )
+                }
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Birthday"
+                value={selectedClient.user.birthday || ""}
+                fullWidth
+                disabled={!isEditing}
+                onChange={(e) =>
+                  setSelectedClient((prev) =>
+                    prev
+                      ? { ...prev, user: { ...prev.user, birthday: e.target.value } }
+                      : prev
+                  )
+                }
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Roles"
+                value={selectedClient.user.roles?.map(role => role.name).join(", ") || ""}
+                fullWidth
+                disabled
+              />
             </Grid>
 
-            {/* Edit and Save Buttons */}
-            <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-              {isEditing ? (
-                <>
-                  <Button variant="outlined" sx={{ mr: 2 }} onClick={() => setIsEditing(false)}>
-                    Cancel
-                  </Button>
-                  <Button variant="contained" color="primary" onClick={handleSave}>
-                    Save
-                  </Button>
-                </>
-              ) : (
-                <Button variant="contained" color="secondary" onClick={() => setIsEditing(true)}>
-                  Edit
+            {/* Client Specific Fields */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Training Status"
+                value={selectedClient.training_status || ""}
+                fullWidth
+                disabled={!isEditing}
+                onChange={(e) => {
+                  const status = e.target.value as "active" | "inactive" | "vacation"; // Explicitly cast to the expected type
+                  setSelectedClient((prev) =>
+                    prev
+                      ? { ...prev, training_status: status } // Ensure the assigned value is correctly typed
+                      : prev
+                  );
+                }}
+              />
+
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Personal Training Rate"
+                value={selectedClient.personal_training_rate || ""}
+                fullWidth
+                disabled={!isEditing}
+                onChange={(e) =>
+                  setSelectedClient((prev) =>
+                    prev
+                      ? { ...prev, personal_training_rate: parseFloat(e.target.value) }
+                      : prev
+                  )
+                }
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Trainer"
+                value={
+                  selectedClient.trainer && selectedClient.trainer.user
+                    ? `${selectedClient.trainer.user.first_name} ${selectedClient.trainer.user.last_name}`
+                    : "No Trainer Assigned"
+                }
+                fullWidth
+                disabled
+              />
+            </Grid>
+
+            {/* Emergency Contact Information */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Emergency Contact Name"
+                value={selectedClient.emergency_contact_name || ""}
+                fullWidth
+                disabled={!isEditing}
+                onChange={(e) =>
+                  setSelectedClient((prev) =>
+                    prev
+                      ? { ...prev, emergency_contact_name: e.target.value }
+                      : prev
+                  )
+                }
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Emergency Contact Phone"
+                value={selectedClient.emergency_contact_phone || ""}
+                fullWidth
+                disabled={!isEditing}
+                onChange={(e) =>
+                  setSelectedClient((prev) =>
+                    prev
+                      ? { ...prev, emergency_contact_phone: e.target.value }
+                      : prev
+                  )
+                }
+              />
+            </Grid>
+          </Grid>
+
+          {/* Edit and Save Buttons */}
+          <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+            {isEditing ? (
+              <>
+                <Button variant="outlined" sx={{ mr: 2 }} onClick={() => setIsEditing(false)}>
+                  Cancel
                 </Button>
-              )}
-            </Box>
-          </Paper>
-        </Box>
-      )}
+                <Button variant="contained" color="primary" onClick={handleSave}>
+                  Save
+                </Button>
+              </>
+            ) : (
+              <Button variant="contained" color="secondary" onClick={() => setIsEditing(true)}>
+                Edit
+              </Button>
+            )}
+          </Box>
+        </Paper>
+      </Box>
     </Box>
   );
 };
