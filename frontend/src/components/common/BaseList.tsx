@@ -1,6 +1,6 @@
 // File: src/components/common/BaseList.tsx
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, List, ListItemButton, Typography } from '@mui/material';
 import ActionButton from './ActionButton';
 
@@ -10,7 +10,7 @@ interface BaseListProps<T> {
   renderItem: (item: T) => React.ReactNode;
   section: 'clients' | 'trainers' | 'sessions';
   getKey: (item: T) => string | number;
-  onAddClient?: () => void;  // Optional prop for adding a client
+  onAddClient?: () => void; // Optional prop for adding a client
 }
 
 const BaseList = <T,>({
@@ -21,6 +21,13 @@ const BaseList = <T,>({
   getKey,
   onAddClient,
 }: BaseListProps<T>) => {
+  const [selectedItem, setSelectedItem] = useState<T | null>(null);
+
+  const handleSelect = (item: T) => {
+    setSelectedItem(item); // Update local state to reflect selected item
+    onSelect(item); // Notify parent about the selection
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', px: 2 }}>
       {/* Heading and Action Button container */}
@@ -43,8 +50,15 @@ const BaseList = <T,>({
         {data.map((item) => (
           <ListItemButton
             key={getKey(item)}
-            onClick={() => onSelect(item)}
-            sx={{ mb: 1, borderRadius: 1, border: '1px solid #ccc', '&:hover': { backgroundColor: '#f0f0f0' } }}
+            onClick={() => handleSelect(item)}
+            selected={item === selectedItem} // Highlight the selected item
+            sx={{
+              mb: 1,
+              borderRadius: 1,
+              border: '1px solid #ccc',
+              '&:hover': { backgroundColor: '#f0f0f0' },
+              backgroundColor: item === selectedItem ? '#e0e0e0' : 'inherit', // Apply background color if selected
+            }}
           >
             {renderItem(item)}
           </ListItemButton>
