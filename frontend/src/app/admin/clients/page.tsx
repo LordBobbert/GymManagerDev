@@ -2,103 +2,212 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { Box, CircularProgress } from "@mui/material";
-import BaseList from "@/components/common/BaseList";
-import BaseListDetailsPage from "@/components/common/BaseListDetailsPage";
-import { fetchClients, updateClient } from "@/services/clientService";
-import { fetchTrainers } from "@/services/trainerService";
-import { Client } from "@/interfaces/client";
-import { Trainer } from "@/interfaces/trainer";
-import { getClientFieldConfig } from "@/config/fieldConfigs";
+import React, { useEffect, useState } from 'react';
+import { Box, Typography, IconButton, Card, CardContent, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from '@mui/icons-material/Email';
+import ChatIcon from '@mui/icons-material/Chat';
+import BaseList from '../../../components/common/BaseList';
+import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
+import AddClientForm from '../../../components/admin/AddClientForm';
+import { Client } from '../../../interfaces/client';
+import { Trainer } from '../../../interfaces/trainer';
+import { Session } from '../../../interfaces/session';
+import { Payment } from '../../../interfaces/payment';
+import { fetchClients, addClient, updateClient, fetchClientSessions, fetchClientPayments } from '../../../services/clientService';
+import { fetchTrainers } from '../../../services/trainerService';
+import { getClientFieldConfig } from '../../../config/fieldConfigs';
 
 const ClientsPage = () => {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [trainers, setTrainers] = useState<Trainer[]>([]);
+  const [clients, setClients] = useState<Client[] | null>(null);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [loadingTrainers, setLoadingTrainers] = useState<boolean>(true);
+  const [isAddClientOpen, setIsAddClientOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch clients and trainers on component mount
   useEffect(() => {
-    const loadClients = async () => {
-      try {
-        const fetchedClients = await fetchClients();
-        setClients(fetchedClients);
-      } catch (err) {
-        console.error("Failed to fetch clients.");
-      }
-      setLoading(false);
-    };
+    fetchClients()
+      .then((data) => setClients(data))
+      .catch(() => setError('Failed to load clients.'));
 
-    const loadTrainers = async () => {
-      try {
-        const fetchedTrainers = await fetchTrainers();
-        setTrainers(fetchedTrainers);
-      } catch (err) {
-        console.error("Failed to fetch trainers.");
-      }
-      setLoadingTrainers(false);
-    };
-
-    loadClients();
-    loadTrainers();
+    fetchTrainers()
+      .then((data) => {
+        setTrainers(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Failed to load trainers.');
+        setLoading(false);
+      });
   }, []);
 
-  // Handle save for updating a client
-  const handleSave = async (updatedClient: Partial<Client>) => {
-    if (selectedClient) {
-      try {
-        await updateClient(selectedClient.id, updatedClient);
-        // Update the client list with the saved client
-        setClients((prevClients) =>
-          prevClients.map((client) =>
-            client.id === selectedClient.id ? { ...client, ...updatedClient } : client
-          )
-        );
-        setSelectedClient((prev) => (prev ? { ...prev, ...updatedClient } : prev));
-      } catch (err) {
-        console.error("Failed to save client.");
+  const handleClientSelect = (client: Client) => {
+    setSelectedClient(null);
+    setTimeout(() => {
+      setSelectedClient(client);
+
+      // Fetch sessions and payments for the selected client
+      fetchClientSessions(client.id).then(setSessions).catch(console.error);
+      fetchClientPayments(client.id).then(setPayments).catch(console.error);
+    }, 0);
+  };
+
+  const handleClientSave = async (updatedFields: Partial<Client>) => {
+    try {
+      if (selectedClient) {
+        await updateClient(selectedClient.id, updatedFields);
+        const updatedClients = await fetchClients();
+        setClients(updatedClients);
+        setSelectedClient(null);
       }
+    } catch (error) {
+      console.error('Error updating client:', error);
     }
   };
 
-  // Loading state
-  if (loading || loadingTrainers) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <CircularProgress />
-      </Box>
-    );
+  const handleAddClientSubmit = async (newClient: Omit<Client, 'id'>) => {
+    try {
+      await addClient(newClient);
+      setIsAddClientOpen(false);
+      const updatedClients = await fetchClients();
+      setClients(updatedClients);
+    } catch (error) {
+      console.error('Error adding client:', error);
+    }
+  };
+
+  if (error) {
+    return <div>{error}</div>;
   }
 
-  // Render ClientsPage
-  return (
-    <Box sx={{ display: "flex", height: "100vh" }}>
-      {/* BaseList: Shows the list of clients */}
-      <BaseList<Client>
-        data={clients}
-        section="clients"
-        onSelect={setSelectedClient}
-        getKey={(client) => client.id}
-        renderItem={(client) => (
-          <>
-            {client.user.first_name} {client.user.last_name}
-            <br />
-            {client.user.email}
-          </>
-        )}
-      />
+  if (!clients) {
+    return <div>Loading...</div>;
+  }
 
-      {/* BaseListDetailsPage: Shows the details of the selected client */}
-      {selectedClient && (
-        <BaseListDetailsPage<Client>
-          data={selectedClient}
-          fieldConfig={getClientFieldConfig(trainers)}
-          onSave={handleSave}
+  return (
+    <div style={{ display: 'flex', gap: '2rem' }}>
+      {/* Left panel: BaseList */}
+      <div style={{ flex: 1 }}>
+        <BaseList<Client>
+          data={clients}
+          section="clients"
+          getKey={(client) => client.id}
+          onSelect={handleClientSelect}
+          renderItem={(client: Client) => (
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              {/* Client Info */}
+              <Box>
+                <Typography variant="h6">
+                  {client.user.first_name} {client.user.last_name}
+                </Typography>
+                <Typography variant="body2">{client.user.email}</Typography>
+                <Typography variant="body2">{client.user.phone_number}</Typography>
+              </Box>
+
+              {/* Action Icons */}
+              <Box>
+                <IconButton aria-label="call" onClick={() => window.open(`tel:${client.user.phone_number}`)}>
+                  <PhoneIcon />
+                </IconButton>
+                <IconButton aria-label="email" onClick={() => window.open(`mailto:${client.user.email}`)}>
+                  <EmailIcon />
+                </IconButton>
+                <IconButton aria-label="text" onClick={() => window.open(`sms:${client.user.phone_number}`)}>
+                  <ChatIcon />
+                </IconButton>
+              </Box>
+            </Box>
+          )}
+          onAddClient={() => setIsAddClientOpen(true)}
         />
+      </div>
+
+      {/* Right panel: BaseListDetailsPage */}
+      {selectedClient && (
+        <div style={{ flex: 3 }}>
+          <BaseListDetailsPage
+            key={selectedClient.id}
+            data={selectedClient}
+            fieldConfig={getClientFieldConfig(trainers)}
+            onSave={handleClientSave}
+          />
+
+          {/* Sessions and Payments Cards */}
+          <Grid container spacing={2} sx={{ mt: 4 }}>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Sessions
+                  </Typography>
+                  {sessions.length > 0 ? (
+                    <TableContainer component={Paper}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Date</TableCell>
+                            <TableCell>Type</TableCell>
+                            <TableCell>Trainer</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {sessions.map((session: Session) => (
+                            <TableRow key={session.id}>
+                              <TableCell>{session.date}</TableCell>
+                              <TableCell>{session.session_type}</TableCell>
+                              <TableCell>
+                                {session.trainer && 'user' in session.trainer ? (
+                                  `${session.trainer.user.first_name} ${session.trainer.user.last_name}`
+                                ) : (
+                                  "Trainer Not Assigned"
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  ) : (
+                    <Typography>No sessions available.</Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Payments
+                  </Typography>
+                  {payments.length > 0 ? (
+                    payments.map((payment: Payment) => (
+                      <Typography key={payment.id}>
+                        {payment.date} - ${payment.amount} {payment.status}
+                      </Typography>
+                    ))
+                  ) : (
+                    <Typography>No payments available.</Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </div>
       )}
-    </Box>
+
+      {/* Add Client Form Modal */}
+      <AddClientForm
+        open={isAddClientOpen}
+        onClose={() => setIsAddClientOpen(false)}
+        onSubmit={handleAddClientSubmit}
+        trainers={trainers}
+        loading={loading}
+      />
+    </div>
   );
 };
 
