@@ -3,7 +3,22 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, IconButton, Card, CardContent, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import {
+  Box,
+  Typography,
+  IconButton,
+  Card,
+  CardContent,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TextField,
+} from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -45,14 +60,12 @@ const ClientsPage = () => {
   }, []);
 
   const handleClientSelect = (client: Client) => {
-    setSelectedClient(null);
+    setSelectedClient(null); // Clear the previous client
     setTimeout(() => {
       setSelectedClient(client);
-
-      // Fetch sessions and payments for the selected client
       fetchClientSessions(client.id).then(setSessions).catch(console.error);
       fetchClientPayments(client.id).then(setPayments).catch(console.error);
-    }, 0);
+    }, 0); // Introduce a slight delay to ensure correct data loading
   };
 
   const handleClientSave = async (updatedFields: Partial<Client>) => {
@@ -60,8 +73,8 @@ const ClientsPage = () => {
       if (selectedClient) {
         await updateClient(selectedClient.id, updatedFields);
         const updatedClients = await fetchClients();
-        setClients(updatedClients);
-        setSelectedClient(null);
+        setClients(updatedClients); // Update the list of clients
+        setSelectedClient(null); // Clear selected client
       }
     } catch (error) {
       console.error('Error updating client:', error);
@@ -159,13 +172,12 @@ const ClientsPage = () => {
                               <TableCell>{session.date}</TableCell>
                               <TableCell>{session.session_type}</TableCell>
                               <TableCell>
-                                {typeof session.trainer === 'object' && session.trainer !== null && "user" in session.trainer ? (
+                                {session.trainer && typeof session.trainer === 'object' && "user" in session.trainer ? (
                                   `${session.trainer.user.first_name} ${session.trainer.user.last_name}`
                                 ) : (
                                   "Trainer Not Assigned"
                                 )}
                               </TableCell>
-
                             </TableRow>
                           ))}
                         </TableBody>
