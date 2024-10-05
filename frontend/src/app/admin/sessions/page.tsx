@@ -85,9 +85,9 @@ const SessionsPage = () => {
         </Button>
       </Box>
 
-      <SessionTable 
-        sessions={sessions} 
-        onSessionSelect={handleSessionSelect} 
+      <SessionTable
+        sessions={sessions}
+        onSessionSelect={handleSessionSelect}
         trainers={trainers}
       />
 
@@ -98,6 +98,7 @@ const SessionsPage = () => {
             data={selectedSession}
             fieldConfig={getSessionFieldConfig()}
             onSave={async (updatedSession) => {
+              // Handle the save logic, e.g., call your API to update the session
               console.log("Session saved", updatedSession);
             }}
           />
@@ -105,10 +106,10 @@ const SessionsPage = () => {
       )}
 
       {/* Add Session Modal */}
-      <AddSessionModal 
-        open={isAddSessionModalOpen} 
-        onClose={handleCloseAddSessionModal} 
-        onSubmit={handleAddSession} 
+      <AddSessionModal
+        open={isAddSessionModalOpen}
+        onClose={handleCloseAddSessionModal}
+        onSubmit={handleAddSession}
         clients={clients}
         trainers={trainers}
         loading={loading}
