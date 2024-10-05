@@ -2,13 +2,14 @@
 
 from rest_framework import serializers
 from training_sessions.models import Session
-from user_management.models import TrainerProfile, ClientProfile
+from user_management.models import TrainerProfile
+from user_management.serializers import ClientProfileSerializer, TrainerProfileSerializer
+
 
 class SessionSerializer(serializers.ModelSerializer):
-    client_id = serializers.PrimaryKeyRelatedField(
-        queryset=ClientProfile.objects.all(), source='client', write_only=True)
-    trainer_id = serializers.PrimaryKeyRelatedField(
-        queryset=TrainerProfile.objects.all(), source='trainer', write_only=True)
+    client = ClientProfileSerializer(read_only=True)
+    trainer = TrainerProfileSerializer(read_only=True)
+
     
     class Meta:
         model = Session

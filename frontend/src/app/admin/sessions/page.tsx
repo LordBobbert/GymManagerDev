@@ -1,37 +1,31 @@
-// File: src/app/admin/sessions/page.tsx
+// File: src/app/sessions/page.tsx
 
 "use client";
 
-import { useState, useEffect } from "react";
 import {
   Box,
-  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Paper,
   Typography,
-  TextField,
-  Button,
 } from "@mui/material";
-import { fetchSessions, updateSession } from "@/services/sessionService";
-import { fetchTrainers } from "@/services/trainerService";
+import { useEffect, useState } from "react";
+import { fetchSessions } from "@/services/sessionService";
+import { fetchTrainerById } from "@/services/trainerService";
 import { Session } from "@/interfaces/session";
 import { Trainer } from "@/interfaces/trainer";
-
-// Type guard to check if the trainer has the `user` property
-const isFullTrainer = (trainer: Trainer | { id: number }): trainer is Trainer => {
-  return (trainer as Trainer).user !== undefined;
-};
+import BaseListDetailsPage from "@/components/common/BaseListDetailsPage";
+import { getSessionFieldConfig } from "@/config/fieldConfigs";
 
 const SessionsPage = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
-  const [trainers, setTrainers] = useState<Trainer[]>([]);
-  const [isEditing, setIsEditing] = useState(false);
-  const [selectedTrainerId, setSelectedTrainerId] = useState<number | null>(null);
+  const [trainers, setTrainers] = useState<{ [key: number]: Trainer }>({});
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadSessions = async () => {
@@ -40,43 +34,37 @@ const SessionsPage = () => {
         setSessions(fetchedSessions);
       } catch (error) {
         console.error("Failed to fetch sessions:", error);
-      }
-    };
-
-    const loadTrainers = async () => {
-      try {
-        const fetchedTrainers = await fetchTrainers();
-        setTrainers(fetchedTrainers);
-      } catch (error) {
-        console.error("Failed to fetch trainers:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadSessions();
-    loadTrainers();
   }, []);
 
-  const handleSessionSelect = (session: Session) => {
+  const handleSessionSelect = async (session: Session) => {
     setSelectedSession(session);
-    setIsEditing(false);
-    setSelectedTrainerId(session.trainer?.id || null);
-  };
 
-  const handleSave = async () => {
-    if (selectedSession) {
-      try {
-        const updatedSession = {
-          trainer: selectedTrainerId ? { id: selectedTrainerId } : selectedSession.trainer,
-          id: selectedSession.id,
-          client: selectedSession.client,
-          session_type: selectedSession.session_type,
-          date: selectedSession.date,
-          notes: selectedSession.notes,
-        };
-        await updateSession(selectedSession.id, updatedSession);
-        setIsEditing(false);
-      } catch (err) {
-        console.error("Failed to update session:", err);
+    if (session.trainer && typeof session.trainer === "number") {
+      const trainerId = session.trainer;
+
+      if (!trainers[trainerId]) {
+        try {
+          const fetchedTrainer = await fetchTrainerById(trainerId);
+          setTrainers((prev) => ({
+            ...prev,
+            [trainerId]: fetchedTrainer,
+          }));
+
+          // Update session with the fetched trainer object
+          setSessions((prevSessions) =>
+            prevSessions.map((s) =>
+              s.id === session.id ? { ...s, trainer: fetchedTrainer } : s
+            )
+          );
+        } catch (error) {
+          console.error(`Failed to fetch trainer with ID ${trainerId}`, error);
+        }
       }
     }
   };
@@ -101,13 +89,19 @@ const SessionsPage = () => {
                 hover
                 sx={{ cursor: "pointer" }}
               >
-                <TableCell>{session.date}</TableCell>
+                <TableCell>{new Date(session.date).toLocaleString()}</TableCell>
                 <TableCell>{session.session_type}</TableCell>
                 <TableCell>
-                  {session.client?.user?.first_name ?? "No Client"}
+                  {session.client?.user.first_name} {session.client?.user.last_name}
                 </TableCell>
                 <TableCell>
-                  {session.trainer && isFullTrainer(session.trainer) ? (
+                  {typeof session.trainer === "number" ? (
+                    trainers[session.trainer] ? (
+                      `${trainers[session.trainer].user.first_name} ${trainers[session.trainer].user.last_name}`
+                    ) : (
+                      "Loading..."
+                    )
+                  ) : session.trainer && "user" in session.trainer ? (
                     `${session.trainer.user.first_name} ${session.trainer.user.last_name}`
                   ) : (
                     "Trainer Not Assigned"
@@ -121,70 +115,15 @@ const SessionsPage = () => {
 
       {selectedSession && (
         <Box sx={{ flex: 3 }}>
-          <Paper sx={{ padding: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              {isEditing ? "Edit Session Details" : "Session Details"}
-            </Typography>
-
-            <TextField
-              label="Session Type"
-              value={selectedSession.session_type}
-              fullWidth
-              disabled={!isEditing}
-              onChange={(e) =>
-                setSelectedSession((prev) =>
-                  prev ? { ...prev, session_type: e.target.value } : prev
-                )
-              }
-              sx={{ mb: 2 }}
-            />
-
-            <TextField
-              label="Date"
-              type="datetime-local"
-              value={selectedSession.date.slice(0, 16)}  // Strip seconds and timezone for input
-              fullWidth
-              disabled={!isEditing}
-              onChange={(e) =>
-                setSelectedSession((prev) =>
-                  prev ? { ...prev, date: e.target.value } : prev
-                )
-              }
-              sx={{ mb: 2 }}
-            />
-
-            <TextField
-              label="Trainer"
-              select
-              fullWidth
-              SelectProps={{ native: true }}
-              value={selectedTrainerId || ""}
-              onChange={(e) => setSelectedTrainerId(Number(e.target.value))}
-              disabled={!isEditing}
-              sx={{ mb: 2 }}
-            >
-              <option value="">Select Trainer</option>
-              {trainers.map((trainer) => (
-                <option key={trainer.id} value={trainer.id}>
-                  {trainer.user?.first_name} {trainer.user?.last_name}
-                </option>
-              ))}
-            </TextField>
-
-            {isEditing ? (
-              <Button variant="contained" color="primary" onClick={handleSave}>
-                Save
-              </Button>
-            ) : (
-              <Button
-                variant="contained"
-                onClick={() => setIsEditing(true)}
-                color="secondary"
-              >
-                Edit
-              </Button>
-            )}
-          </Paper>
+          <BaseListDetailsPage
+            key={selectedSession.id}
+            data={selectedSession}
+            fieldConfig={getSessionFieldConfig()}
+            onSave={async (updatedSession) => {
+              // Handle save logic for session update
+              console.log("Session saved", updatedSession);
+            }}
+          />
         </Box>
       )}
     </Box>
