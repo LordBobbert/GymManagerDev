@@ -11,7 +11,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  CircularProgress,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fetchSessions } from "@/services/sessionService";
@@ -25,7 +24,6 @@ const SessionsPage = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [trainers, setTrainers] = useState<{ [key: number]: Trainer }>({});
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadSessions = async () => {
@@ -34,8 +32,7 @@ const SessionsPage = () => {
         setSessions(fetchedSessions);
       } catch (error) {
         console.error("Failed to fetch sessions:", error);
-      } finally {
-        setLoading(false);
+      
       }
     };
 
@@ -69,10 +66,8 @@ const SessionsPage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', padding: 2 }}>
-        <CircularProgress />
+  return (
+    <Box sx={{ display: "flex", padding: 2 }}>
       <TableContainer component={Paper} sx={{ flex: 1, mr: 2 }}>
         <Table>
           <TableHead>
@@ -131,5 +126,5 @@ const SessionsPage = () => {
     </Box>
   );
 };
-}
+
 export default SessionsPage;
