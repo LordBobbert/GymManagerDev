@@ -1,26 +1,7 @@
-// File: src/app/admin/clients/page.tsx
-
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Typography,
-  IconButton,
-  Card,
-  CardContent,
-  Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-} from '@mui/material';
-import PhoneIcon from '@mui/icons-material/Phone';
-import EmailIcon from '@mui/icons-material/Email';
-import ChatIcon from '@mui/icons-material/Chat';
+import { Box, Typography, Card, CardContent, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import BaseList from '../../../components/common/BaseList';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
 import AddClientForm from '../../../components/admin/AddClientForm';
@@ -30,7 +11,7 @@ import { Session } from '../../../interfaces/session';
 import { Payment } from '../../../interfaces/payment';
 import { fetchClients, addClient, updateClient, fetchClientSessions, fetchClientPayments } from '../../../services/clientService';
 import { fetchTrainers } from '../../../services/trainerService';
-import { getClientFieldConfig } from '../../../config/fieldConfigs';
+import { getClientFieldConfig, getSessionFieldConfig } from '../../../config/fieldConfigs';
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[] | null>(null);
@@ -38,6 +19,7 @@ const ClientsPage = () => {
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [selectedSession, setSelectedSession] = useState<Session | null>(null); // Added state for selected session
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddClientOpen, setIsAddClientOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,12 +41,19 @@ const ClientsPage = () => {
   }, []);
 
   const handleClientSelect = (client: Client) => {
-    setSelectedClient(null); // Clear the previous client
+    setSelectedClient(null);
+    setSelectedSession(null);  // Clear session when switching clients
     setTimeout(() => {
       setSelectedClient(client);
+
+      // Fetch sessions and payments for the selected client
       fetchClientSessions(client.id).then(setSessions).catch(console.error);
       fetchClientPayments(client.id).then(setPayments).catch(console.error);
-    }, 0); // Introduce a slight delay to ensure correct data loading
+    }, 0);
+  };
+
+  const handleSessionSelect = (session: Session) => {
+    setSelectedSession(session);  // Set the clicked session
   };
 
   const handleClientSave = async (updatedFields: Partial<Client>) => {
@@ -72,8 +61,8 @@ const ClientsPage = () => {
       if (selectedClient) {
         await updateClient(selectedClient.id, updatedFields);
         const updatedClients = await fetchClients();
-        setClients(updatedClients); // Update the list of clients
-        setSelectedClient(null); // Clear selected client
+        setClients(updatedClients);
+        setSelectedClient(null);
       }
     } catch (error) {
       console.error('Error updating client:', error);
@@ -110,26 +99,12 @@ const ClientsPage = () => {
           onSelect={handleClientSelect}
           renderItem={(client: Client) => (
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              {/* Client Info */}
               <Box>
                 <Typography variant="h6">
                   {client.user.first_name} {client.user.last_name}
                 </Typography>
                 <Typography variant="body2">{client.user.email}</Typography>
                 <Typography variant="body2">{client.user.phone_number}</Typography>
-              </Box>
-
-              {/* Action Icons */}
-              <Box>
-                <IconButton aria-label="call" onClick={() => window.open(`tel:${client.user.phone_number}`)}>
-                  <PhoneIcon />
-                </IconButton>
-                <IconButton aria-label="email" onClick={() => window.open(`mailto:${client.user.email}`)}>
-                  <EmailIcon />
-                </IconButton>
-                <IconButton aria-label="text" onClick={() => window.open(`sms:${client.user.phone_number}`)}>
-                  <ChatIcon />
-                </IconButton>
               </Box>
             </Box>
           )}
@@ -138,16 +113,27 @@ const ClientsPage = () => {
       </div>
 
       {/* Right panel: BaseListDetailsPage */}
-      {selectedClient && (
-        <div style={{ flex: 3 }}>
+      <div style={{ flex: 3 }}>
+        {selectedSession ? (
+          // Show session details if a session is selected
+          <BaseListDetailsPage
+            key={selectedSession.id}
+            data={selectedSession}
+            fieldConfig={getSessionFieldConfig()}
+            onSave={(updatedSession) => console.log(updatedSession)}  // Define save behavior
+          />
+        ) : selectedClient ? (
+          // Show client details if a client is selected
           <BaseListDetailsPage
             key={selectedClient.id}
             data={selectedClient}
             fieldConfig={getClientFieldConfig(trainers)}
             onSave={handleClientSave}
           />
+        ) : null}
 
-          {/* Sessions and Payments Cards */}
+        {/* Sessions and Payments Cards */}
+        {selectedClient && (
           <Grid container spacing={2} sx={{ mt: 4 }}>
             <Grid item xs={12} md={6}>
               <Card>
@@ -167,16 +153,22 @@ const ClientsPage = () => {
                         </TableHead>
                         <TableBody>
                           {sessions.map((session: Session) => (
-                            <TableRow key={session.id}>
+                            <TableRow
+                              key={session.id}
+                              onClick={() => handleSessionSelect(session)}  // Handle session click
+                              hover
+                              sx={{ cursor: 'pointer' }}
+                            >
                               <TableCell>{session.date}</TableCell>
                               <TableCell>{session.session_type}</TableCell>
                               <TableCell>
-                                {session.trainer && typeof session.trainer === 'object' && "user" in session.trainer ? (
+                                {session.trainer && 'user' in session.trainer ? (
                                   `${session.trainer.user.first_name} ${session.trainer.user.last_name}`
                                 ) : (
                                   "Trainer Not Assigned"
                                 )}
                               </TableCell>
+
                             </TableRow>
                           ))}
                         </TableBody>
@@ -208,8 +200,8 @@ const ClientsPage = () => {
               </Card>
             </Grid>
           </Grid>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Add Client Form Modal */}
       <AddClientForm
