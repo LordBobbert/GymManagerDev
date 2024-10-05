@@ -1,6 +1,4 @@
-// File: src/components/common/BaseListDetailsPage.tsx
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Grid, TextField, Select, MenuItem, InputLabel, FormControl, Button, Paper } from '@mui/material';
 import { FieldConfig } from '../../interfaces/FieldConfig';
 import { getNestedValue, setNestedValue } from '../../utils/nestedUtils';
@@ -11,24 +9,25 @@ interface BaseListDetailsPageProps<T> {
   onSave: (updatedItem: Partial<T>) => void;  // Send partial updates
 }
 
-const BaseListDetailsPage = <T,>({
-  data,
-  fieldConfig,
-  onSave,
-}: BaseListDetailsPageProps<T>) => {
+const BaseListDetailsPage = <T,>({ data, fieldConfig, onSave }: BaseListDetailsPageProps<T>) => {
   const [formData, setFormData] = useState<Partial<T>>(data);  // Set initial state as Partial<T>
   const [modifiedData, setModifiedData] = useState<Partial<T>>({});  // Track modified fields
   const [isEditing, setIsEditing] = useState<boolean>(false);  // Track edit state
 
+  useEffect(() => {
+    setFormData(data);  // Ensure formData is updated when data changes
+  }, [data]);
+
   const handleChange = (key: string, value: unknown) => {
-    setFormData((prev) => setNestedValue({ ...prev }, key, value));  // Use spread operator to maintain the shape of 'T'
-    setModifiedData((prev) => setNestedValue({ ...prev }, key, value));  // Track changes
+    setFormData((prev) => setNestedValue({ ...prev }, key, value));  // Update formData state
+    setModifiedData((prev) => setNestedValue({ ...prev }, key, value));  // Track modified data
   };
 
   const handleSave = () => {
     if (Object.keys(modifiedData).length > 0) {
-      onSave(modifiedData);  // Send only the modified data
+      onSave(modifiedData);  // Send only modified data
       setIsEditing(false);  // Exit edit mode after saving
+      setModifiedData({});  // Clear modified data after save
     }
   };
 
