@@ -18,7 +18,7 @@ interface SessionTableProps {
     trainers: Trainer[];
 }
 
-const SessionTable: React.FC<SessionTableProps> = ({ sessions, onSessionSelect, trainers }) => {
+const SessionTable: React.FC<SessionTableProps> = ({ sessions, onSessionSelect }) => {
 
     const renderTrainer = (session: Session) => {
         // Ensure session has a trainer and the trainer has a user object
