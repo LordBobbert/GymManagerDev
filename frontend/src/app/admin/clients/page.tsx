@@ -120,7 +120,9 @@ const ClientsPage = () => {
             key={selectedSession.id}
             data={selectedSession}
             fieldConfig={getSessionFieldConfig()}
-            onSave={(updatedSession) => console.log(updatedSession)}  // Define save behavior
+            onSave={async (updatedSession) => {
+              console.log(updatedSession); // This will now be part of an async function
+            }}
           />
         ) : selectedClient ? (
           // Show client details if a client is selected
