@@ -162,13 +162,12 @@ const ClientsPage = () => {
                               <TableCell>{session.date}</TableCell>
                               <TableCell>{session.session_type}</TableCell>
                               <TableCell>
-                                {session.trainer && 'user' in session.trainer ? (
+                                {session.trainer && typeof session.trainer === 'object' && 'user' in session.trainer ? (
                                   `${session.trainer.user.first_name} ${session.trainer.user.last_name}`
                                 ) : (
                                   "Trainer Not Assigned"
                                 )}
                               </TableCell>
-
                             </TableRow>
                           ))}
                         </TableBody>
