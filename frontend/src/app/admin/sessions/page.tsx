@@ -11,7 +11,7 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Typography,
+  CircularProgress,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fetchSessions } from "@/services/sessionService";
@@ -69,8 +69,10 @@ const SessionsPage = () => {
     }
   };
 
-  return (
-    <Box sx={{ display: "flex", padding: 2 }}>
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', padding: 2 }}>
+        <CircularProgress />
       <TableContainer component={Paper} sx={{ flex: 1, mr: 2 }}>
         <Table>
           <TableHead>
@@ -129,5 +131,5 @@ const SessionsPage = () => {
     </Box>
   );
 };
-
+}
 export default SessionsPage;
