@@ -1,9 +1,9 @@
 // File: src/components/common/BaseListDetailsPage.tsx
 
-import React from "react";
-import { Box, Grid, Button, Paper, TextField, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
-import { FieldConfig } from "@/interfaces/FieldConfig";
-import { getNestedValue, setNestedValue } from "@/utils/nestedUtils";
+import React, { useState } from 'react';
+import { Box, Grid, TextField, Select, MenuItem, InputLabel, FormControl, Button, Paper } from '@mui/material';
+import { FieldConfig } from '../../interfaces/FieldConfig';
+import { getNestedValue, setNestedValue } from '../../utils/nestedUtils';
 
 interface BaseListDetailsPageProps<T> {
   data: T;
@@ -16,57 +16,77 @@ const BaseListDetailsPage = <T,>({
   fieldConfig,
   onSave,
 }: BaseListDetailsPageProps<T>) => {
-  const [formData, setFormData] = React.useState<Partial<T>>(data);
+  const [formData, setFormData] = useState<Partial<T>>(data);
+  const [modifiedData, setModifiedData] = useState<Partial<T>>({});
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const handleChange = (key: string, value: any) => {
+  const handleChange = (key: string, value: unknown) => {
     setFormData((prev) => setNestedValue({ ...prev }, key, value));
+    setModifiedData((prev) => setNestedValue({ ...prev }, key, value));
   };
 
-  const handleSave = () => {
-    onSave(formData);
+  const handleSave = async () => {
+    if (Object.keys(modifiedData).length > 0) {
+      await onSave(modifiedData);
+      setIsEditing(false);
+    }
   };
 
   return (
-    <Paper>
-      <Box sx={{ padding: 3 }}>
-        <Grid container spacing={2}>
-          {fieldConfig.map(({ key, label, type, options }) => {
-            const value = getNestedValue(formData, key as string) || ""; // Cast key to string to resolve the issue
-            return (
-              <Grid item xs={12} sm={6} key={key as string}>
-                {type === "select" ? (
-                  <FormControl fullWidth>
-                    <InputLabel>{label}</InputLabel>
-                    <Select
-                      label={label}
-                      value={value}
-                      onChange={(e) => handleChange(key as string, e.target.value)}
-                      fullWidth
-                    >
-                      {options?.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                ) : (
-                  <TextField
-                    fullWidth
+    <Paper elevation={3} sx={{ padding: 3, marginLeft: 2, flexGrow: 1 }}>
+      <Grid container spacing={2}>
+        {fieldConfig.map(({ label, key, type, options }) => {
+          const value: unknown = getNestedValue(formData || {}, key as string) || ''; // Safely access nested values
+
+          return (
+            <Grid item xs={12} sm={6} key={String(key)}>
+              {type === 'select' && options ? (
+                <FormControl fullWidth>
+                  <InputLabel>{label}</InputLabel>
+                  <Select
                     label={label}
-                    value={value}
+                    value={value as string}
                     onChange={(e) => handleChange(key as string, e.target.value)}
-                  />
-                )}
-              </Grid>
-            );
-          })}
-        </Grid>
-        <Box sx={{ marginTop: 2 }}>
-          <Button variant="contained" onClick={handleSave}>
-            Save
+                    disabled={!isEditing}
+                  >
+                    {options.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : (
+                <TextField
+                  label={label}
+                  type={type || 'text'}
+                  value={value as string}
+                  onChange={(e) => handleChange(key as string, e.target.value)}
+                  fullWidth
+                  disabled={!isEditing}
+                />
+              )}
+            </Grid>
+          );
+        })}
+      </Grid>
+
+      {/* Buttons */}
+      <Box display="flex" justifyContent="flex-end" mt={2}>
+        {isEditing ? (
+          <>
+            <Button variant="outlined" sx={{ mr: 2 }} onClick={() => setIsEditing(false)}>
+              Cancel
+            </Button>
+            <Button variant="contained" onClick={handleSave} disabled={Object.keys(modifiedData).length === 0}>
+              Save
+            </Button>
+          </>
+        ) : (
+          <Button variant="contained" color="primary" onClick={() => setIsEditing(true)}>
+            Edit
           </Button>
-        </Box>
+        )}
       </Box>
     </Paper>
   );
