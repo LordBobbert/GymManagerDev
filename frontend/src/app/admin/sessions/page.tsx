@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fetchSessions, addSession } from "@/services/sessionService";
-import { fetchTrainerById, fetchTrainers } from "@/services/trainerService";
+import { fetchTrainers } from "@/services/trainerService";
 import { fetchClients } from "@/services/clientService";
 import { Session } from "@/interfaces/session";
 import { Trainer } from "@/interfaces/trainer";
