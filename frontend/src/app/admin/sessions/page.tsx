@@ -71,7 +71,7 @@ const SessionsPage = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', padding: 2 }}>
+      <Box sx={{ display: 'flex', padding: 2 }}>
         <CircularProgress />
       <TableContainer component={Paper} sx={{ flex: 1, mr: 2 }}>
         <Table>
