@@ -1,3 +1,5 @@
+// File: src/components/admin/AddSessionForm.tsx
+
 import React, { useState } from 'react';
 import {
     Dialog,
@@ -15,7 +17,6 @@ import { Client } from '../../interfaces/client';
 import { Trainer } from '../../interfaces/trainer';
 
 interface AddSessionFormProps {
-    open: boolean;
     onClose: () => void;
     onSubmit: (newSession: { client_id: number; trainer_id: number; session_type: string; date: string; notes?: string }) => Promise<void>;
     clients: Client[];
@@ -31,7 +32,7 @@ const SESSION_TYPE_CHOICES = [
     { value: 'group', label: 'Group' },
 ];
 
-const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit, clients, trainers, loading, session }) => {
+const AddSessionForm: React.FC<AddSessionFormProps> = ({ onClose, onSubmit, clients, trainers, loading, session }) => {
     const [formData, setFormData] = useState({
         client: session?.client || undefined,
         trainer: session?.trainer || undefined,
@@ -69,74 +70,71 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
     };
 
     return (
-        <Dialog open={open} onClose={onClose}>
-            <DialogTitle>{session ? 'Edit Session' : 'Add Session'}</DialogTitle>
-            <DialogContent>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <TextField
-                        label="Date"
-                        type="date"
-                        value={formData.date}
-                        onChange={(e) => handleChange('date', e.target.value)}
-                        fullWidth
-                    />
+        <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <TextField
+                    label="Date"
+                    type="date"
+                    value={formData.date}
+                    onChange={(e) => handleChange('date', e.target.value)}
+                    fullWidth
+                />
 
-                    <InputLabel>Session Type</InputLabel>
-                    <Select
-                        value={formData.session_type}
-                        onChange={(e) => handleChange('session_type', e.target.value)}
-                        fullWidth
-                    >
-                        {SESSION_TYPE_CHOICES.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                <InputLabel>Session Type</InputLabel>
+                <Select
+                    value={formData.session_type}
+                    onChange={(e) => handleChange('session_type', e.target.value)}
+                    fullWidth
+                >
+                    {SESSION_TYPE_CHOICES.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                        </MenuItem>
+                    ))}
+                </Select>
 
-                    <TextField
-                        label="Notes"
-                        type="text"
-                        value={formData.notes}
-                        onChange={(e) => handleChange('notes', e.target.value)}
-                        fullWidth
-                    />
+                <TextField
+                    label="Notes"
+                    type="text"
+                    value={formData.notes}
+                    onChange={(e) => handleChange('notes', e.target.value)}
+                    fullWidth
+                />
 
-                    <InputLabel>Client</InputLabel>
-                    <Select
-                        value={formData.client?.id || ''}
-                        onChange={(e) => {
-                            const selectedClient = clients.find(client => client.id === Number(e.target.value));
-                            handleChange('client', selectedClient);
-                        }}
-                        fullWidth
-                    >
-                        <MenuItem value="">None</MenuItem>
-                        {clients.map((client) => (
-                            <MenuItem key={client.id} value={client.id}>
-                                {client.user.first_name} {client.user.last_name}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                <InputLabel>Client</InputLabel>
+                <Select
+                    value={formData.client?.id || ''}
+                    onChange={(e) => {
+                        const selectedClient = clients.find(client => client.id === Number(e.target.value));
+                        handleChange('client', selectedClient);
+                    }}
+                    fullWidth
+                >
+                    <MenuItem value="">None</MenuItem>
+                    {clients.map((client) => (
+                        <MenuItem key={client.id} value={client.id}>
+                            {client.user.first_name} {client.user.last_name}
+                        </MenuItem>
+                    ))}
+                </Select>
 
-                    <InputLabel>Trainer</InputLabel>
-                    <Select
-                        value={formData.trainer?.id || ''}
-                        onChange={(e) => {
-                            const selectedTrainer = trainers.find(trainer => trainer.id === Number(e.target.value));
-                            handleChange('trainer', selectedTrainer);
-                        }}
-                        fullWidth
-                    >
-                        <MenuItem value="">None</MenuItem>
-                        {trainers.map((trainer) => (
-                            <MenuItem key={trainer.id} value={trainer.id}>
-                                {trainer.user.first_name} {trainer.user.last_name}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </Box>
-            </DialogContent>
+                <InputLabel>Trainer</InputLabel>
+                <Select
+                    value={formData.trainer?.id || ''}
+                    onChange={(e) => {
+                        const selectedTrainer = trainers.find(trainer => trainer.id === Number(e.target.value));
+                        handleChange('trainer', selectedTrainer);
+                    }}
+                    fullWidth
+                >
+                    <MenuItem value="">None</MenuItem>
+                    {trainers.map((trainer) => (
+                        <MenuItem key={trainer.id} value={trainer.id}>
+                            {trainer.user.first_name} {trainer.user.last_name}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </Box>
             <DialogActions>
                 <Button onClick={onClose}>Cancel</Button>
                 <Button
@@ -147,7 +145,7 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ open, onClose, onSubmit
                     {loading ? 'Saving...' : 'Save'}
                 </Button>
             </DialogActions>
-        </Dialog>
+        </DialogContent>
     );
 };
 
