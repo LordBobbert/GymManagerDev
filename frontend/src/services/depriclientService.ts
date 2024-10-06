@@ -1,6 +1,6 @@
 // File: src/services/clientService.ts
 
-import { Client } from '../interfaces/client';
+import { Client } from '../interfaces/depriclient';
 
 export const fetchClients = async (): Promise<Client[]> => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/clients/`, {

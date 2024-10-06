@@ -5,50 +5,61 @@
 import React, { useEffect, useState } from 'react';
 import BaseList from '../../../components/common/BaseList';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
-import AddTrainerForm from '../../../components/admin/AddTrainerForm';  // Create similar to AddClientForm
-import { TrainerProfile } from '../../../interfaces/trainer';
-import { fetchTrainers, addTrainer, updateTrainer } from '../../../services/trainerService';
+import AddTrainerForm from '../../../components/admin/AddTrainerForm';
+import { User } from '../../../interfaces/user';
+import { fetchUsers, createUser, updateUser } from '../../../services/userService';
 import { getTrainerFieldConfig } from '../../../config/fieldConfigs';  // Field config for trainers
 
 const TrainersPage = () => {
-  const [trainers, setTrainers] = useState<TrainerProfile[] | null>(null);
-  const [selectedTrainer, setSelectedTrainer] = useState<TrainerProfile | null>(null);
+  const [trainers, setTrainers] = useState<User[] | null>(null);
+  const [selectedTrainer, setSelectedTrainer] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddTrainerOpen, setIsAddTrainerOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchTrainers()
-      .then((data) => setTrainers(data))
-      .catch(() => setError('Failed to load trainers'))
-      .finally(() => setLoading(false));
+    const loadTrainers = async () => {
+      try {
+        const fetchedUsers = await fetchUsers();
+        const trainerUsers = fetchedUsers.filter((user) => user.roles.includes("trainer"));
+        setTrainers(trainerUsers);
+        setLoading(false);
+      } catch (error) {
+        setError('Failed to load trainers');
+        setLoading(false);
+      }
+    };
+
+    loadTrainers();
   }, []);
 
-  const handleTrainerSelect = (trainer: TrainerProfile) => {
+  const handleTrainerSelect = (trainer: User) => {
     setSelectedTrainer(null);
     setTimeout(() => {
       setSelectedTrainer(trainer);
     }, 0);
   };
 
-  const handleTrainerSave = async (updatedTrainer: Partial<TrainerProfile>) => {
+  const handleTrainerSave = async (updatedTrainer: Partial<User>) => {
     try {
       if (selectedTrainer) {
-        await updateTrainer(selectedTrainer.user.id, updatedTrainer);
-        const updatedTrainers = await fetchTrainers();
+        await updateUser(selectedTrainer.id, updatedTrainer);
+        const fetchedUsers = await fetchUsers();
+        const updatedTrainers = fetchedUsers.filter((user) => user.roles.includes("trainer"));
         setTrainers(updatedTrainers);
-        setSelectedTrainer(null);  // Reset selected trainer to refresh UI
+        setSelectedTrainer(null);
       }
     } catch (error) {
       console.error('Error updating trainer:', error);
     }
   };
 
-  const handleAddTrainerSubmit = async (newTrainer: Omit<TrainerProfile, 'id'>) => {
+  const handleAddTrainerSubmit = async (newTrainer: Omit<User, 'id'>) => {
     try {
-      await addTrainer(newTrainer);
+      await createUser(newTrainer);
       setIsAddTrainerOpen(false);
-      const updatedTrainers = await fetchTrainers();
+      const fetchedUsers = await fetchUsers();
+      const updatedTrainers = fetchedUsers.filter((user) => user.roles.includes("trainer"));
       setTrainers(updatedTrainers);
     } catch (error) {
       console.error('Error adding trainer:', error);
@@ -66,53 +77,32 @@ const TrainersPage = () => {
   return (
     <div style={{ display: 'flex', gap: '2rem' }}>
       <div style={{ flex: 1 }}>
-        <BaseList<TrainerProfile>
+        <BaseList<User>
           data={trainers}
           section="trainers"
-          getKey={(trainer) => trainer.user.id}
+          getKey={(trainer) => trainer.id}
           onSelect={handleTrainerSelect}
-          renderItem={(trainer: TrainerProfile) => (
-            <span>{trainer.user.first_name} {trainer.user.last_name}</span>
+          renderItem={(trainer: User) => (
+            <span>{trainer.first_name} {trainer.last_name}</span>
           )}
-          onAddClient={() => setIsAddTrainerOpen(true)}
+          onAddItem={() => setIsAddTrainerOpen(true)}
         />
       </div>
 
       {selectedTrainer && (
         <div style={{ flex: 3 }}>
-          <BaseListDetailsPage<TrainerProfile>
-            key={selectedTrainer.user.id}
+          <BaseListDetailsPage<User>
+            key={selectedTrainer.id}
             data={selectedTrainer}
-            fieldConfig={getTrainerFieldConfig()}
+            fieldConfig={getTrainerFieldConfig()}  // FieldConfig now expects User
             onSave={handleTrainerSave}
-            isEditing={true}  // Set this to control editing mode
+            isEditing={true}
             handleChange={(key, value) => {
-              setSelectedTrainer((prevTrainer) => {
-                if (!prevTrainer) return null;
-            
-                // Check if we're updating a nested 'user' field
-                if (key in prevTrainer.user) {
-                  return {
-                    ...prevTrainer,
-                    user: {
-                      ...prevTrainer.user,
-                      [key]: value,
-                    },
-                  };
-                } else {
-                  // Otherwise, update the trainer-level fields
-                  return {
-                    ...prevTrainer,
-                    [key]: value,
-                  };
-                }
-              });
+              setSelectedTrainer((prevTrainer) => prevTrainer ? { ...prevTrainer, [key]: value } : null);
             }}
-            
-            clients={[]}  // You can pass an empty array if clients are not needed
-            trainers={[]}  // If you have trainers data to pass, use that here
+            clients={[]}  // Pass empty clients if not needed
+            trainers={trainers}  // Pass trainers
           />
-
         </div>
       )}
 

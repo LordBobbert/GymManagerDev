@@ -1,82 +1,52 @@
 // File: src/components/common/BaseListDetailsPage.tsx
 
-import React, { useState } from "react";
-import { Box, TextField, Select, MenuItem, FormControl, InputLabel, Button } from "@mui/material";
+import React from "react";
+import { Box, Button, TextField } from "@mui/material";
+import { User } from "@/interfaces/user";
 import { FieldConfig } from "@/interfaces/FieldConfig";
-import { ClientProfile } from "@/interfaces/client";
-import { TrainerProfile } from "@/interfaces/trainer";
 
 interface BaseListDetailsPageProps<T> {
   data: T;
-  fieldConfig: FieldConfig<T>[];
-  onSave: (updatedData: Partial<T>) => Promise<void>;
+  fieldConfig: FieldConfig<T>[];  // Correct typing based on User
+  clients: User[];  // Accept User[] for clients
+  trainers: User[];  // Accept User[] for trainers
+  onSave: (updatedData: T) => void;
   isEditing: boolean;
-  handleChange: (key: keyof T, value: unknown) => void;
-  clients: ClientProfile[];  // Pass these separately
-  trainers: TrainerProfile[];  // Pass these separately
-  selectOptions?: Partial<{ [key in keyof T]: Array<{ label: string; value: string | number }> }>;  // Add this line
+  handleChange: (key: keyof T, value: any) => void;
 }
 
 const BaseListDetailsPage = <T extends object>({
   data,
   fieldConfig,
+  clients,
+  trainers,
   onSave,
   isEditing,
   handleChange,
-  selectOptions = {},  // This is now properly typed and optional
 }: BaseListDetailsPageProps<T>) => {
-  const [formData, setFormData] = useState<Partial<T>>(data);
-
-  const handleInputChange = (key: keyof T, value: unknown) => {
-    setFormData((prevData) => ({ ...prevData, [key]: value }));
-    handleChange(key, value);
-  };
-
   const handleSave = () => {
-    onSave(formData);
+    onSave(data);
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    <Box>
       {fieldConfig.map(({ label, key, type }) => {
         const typedKey = key as keyof T;
-        const value = (formData[typedKey] as string | number | undefined) || "";
+        const value = (data[typedKey] as string | number | undefined) || "";
 
-        if (type === "select" && selectOptions[typedKey]) {
-          const options = selectOptions[typedKey];
-
-          return (
-            <FormControl fullWidth key={String(key)}>
-              <InputLabel>{label}</InputLabel>
-              <Select
-                value={String(value)}
-                onChange={(e) => handleInputChange(typedKey, e.target.value)}
-                disabled={!isEditing}
-              >
-                {options?.map((option) => (
-                  <MenuItem key={String(option.value)} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          );
-        } else {
-          return (
-            <TextField
-              key={String(key)}
-              label={label}
-              type={type || "text"}
-              value={String(value)}
-              onChange={(e) => handleInputChange(typedKey, e.target.value)}
-              fullWidth
-              disabled={!isEditing}
-            />
-          );
-        }
+        return (
+          <TextField
+            key={String(key)}
+            label={label}
+            type={type || "text"}
+            value={String(value)}
+            onChange={(e) => handleChange(typedKey, e.target.value)}
+            disabled={!isEditing}
+            fullWidth
+          />
+        );
       })}
-
-      <Button variant="contained" onClick={handleSave} disabled={!isEditing}>
+      <Button onClick={handleSave} disabled={!isEditing}>
         Save
       </Button>
     </Box>

@@ -1,46 +1,40 @@
 // File: src/config/fieldConfigs.ts
 
 import { FieldConfig } from '../interfaces/FieldConfig';
-import { ClientProfile } from '../interfaces/client';
-import { TrainerProfile } from '../interfaces/trainer';
+import { TrainerProfile } from '../interfaces/depritrainer';
 import { User } from '../interfaces/user';
 import { Session } from '../interfaces/session';  // Import Session type
 
 // Updated getClientFieldConfig function
-export const getClientFieldConfig = (trainers: User[]): FieldConfig<ClientProfile>[] => [
+export const getClientFieldConfig = (): FieldConfig<User>[] => [
   {
     label: 'First Name',
-    key: 'user.first_name',
+    key: 'first_name',  // User-specific fields
     type: 'text',
   },
   {
     label: 'Last Name',
-    key: 'user.last_name',
-    type: 'text',
-  },
-  {
-    label: 'Username',
-    key: 'user.username',
+    key: 'last_name',  // User-specific fields
     type: 'text',
   },
   {
     label: 'Email',
-    key: 'user.email',
+    key: 'email',
     type: 'email',
   },
   {
     label: 'Phone Number',
-    key: 'user.phone_number',
+    key: 'phone_number',
     type: 'text',
   },
   {
     label: 'Birthday',
-    key: 'user.birthday',
+    key: 'birthday',
     type: 'date',
   },
   {
     label: 'Gender',
-    key: 'user.gender',
+    key: 'gender',
     type: 'select',
     options: [
       { label: 'Male', value: 'male' },
@@ -49,13 +43,8 @@ export const getClientFieldConfig = (trainers: User[]): FieldConfig<ClientProfil
     ],
   },
   {
-    label: 'Roles',
-    key: 'user.roles',
-    type: 'text',
-  },
-  {
     label: 'Training Status',
-    key: 'training_status',
+    key: 'training_status',  // Client-specific fields
     type: 'select',
     options: [
       { label: 'Active', value: 'active' },
@@ -78,15 +67,6 @@ export const getClientFieldConfig = (trainers: User[]): FieldConfig<ClientProfil
     ],
   },
   {
-    label: 'Trainer',
-    key: 'trainer.id',
-    type: 'select',
-    options: trainers.map((trainer) => ({
-      label: `${trainer.first_name} ${trainer.last_name}`,
-      value: trainer.id,
-    })),
-  },
-  {
     label: 'Emergency Contact Name',
     key: 'emergency_contact_name',
     type: 'text',
@@ -99,40 +79,35 @@ export const getClientFieldConfig = (trainers: User[]): FieldConfig<ClientProfil
 ];
 
 // Updated getTrainerFieldConfig function
-export const getTrainerFieldConfig = (): FieldConfig<TrainerProfile>[] => [
+export const getTrainerFieldConfig = (): FieldConfig<User>[] => [
   {
     label: 'First Name',
-    key: 'user.first_name',
+    key: 'first_name',  // Directly reference User fields
     type: 'text',
   },
   {
     label: 'Last Name',
-    key: 'user.last_name',
-    type: 'text',
-  },
-  {
-    label: 'Username',
-    key: 'user.username',
+    key: 'last_name',
     type: 'text',
   },
   {
     label: 'Email',
-    key: 'user.email',
+    key: 'email',
     type: 'email',
   },
   {
     label: 'Phone Number',
-    key: 'user.phone_number',
+    key: 'phone_number',
     type: 'text',
   },
   {
     label: 'Birthday',
-    key: 'user.birthday',
+    key: 'birthday',
     type: 'date',
   },
   {
     label: 'Gender',
-    key: 'user.gender',
+    key: 'gender',
     type: 'select',
     options: [
       { label: 'Male', value: 'male' },
@@ -154,21 +129,12 @@ export const getTrainerFieldConfig = (): FieldConfig<TrainerProfile>[] => [
   {
     label: 'Monthly Rate',
     key: 'monthly_rate',
-    type: 'select',
-    options: [
-      { value: '200', label: 'Legacy Part Time - $200' },
-      { value: '250', label: 'Part Time - $250' },
-      { value: '1000', label: 'Full Time - $1000' },
-    ],
+    type: 'number',
   },
   {
     label: 'Rent Rate per Session',
     key: 'rent_rate_per_session',
-    type: 'select',
-    options: [
-      { value: '15', label: 'Legacy Part Time - $15' },
-      { value: '20', label: 'Part Time - $20' },
-    ],
+    type: 'number',
   },
 ];
 

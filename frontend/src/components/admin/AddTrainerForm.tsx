@@ -11,7 +11,7 @@ import {
     TextField,
 }
 from '@mui/material';
-import { Trainer } from '../../interfaces/trainer';
+import { Trainer } from '../../interfaces/depritrainer';
 import { getTrainerFieldConfig } from './../../config/fieldConfigs';  // Import the correct function
 import { setNestedValue, getNestedValue } from '../../utils/nestedUtils';
 

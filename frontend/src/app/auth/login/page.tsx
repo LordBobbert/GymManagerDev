@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import LoginForm from "../../../components/auth/LoginForm";
+import LoginForm from "@/components/auth/LoginForm";  // Correct path to LoginForm
 import { Container, Typography, Box } from '@mui/material';
 
 const LoginPage = () => {
@@ -40,12 +40,12 @@ const LoginPage = () => {
           setError("You don't have the required permissions.");
         }
       } else {
-        // Detailed error logging
+        // Handle error response
         console.log("Login error:", result.error || 'Login failed');
         setError(result.error || 'Login failed');
       }
     } catch (err) {
-      // Log network errors or unexpected issues
+      // Handle network or unexpected errors
       console.error('Network error or unexpected error:', err);
       setError('An unexpected error occurred. Please try again.');
     }
@@ -60,7 +60,7 @@ const LoginPage = () => {
         <Typography component="p" variant="body1" sx={{ mt: 1, textAlign: 'center' }}>
           Enter your credentials below to access your account.
         </Typography>
-        <LoginForm onSubmit={handleLogin} error={error} />
+        <LoginForm onSubmit={handleLogin} error={error} />  {/* Pass props to LoginForm */}
       </Box>
     </Container>
   );

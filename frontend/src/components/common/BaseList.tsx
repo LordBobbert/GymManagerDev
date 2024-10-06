@@ -10,7 +10,7 @@ interface BaseListProps<T> {
   renderItem: (item: T) => React.ReactNode;
   section: 'clients' | 'trainers' | 'sessions';
   getKey: (item: T) => string | number;
-  onAddClient?: () => void; // Optional prop for adding a client
+  onAddItem?: () => void;  // Rename to more generic `onAddItem`
 }
 
 const BaseList = <T,>({
@@ -19,45 +19,36 @@ const BaseList = <T,>({
   renderItem,
   section,
   getKey,
-  onAddClient,
+  onAddItem,  // Updated prop name
 }: BaseListProps<T>) => {
   const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
   const handleSelect = (item: T) => {
-    setSelectedItem(item); // Update local state to reflect selected item
-    onSelect(item); // Notify parent about the selection
+    setSelectedItem(item);
+    onSelect(item);
   };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', px: 2 }}>
-      {/* Heading and Action Button container */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 2,
-        }}
-      >
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h5">
           {section.charAt(0).toUpperCase() + section.slice(1)} List
         </Typography>
-        <ActionButton section={section} onClick={onAddClient} /> {/* Attach onClick to open modal */}
+        <ActionButton section={section} onClick={onAddItem} />  {/* Attach onClick to open modal */}
       </Box>
 
-      {/* List of items */}
       <List sx={{ flexGrow: 1 }}>
         {data.map((item) => (
           <ListItemButton
             key={getKey(item)}
             onClick={() => handleSelect(item)}
-            selected={item === selectedItem} // Highlight the selected item
+            selected={item === selectedItem}
             sx={{
               mb: 1,
               borderRadius: 1,
               border: '1px solid #ccc',
               '&:hover': { backgroundColor: '#f0f0f0' },
-              backgroundColor: item === selectedItem ? '#e0e0e0' : 'inherit', // Apply background color if selected
+              backgroundColor: item === selectedItem ? '#e0e0e0' : 'inherit',
             }}
           >
             {renderItem(item)}

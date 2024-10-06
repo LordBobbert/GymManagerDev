@@ -1,79 +1,59 @@
-// File: components/auth/LoginForm.tsx
+import React, { useState } from "react";
+import { Box, Button, TextField, Typography, Alert } from "@mui/material";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { TextField, Button, Typography, Box, IconButton, InputAdornment } from '@mui/material';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
-interface LoginFormData {
-  username: string;
-  password: string;
-}
-
+// Define the props interface
 interface LoginFormProps {
-  onSubmit: (data: LoginFormData) => void;
-  error?: string | null;
+  onSubmit: (data: { username: string; password: string }) => Promise<void>; // The onSubmit prop expects a function
+  error: string | null;  // The error prop expects a string or null
 }
 
-const loginSchema = Yup.object().shape({
-  username: Yup.string().required("Username is required"),
-  password: Yup.string().min(8, "Password must be at least 8 characters").required("Password is required"),
-});
+const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, error }) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-const LoginForm = ({ onSubmit, error }: LoginFormProps) => {
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
-    resolver: yupResolver(loginSchema),
-  });
-
-  const [showPassword, setShowPassword] = useState(false);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ username, password });  // Pass the form data to the onSubmit prop
+  };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+      {/* Display error message if there's any */}
+      {error && <Alert severity="error">{error}</Alert>}
+
       <TextField
+        margin="normal"
+        required
+        fullWidth
+        id="username"
         label="Username"
-        fullWidth
-        margin="normal"
-        {...register("username")}
-        error={!!errors.username}
-        helperText={errors.username?.message}
+        name="username"
+        autoComplete="username"
+        autoFocus
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
       />
 
       <TextField
-        label="Password"
-        fullWidth
         margin="normal"
-        type={showPassword ? "text" : "password"}
-        {...register("password")}
-        error={!!errors.password}
-        helperText={errors.password?.message}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          )
-        }}
+        required
+        fullWidth
+        name="password"
+        label="Password"
+        type="password"
+        id="password"
+        autoComplete="current-password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
       />
-
-      {error && (
-        <Typography color="error" variant="body2">
-          {error}
-        </Typography>
-      )}
 
       <Button
         type="submit"
         fullWidth
         variant="contained"
-        color="primary"
-        sx={{ mt: 2 }}
+        sx={{ mt: 3, mb: 2 }}
       >
-        Login
+        Sign In
       </Button>
     </Box>
   );

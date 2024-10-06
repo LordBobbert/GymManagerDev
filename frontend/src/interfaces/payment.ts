@@ -1,6 +1,6 @@
 // File: src/interfaces/payment.ts
 
-import { Client } from './client';
+import { Client } from './depriclient';
 
 export interface Payment {
   id: number;

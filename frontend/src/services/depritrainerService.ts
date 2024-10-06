@@ -1,6 +1,6 @@
 // File: src/services/trainerService.ts
 
-import { Trainer } from '../interfaces/trainer';
+import { Trainer } from '../interfaces/depritrainer';
 
 /**
  * Fetch all trainers from the API.

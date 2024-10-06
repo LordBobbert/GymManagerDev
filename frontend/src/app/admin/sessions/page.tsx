@@ -2,18 +2,12 @@
 
 "use client";
 
-import {
-  Box,
-  Button,
-  Typography,
-} from "@mui/material";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Box, Button, Typography } from "@mui/material";
 import { fetchSessions, addSession, updateSession } from "@/services/sessionService";
-import { fetchTrainers } from "@/services/trainerService";
-import { fetchClients } from "@/services/clientService";
+import { fetchUsers } from "@/services/userService";  // Unified fetch method for users
 import { Session } from "@/interfaces/session";
-import { TrainerProfile } from "@/interfaces/trainer";
-import { ClientProfile } from "@/interfaces/client";
+import { User } from "@/interfaces/user";
 import BaseListDetailsPage from "@/components/common/BaseListDetailsPage";
 import AddSessionModal from "@/components/admin/AddSessionModal";
 import SessionTable from "@/components/admin/SessionTable";
@@ -22,23 +16,20 @@ import { getSessionFieldConfig } from "@/config/fieldConfigs";
 const SessionsPage = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
-  const [trainers, setTrainers] = useState<TrainerProfile[]>([]);
-  const [clients, setClients] = useState<ClientProfile[]>([]);
+  const [users, setUsers] = useState<User[]>([]);  // Unified user array
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddSessionModalOpen, setIsAddSessionModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const loadSessionsData = async () => {
       try {
-        const [fetchedSessions, fetchedTrainers, fetchedClients] = await Promise.all([
+        const [fetchedSessions, fetchedUsers] = await Promise.all([
           fetchSessions(),
-          fetchTrainers(),
-          fetchClients(),
+          fetchUsers(),  // Fetch all users at once
         ]);
 
         setSessions(fetchedSessions);
-        setTrainers(fetchedTrainers);  // Keep full TrainerProfile[]
-        setClients(fetchedClients);
+        setUsers(fetchedUsers);
         setLoading(false);
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -49,19 +40,20 @@ const SessionsPage = () => {
     loadSessionsData();
   }, []);
 
+  // Filter the users based on their roles
+  const trainers = users.filter((user) => user.roles.includes("trainer"));
+  const clients = users.filter((user) => user.roles.includes("client"));
+
   const handleSessionSelect = (session: Session) => {
     setSelectedSession(session);
   };
-
-  const handleOpenAddSessionModal = () => setIsAddSessionModalOpen(true);
-  const handleCloseAddSessionModal = () => setIsAddSessionModalOpen(false);
 
   const handleAddSession = async (newSession: Omit<Session, "id">): Promise<void> => {
     try {
       setLoading(true);
       const addedSession = await addSession(newSession);
       setSessions((prevSessions) => [...prevSessions, addedSession]);
-      handleCloseAddSessionModal();
+      setIsAddSessionModalOpen(false);
     } catch (error) {
       console.error("Failed to add session:", error);
     } finally {
@@ -96,7 +88,7 @@ const SessionsPage = () => {
         }}
       >
         <Typography variant="h4">Sessions</Typography>
-        <Button variant="contained" color="primary" onClick={handleOpenAddSessionModal}>
+        <Button variant="contained" color="primary" onClick={() => setIsAddSessionModalOpen(true)}>
           Add Session
         </Button>
       </Box>
@@ -104,7 +96,7 @@ const SessionsPage = () => {
       <SessionTable
         sessions={sessions}
         onSessionSelect={handleSessionSelect}
-        trainers={trainers}  // Pass full TrainerProfile[]
+        trainers={trainers}  // Pass filtered trainers
       />
 
       {selectedSession && (
@@ -113,23 +105,21 @@ const SessionsPage = () => {
             key={selectedSession.id}
             data={selectedSession}
             fieldConfig={getSessionFieldConfig()}
-            clients={clients}  // Explicitly pass clients
-            trainers={trainers}  // Explicitly pass trainers
+            clients={clients}  // Pass filtered clients
+            trainers={trainers}  // Pass filtered trainers
             onSave={handleSaveSession}
             isEditing={true}
-            handleChange={() => { }}  // Implement as needed in BaseListDetailsPage
+            handleChange={() => {}}  // Implement handleChange as needed
           />
-
         </Box>
       )}
 
-      {/* Add Session Modal */}
       <AddSessionModal
         open={isAddSessionModalOpen}
-        onClose={handleCloseAddSessionModal}
+        onClose={() => setIsAddSessionModalOpen(false)}
         onSubmit={handleAddSession}
-        clients={clients}
-        trainers={trainers}  // Pass full TrainerProfile[]
+        clients={clients}  // Pass filtered clients
+        trainers={trainers}  // Pass filtered trainers
         loading={loading}
       />
     </Box>

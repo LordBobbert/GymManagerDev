@@ -1,5 +1,3 @@
-// File: src/components/admin/AddClientForm.tsx
-
 import React, { useState } from 'react';
 import {
     Dialog,
@@ -14,57 +12,42 @@ import {
     InputLabel,
     CircularProgress,
 } from '@mui/material';
-import { Client } from '../../interfaces/client';
-import { Trainer } from '../../interfaces/trainer';
-import { getClientFieldConfig } from './../../config/fieldConfigs';  // Import the correct function
+import { User } from '../../interfaces/user';  // Using the unified User model
+import { getClientFieldConfig } from './../../config/fieldConfigs';  // Client-specific fields configuration
 import { setNestedValue, getNestedValue } from '../../utils/nestedUtils';
 
 interface AddClientFormProps {
     open: boolean;
     onClose: () => void;
-    onSubmit: (newClient: Omit<Client, 'id'>) => Promise<void>; // Ensure async onSubmit
-    trainers: Trainer[];
+    onSubmit: (newClient: Omit<User, 'id'>) => Promise<void>;
+    trainers: User[];  // Trainers are now Users with the 'trainer' role
     loading: boolean;
 }
 
 const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, trainers, loading }) => {
-    const [formData, setFormData] = useState<Omit<Client, 'id'>>({
-        user: {
-            id: '',
-            username: '',
-            first_name: '',
-            last_name: '',
-            email: '',
-            phone_number: '',
-            gender: undefined,
-            birthday: undefined,
-            roles: [],
-        },
+    const [formData, setFormData] = useState<Omit<User, 'id'>>({
+        first_name: '',
+        last_name: '',
+        username: '',
+        email: '',
+        phone_number: '',
+        gender: undefined,
+        birthday: undefined,
+        roles: ['client'],  // Predefined 'client' role
         training_status: 'active',
         personal_training_rate: 0,
         rate_type: 'one_on_one',
         emergency_contact_name: '',
         emergency_contact_phone: '',
-        trainer: undefined,
+        trainer_id: undefined,  // Selected trainer's ID
     });
 
-    const handleChange = (key: string, value: string | number | boolean | Trainer | undefined) => {
+    const handleChange = (key: keyof Omit<User, 'id'>, value: any) => {
         setFormData((prev) => setNestedValue(prev, key, value));
     };
 
     const handleSave = () => {
-        const newClient = {
-            ...formData,
-            trainer_id: formData.trainer?.id ?? undefined,  // Ensure `trainer_id` is properly set
-            user: {
-                ...formData.user,
-                id: formData.user.id ?? '',  // Ensure `id` is a string or empty string
-                username: formData.user.username || '',  // Ensure `username` is always a string
-            },
-        };
-
-        console.log('Submitting new client:', newClient);  // Debug: Log the new client data before submitting
-        onSubmit(newClient);  // Call `onSubmit` with the new client data
+        onSubmit(formData);  // Submit the form data
     };
 
     return (
@@ -72,41 +55,38 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
             <DialogTitle>Add Client</DialogTitle>
             <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {getClientFieldConfig(trainers).map(({ label, key, type }: { label: string; key: string; type: string }) => {
-                        const value = getNestedValue(formData, key as string) || '';  // Correct usage for retrieving nested value
+                    {/* Map through the client field config to generate form fields */}
+                    {getClientFieldConfig().map(({ label, key, type }) => {
+                        const value = getNestedValue(formData, key as keyof Omit<User, 'id'>) || '';  // Access flat fields
                         return (
                             <TextField
                                 key={String(key)}
                                 label={label}
                                 type={type}
                                 value={value}
-                                onChange={(e) => handleChange(key as string, e.target.value)}  // Update form data using setNestedValue
+                                onChange={(e) => handleChange(key as keyof Omit<User, 'id'>, e.target.value)}
+                                fullWidth
                             />
                         );
                     })}
 
-                    {/* Trainer Dropdown */}
-                    {loading ? (
-                        <CircularProgress />
-                    ) : (
-                        <div>
-                            <InputLabel>Trainer</InputLabel>
-                            <Select
-                                value={formData.trainer?.id || ''} // Use the trainer's id or empty string
-                                onChange={(e) => {
-                                    const selectedTrainer = trainers.find((trainer) => trainer.id === Number(e.target.value)); // Convert e.target.value to a number
-                                    handleChange('trainer', selectedTrainer || undefined); // Set the selected trainer object or undefined
-                                }}
-                            >
-                                <MenuItem value="">None</MenuItem>
-                                {trainers.map((trainer) => (
-                                    <MenuItem key={trainer.id} value={trainer.id.toString()}> {/* Convert trainer.id to string */}
-                                        {trainer.user.first_name} {trainer.user.last_name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </div>
-                    )}
+                    {/* Trainer dropdown selection */}
+                    <InputLabel>Trainer</InputLabel>
+                    <Select
+                        value={formData.trainer_id || ''}  // Use trainer_id directly
+                        onChange={(e) => handleChange('trainer_id', Number(e.target.value))}
+                        fullWidth
+                    >
+                        <MenuItem value="">None</MenuItem>
+                        {trainers.map((trainer) => (
+                            <MenuItem key={trainer.id} value={trainer.id}>
+                                {trainer.first_name} {trainer.last_name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+
+                    {/* Show loader if in loading state */}
+                    {loading && <CircularProgress />}
                 </Box>
             </DialogContent>
             <DialogActions>
@@ -114,9 +94,9 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
                 <Button
                     variant="contained"
                     onClick={handleSave}
-                    disabled={loading}  // Disable button while loading
+                    disabled={loading}  // Disable button when loading
                 >
-                    {loading ? 'Saving...' : 'Save'}  {/* Show loading text */}
+                    {loading ? 'Saving...' : 'Save'}
                 </Button>
             </DialogActions>
         </Dialog>

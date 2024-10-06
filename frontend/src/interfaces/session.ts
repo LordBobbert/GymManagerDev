@@ -1,7 +1,7 @@
 // src/interfaces/session.ts
 
-import { Client } from './client';
-import { Trainer } from './trainer';
+import { Client } from './depriclient';
+import { Trainer } from './depritrainer';
 
 export interface Session {
     id: number;
