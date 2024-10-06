@@ -2,24 +2,22 @@
 
 import React from "react";
 import { Box, Button, TextField } from "@mui/material";
-import { User } from "@/interfaces/user";
 import { FieldConfig } from "@/interfaces/FieldConfig";
+import { User } from "@/interfaces/user";
 
 interface BaseListDetailsPageProps<T> {
   data: T;
-  fieldConfig: FieldConfig<T>[];  // Correct typing based on User
-  clients: User[];  // Accept User[] for clients
-  trainers: User[];  // Accept User[] for trainers
+  fieldConfig: FieldConfig<T>[];
   onSave: (updatedData: T) => void;
   isEditing: boolean;
-  handleChange: (key: keyof T, value: any) => void;
+  clients: User[];  // Accept User[] for clients
+  trainers: User[];  // Accept User[] for trainers
+  handleChange: (key: keyof T, value: T[keyof T]) => void;
 }
 
 const BaseListDetailsPage = <T extends object>({
   data,
   fieldConfig,
-  clients,
-  trainers,
   onSave,
   isEditing,
   handleChange,
@@ -34,13 +32,29 @@ const BaseListDetailsPage = <T extends object>({
         const typedKey = key as keyof T;
         const value = (data[typedKey] as string | number | undefined) || "";
 
+        const handleInputChange = (
+          e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        ) => {
+          let newValue: any = e.target.value;
+
+          // Coerce types based on the field type
+          if (type === "number") {
+            newValue = parseFloat(newValue);
+            if (isNaN(newValue)) newValue = 0; // Handle invalid numbers
+          } else if (type === "date") {
+            newValue = new Date(newValue);
+          }
+
+          handleChange(typedKey, newValue as T[keyof T]); // Cast based on expected type
+        };
+
         return (
           <TextField
             key={String(key)}
             label={label}
             type={type || "text"}
             value={String(value)}
-            onChange={(e) => handleChange(typedKey, e.target.value)}
+            onChange={handleInputChange}
             disabled={!isEditing}
             fullWidth
           />

@@ -1,7 +1,6 @@
 // File: src/config/fieldConfigs.ts
 
 import { FieldConfig } from '../interfaces/FieldConfig';
-import { TrainerProfile } from '../interfaces/depritrainer';
 import { User } from '../interfaces/user';
 import { Session } from '../interfaces/session';  // Import Session type
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, TextField, Typography, Alert } from "@mui/material";
+import { Box, Button, TextField, Alert } from "@mui/material";
 
 // Define the props interface
 interface LoginFormProps {
