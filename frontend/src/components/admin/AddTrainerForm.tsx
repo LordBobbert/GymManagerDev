@@ -1,3 +1,5 @@
+// File: src/components/admin/AddTrainerForm.tsx
+
 import React, { useState } from 'react';
 import {
     Dialog,
@@ -8,7 +10,7 @@ import {
     Box,
     TextField,
 } from '@mui/material';
-import { User } from '../../interfaces/user';
+import { User } from '../../interfaces/user';  // Use User interface for typing
 import { getTrainerFieldConfig } from './../../config/fieldConfigs';
 import { setNestedValue, getNestedValue } from '../../utils/nestedUtils';
 
@@ -28,13 +30,14 @@ const AddTrainerForm: React.FC<AddTrainerFormProps> = ({ open, onClose, onSubmit
         phone_number: '',
         gender: undefined,
         birthday: undefined,
-        roles: ['trainer'],
+        roles: ['trainer'],  // Predefined 'trainer' role
         status: 'sub_part_time',
-        monthly_rate: 250,  // Correctly typed as number
-        rent_rate_per_session: 20,  // Correctly typed as number
+        monthly_rate: 250,  // Type as number
+        rent_rate_per_session: 20,  // Type as number
     });
 
-    const handleChange = (key: keyof Omit<User, 'id'>, value: any) => {
+    // Update typing to avoid 'any'
+    const handleChange = <K extends keyof Omit<User, 'id'>>(key: K, value: User[K]) => {
         setFormData((prev) => setNestedValue(prev, key, value));
     };
 
@@ -52,14 +55,15 @@ const AddTrainerForm: React.FC<AddTrainerFormProps> = ({ open, onClose, onSubmit
             <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     {getTrainerFieldConfig().map(({ label, key, type }) => {
-                        const value = getNestedValue(formData, key as keyof Omit<User, 'id'>) || '';
+                        const typedKey = key as keyof Omit<User, 'id'>;  // Use more specific typing
+                        const value = getNestedValue(formData, typedKey) || '';  // Type-safe access
                         return (
                             <TextField
                                 key={String(key)}
                                 label={label}
                                 type={type}
-                                value={value}
-                                onChange={(e) => handleChange(key as keyof Omit<User, 'id'>, e.target.value)}
+                                value={String(value)}  // Ensure value is converted to string
+                                onChange={(e) => handleChange(typedKey, e.target.value as any)}
                                 fullWidth
                             />
                         );
