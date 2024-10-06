@@ -1,5 +1,4 @@
 // File: src/app/admin/clients/page.tsx
-"use client";
 
 import React, { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
@@ -10,7 +9,6 @@ import { fetchUsers, createUser } from '@/services/userService';
 
 const ClientsPage: React.FC = () => {
   const [clients, setClients] = useState<User[]>([]);
-  const [selectedClient, setSelectedClient] = useState<User | null>(null);
   const [isAddClientOpen, setIsAddClientOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -34,12 +32,11 @@ const ClientsPage: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', px: 2 }}>
-      {/* Only BaseList will handle rendering the "Add Client" button */}
       <BaseList
         data={clients}
         section="clients"
         getKey={(client) => client.id}
-        onSelect={setSelectedClient}
+        onSelect={() => {}} // This can be left empty or removed if selection is not needed
         renderItem={(client) => (
           <span>{client.first_name} {client.last_name}</span>
         )}
