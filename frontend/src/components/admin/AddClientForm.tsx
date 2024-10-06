@@ -1,5 +1,7 @@
 // File: src/components/admin/AddClientForm.tsx
 
+"use client";
+
 import React, { useState } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, TextField, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import { User } from "@/interfaces/user";
