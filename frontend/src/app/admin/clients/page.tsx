@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { User } from "@/interfaces/user";
 import { fetchUsers } from "@/services/userService";
 import { createUser, updateUser } from "@/services/userService"; 

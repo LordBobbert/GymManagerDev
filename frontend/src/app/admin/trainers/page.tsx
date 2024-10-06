@@ -61,7 +61,7 @@ const TrainersPage = () => {
             fieldConfig={getTrainerFieldConfig()}
             onSave={() => {}}
             isEditing={true}
-            handleChange={(key, value) => {}}
+            handleChange={() => {}}
             clients={[]}  // You can pass an empty array if clients are not needed
             trainers={trainers}  // Pass trainers
           />
