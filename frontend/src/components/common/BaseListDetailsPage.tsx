@@ -1,130 +1,95 @@
-// File: src/components/common/BaseListDetailsPage.tsx
-
-import React, { useState } from 'react';
-import { Box, Grid, TextField, Select, MenuItem, InputLabel, FormControl, Button, Paper } from '@mui/material';
-import { FieldConfig } from '../../interfaces/FieldConfig';
-import { getNestedValue, setNestedValue } from '../../utils/nestedUtils';
+import React, { useState } from "react";
+import { Box, TextField, Select, MenuItem, FormControl, InputLabel, Button } from "@mui/material";
+import { FieldConfig } from "@/interfaces/FieldConfig";
+import { ClientProfile } from "@/interfaces/client";
+import { TrainerProfile } from "@/interfaces/trainer";
 
 interface BaseListDetailsPageProps<T> {
   data: T;
   fieldConfig: FieldConfig<T>[];
-  clients?: { id: number; user: { first_name: string; last_name: string } }[];  // Add clients prop
-  trainers?: { id: number; user: { first_name: string; last_name: string } }[]; // Add trainers prop
-  onSave: (updatedItem: Partial<T>) => Promise<void>;
+  onSave: (updatedData: Partial<T>) => Promise<void>;
+  clients: ClientProfile[];
+  trainers: TrainerProfile[];
+  isEditing: boolean;
+  handleChange: (key: string, value: any) => void;
 }
 
-const BaseListDetailsPage = <T,>({
+const BaseListDetailsPage = <T extends {}>({
   data,
   fieldConfig,
-  clients = [],
-  trainers = [],
   onSave,
+  clients,
+  trainers,
+  isEditing,
+  handleChange
 }: BaseListDetailsPageProps<T>) => {
   const [formData, setFormData] = useState<Partial<T>>(data);
-  const [modifiedData, setModifiedData] = useState<Partial<T>>({});
-  const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const handleChange = (key: string, value: unknown) => {
-    setFormData((prev) => setNestedValue({ ...prev }, key, value));
-    setModifiedData((prev) => setNestedValue({ ...prev }, key, value));
+  const handleInputChange = (key: string, value: any) => {
+    setFormData((prevData) => ({ ...prevData, [key]: value }));
+    handleChange(key, value);
   };
 
-  const handleSave = async () => {
-    if (Object.keys(modifiedData).length > 0) {
-      await onSave(modifiedData);
-      setIsEditing(false);
-    }
+  const handleSave = () => {
+    onSave(formData);
   };
 
   return (
-    <Paper elevation={3} sx={{ padding: 3, marginLeft: 2, flexGrow: 1 }}>
-      <Grid container spacing={2}>
-        {fieldConfig.map(({ label, key, type, options }) => {
-          let value = getNestedValue(formData || {}, key as string) || '';
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      {fieldConfig.map(({ label, key, type, options }) => {
+        // Ensure key is a string or number
+        const reactKey = String(key); // Explicitly cast key to string
 
-          // Handle special cases for date, clients, and trainers
-          if (key === 'date') {
-            value = typeof value === 'string' ? value.split('T')[0] : '';  // Ensure the correct date format for input
-          }
-
-          return (
-            <Grid item xs={12} sm={6} key={String(key)}>
-              {isEditing && key === 'client' && clients.length > 0 ? (
-                <FormControl fullWidth>
-                  <InputLabel>{label}</InputLabel>
-                  <Select
-                    value={getNestedValue(formData || {}, key as string) || ''}
-                    onChange={(e) => handleChange(key as string, e.target.value)}
-                  >
-                    {clients.map((client) => (
-                      <MenuItem key={client.id} value={client.id}>
-                        {client.user.first_name} {client.user.last_name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : isEditing && key === 'trainer' && trainers.length > 0 ? (
-                <FormControl fullWidth>
-                  <InputLabel>{label}</InputLabel>
-                  <Select
-                    value={getNestedValue(formData || {}, key as string) || ''}
-                    onChange={(e) => handleChange(key as string, e.target.value)}
-                  >
-                    {trainers.map((trainer) => (
-                      <MenuItem key={trainer.id} value={trainer.id}>
-                        {trainer.user.first_name} {trainer.user.last_name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : isEditing && options ? (
-                <FormControl fullWidth>
-                  <InputLabel>{label}</InputLabel>
-                  <Select
-                    label={label}
-                    value={value}
-                    onChange={(e) => handleChange(key as string, e.target.value)}
-                  >
-                    {options.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : (
-                <TextField
-                  label={label}
-                  type={type || 'text'}
-                  value={value}
-                  onChange={(e) => handleChange(key as string, e.target.value)}
-                  fullWidth
-                  disabled={!isEditing}
-                />
-              )}
-            </Grid>
-          );
-        })}
-      </Grid>
-
-      {/* Buttons */}
-      <Box display="flex" justifyContent="flex-end" mt={2}>
-        {isEditing ? (
-          <>
-            <Button variant="outlined" sx={{ mr: 2 }} onClick={() => setIsEditing(false)}>
-              Cancel
-            </Button>
-            <Button variant="contained" onClick={handleSave} disabled={Object.keys(modifiedData).length === 0}>
-              Save
-            </Button>
-          </>
+        return type === "select" && key === "client_id" ? (
+          <FormControl fullWidth key={reactKey}>
+            <InputLabel>{label}</InputLabel>
+            <Select
+              value={(formData as any).client?.user.id || ""}
+              onChange={(e) =>
+                handleInputChange(key as string, clients.find(client => client.user.id === Number(e.target.value)))
+              }
+              disabled={!isEditing}
+            >
+              {clients.map(client => (
+                <MenuItem key={client.user.id} value={client.user.id}>
+                  {client.user.first_name} {client.user.last_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        ) : type === "select" && key === "trainer_id" ? (
+          <FormControl fullWidth key={reactKey}>
+            <InputLabel>{label}</InputLabel>
+            <Select
+              value={(formData as any).trainer?.user.id || ""}
+              onChange={(e) =>
+                handleInputChange(key as string, trainers.find(trainer => trainer.user.id === Number(e.target.value)))
+              }
+              disabled={!isEditing}
+            >
+              {trainers.map(trainer => (
+                <MenuItem key={trainer.user.id} value={trainer.user.id}>
+                  {trainer.user.first_name} {trainer.user.last_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         ) : (
-          <Button variant="contained" color="primary" onClick={() => setIsEditing(true)}>
-            Edit
-          </Button>
-        )}
-      </Box>
-    </Paper>
+          <TextField
+            key={reactKey}  // Use the converted string as the key
+            label={label}
+            type={type || "text"}
+            value={(formData as any)[key] || ""}
+            onChange={(e) => handleInputChange(key as string, e.target.value)}
+            fullWidth
+            disabled={!isEditing}
+          />
+        );
+      })}
+      <Button variant="contained" onClick={handleSave} disabled={!isEditing}>
+        Save
+      </Button>
+    </Box>
   );
 };
 

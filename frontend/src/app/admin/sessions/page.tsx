@@ -8,22 +8,22 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { fetchSessions, addSession } from "@/services/sessionService";
+import { fetchSessions, addSession, updateSession } from "@/services/sessionService";
 import { fetchTrainers } from "@/services/trainerService";
 import { fetchClients } from "@/services/clientService";
 import { Session } from "@/interfaces/session";
-import { Trainer } from "@/interfaces/trainer";
-import { Client } from "@/interfaces/client";
+import { TrainerProfile } from "@/interfaces/trainer";
+import { ClientProfile } from "@/interfaces/client";
 import BaseListDetailsPage from "@/components/common/BaseListDetailsPage";
-import { getSessionFieldConfig } from "@/config/fieldConfigs";
 import AddSessionModal from "@/components/admin/AddSessionModal";
 import SessionTable from "@/components/admin/SessionTable";
+import { getSessionFieldConfig } from "@/config/fieldConfigs";
 
 const SessionsPage = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
-  const [trainers, setTrainers] = useState<Trainer[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
+  const [trainers, setTrainers] = useState<TrainerProfile[]>([]);
+  const [clients, setClients] = useState<ClientProfile[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddSessionModalOpen, setIsAddSessionModalOpen] = useState<boolean>(false);
 
@@ -37,7 +37,7 @@ const SessionsPage = () => {
         ]);
 
         setSessions(fetchedSessions);
-        setTrainers(fetchedTrainers);
+        setTrainers(fetchedTrainers);  // Keep full TrainerProfile[]
         setClients(fetchedClients);
         setLoading(false);
       } catch (error) {
@@ -59,11 +59,27 @@ const SessionsPage = () => {
   const handleAddSession = async (newSession: Omit<Session, "id">): Promise<void> => {
     try {
       setLoading(true);
-      const addedSession = await addSession(newSession);  // This is asynchronous
+      const addedSession = await addSession(newSession);
       setSessions((prevSessions) => [...prevSessions, addedSession]);
       handleCloseAddSessionModal();
     } catch (error) {
       console.error("Failed to add session:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveSession = async (updatedSession: Partial<Session>): Promise<void> => {
+    try {
+      setLoading(true);
+      const savedSession = await updateSession(updatedSession.id!, updatedSession);
+      setSessions((prevSessions) =>
+        prevSessions.map((session) =>
+          session.id === savedSession.id ? savedSession : session
+        )
+      );
+    } catch (error) {
+      console.error("Failed to save session:", error);
     } finally {
       setLoading(false);
     }
@@ -88,7 +104,7 @@ const SessionsPage = () => {
       <SessionTable
         sessions={sessions}
         onSessionSelect={handleSessionSelect}
-        trainers={trainers}
+        trainers={trainers}  // Pass full TrainerProfile[]
       />
 
       {selectedSession && (
@@ -97,13 +113,12 @@ const SessionsPage = () => {
             key={selectedSession.id}
             data={selectedSession}
             fieldConfig={getSessionFieldConfig()}
-            clients={clients}  // Pass clients array
-            trainers={trainers}  // Pass trainers array
-            onSave={async (updatedSession) => {
-              console.log("Session saved", updatedSession);
-            }}
+            clients={clients}
+            trainers={trainers}  // Pass full TrainerProfile[]
+            onSave={handleSaveSession}
+            isEditing={true}  // Assuming editing mode is always enabled for selected sessions
+            handleChange={() => {}}  // Implement as needed in BaseListDetailsPage
           />
-
         </Box>
       )}
 
@@ -113,7 +128,7 @@ const SessionsPage = () => {
         onClose={handleCloseAddSessionModal}
         onSubmit={handleAddSession}
         clients={clients}
-        trainers={trainers}
+        trainers={trainers}  // Pass full TrainerProfile[]
         loading={loading}
       />
     </Box>

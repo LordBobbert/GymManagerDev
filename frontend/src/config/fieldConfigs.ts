@@ -1,10 +1,12 @@
 // File: src/config/fieldConfigs.ts
 
 import { FieldConfig } from '../interfaces/FieldConfig';
-import { Client } from '../interfaces/client';
-import { Trainer } from '../interfaces/trainer';
+import { ClientProfile } from '../interfaces/client';
+import { TrainerProfile } from '../interfaces/trainer';
+import { User } from '../interfaces/user';  // Import User as we will now be dealing with User objects
 
-export const getClientFieldConfig = (trainers: Trainer[]): FieldConfig<Client>[] => [
+// Updated getClientFieldConfig function
+export const getClientFieldConfig = (trainers: User[]): FieldConfig<ClientProfile>[] => [
   {
     label: 'First Name',
     key: 'user.first_name',
@@ -75,13 +77,13 @@ export const getClientFieldConfig = (trainers: Trainer[]): FieldConfig<Client>[]
     ],
   },
   {
-    label: 'Trainer', // Field for trainer
-    key: 'trainer.id',  // Use `trainer.id` to reference the trainer's id
-    type: 'select',  // Make this a select dropdown
+    label: 'Trainer',
+    key: 'trainer.id',  // Trainer is linked via the User model
+    type: 'select',
     options: trainers.map((trainer) => ({
-      label: `${trainer.user.first_name} ${trainer.user.last_name}`,
+      label: `${trainer.first_name} ${trainer.last_name}`,  // Access trainer's name directly from User model
       value: trainer.id,
-    })),  // Map the trainers into options
+    })),
   },
   {
     label: 'Emergency Contact Name',
@@ -95,51 +97,111 @@ export const getClientFieldConfig = (trainers: Trainer[]): FieldConfig<Client>[]
   },
 ];
 
+// Updated getTrainerFieldConfig function
+export const getTrainerFieldConfig = (): FieldConfig<TrainerProfile>[] => [
+  {
+    label: 'First Name',
+    key: 'user.first_name',
+    type: 'text',
+  },
+  {
+    label: 'Last Name',
+    key: 'user.last_name',
+    type: 'text',
+  },
+  {
+    label: 'Username',
+    key: 'user.username',
+    type: 'text',
+  },
+  {
+    label: 'Email',
+    key: 'user.email',
+    type: 'email',
+  },
+  {
+    label: 'Phone Number',
+    key: 'user.phone_number',
+    type: 'text',
+  },
+  {
+    label: 'Birthday',
+    key: 'user.birthday',
+    type: 'date',
+  },
+  {
+    label: 'Gender',
+    key: 'user.gender',
+    type: 'select',
+    options: [
+      { label: 'Male', value: 'male' },
+      { label: 'Female', value: 'female' },
+    ],
+  },
+  {
+    label: 'Status',
+    key: 'status',
+    type: 'select',
+    options: [
+      { value: 'sub_part_time', label: 'Subcontractor Part Time' },
+      { value: 'sub_full_time', label: 'Subcontractor Full Time' },
+      { value: 'emp_part_time', label: 'Employee Part Time' },
+      { value: 'emp_full_time', label: 'Employee Full Time' },
+      { value: 'inactive', label: 'Inactive' },
+    ],
+  },
+  {
+    label: 'Monthly Rate',
+    key: 'monthly_rate',
+    type: 'select',
+    options: [
+      { value: '200', label: 'Legacy Part Time - $200' },
+      { value: '250', label: 'Part Time - $250' },
+      { value: '1000', label: 'Full Time - $1000' },
+    ],
+  },
+  {
+    label: 'Rent Rate per Session',
+    key: 'rent_rate_per_session',
+    type: 'select',
+    options: [
+      { value: '15', label: 'Legacy Part Time - $15' },
+      { value: '20', label: 'Part Time - $20' },
+    ],
+  },
+];
 
-export const getTrainerFieldConfig = () => {
-  return [
-    { label: 'First Name', key: 'user.first_name', type: 'text' },
-    { label: 'Last Name', key: 'user.last_name', type: 'text' },
-    { label: 'Username', key: 'user.username', type: 'text' },
-    { label: 'Email', key: 'user.email', type: 'email' },
-    { label: 'Phone Number', key: 'user.phone_number', type: 'text' },
-    { label: 'Birthday', key: 'user.birthday', type: 'date' },
-    { label: 'Gender', key: 'user.gender', type: 'select', options: [
-        { label: 'Male', value: 'male' },
-        { label: 'Female', value: 'female' },
-      ]
-    },
-    { label: 'Status', key: 'status', type: 'select', options: [
-        { value: 'sub_part_time', label: 'Subcontractor Part Time' },
-        { value: 'sub_full_time', label: 'Subcontractor Full Time' },
-        { value: 'emp_part_time', label: 'Employee Part Time' },
-        { value: 'emp_full_time', label: 'Employee Full Time' },
-        { value: 'inactive', label: 'Inactive' }
-      ]
-    },
-    { label: 'Monthly Rate', key: 'monthly_rate', type: 'select', options: [
-        { value: '200', label: 'Legacy Part Time - $200' },
-        { value: '250', label: 'Part Time - $250' },
-        { value: '1000', label: 'Full Time - $1000' }
-      ]
-    },
-    { label: 'Rent Rate per Session', key: 'rent_rate_per_session', type: 'select', options: [
-        { value: '15', label: 'Legacy Part Time - $15' },
-        { value: '20', label: 'Part Time - $20' }
-      ]
-    }
-  ];
-};
-
-export const getSessionFieldConfig = () => [
-  { label: 'Date', key: 'date', type: 'date' },
-  { label: 'Session Type', key: 'session_type', type: 'select', options: [
-    { label: 'One on One', value: 'one_on_one' },
-    { label: 'Partner', value: 'partner' },
-    { label: 'Small Group', value: 'small_group' },
-    { label: 'Group', value: 'group' }
-  ]},
-  { label: 'Client', key: 'client', type: 'select' },  // Use select for client
-  { label: 'Trainer', key: 'trainer', type: 'select' }, // Use select for trainer
-  { label: 'Notes', key: 'notes', type: 'text' },
+// Updated getSessionFieldConfig function
+export const getSessionFieldConfig = (): FieldConfig<any>[] => [
+  {
+    label: 'Date',
+    key: 'date',
+    type: 'date',
+  },
+  {
+    label: 'Session Type',
+    key: 'session_type',
+    type: 'select',
+    options: [
+      { label: 'One on One', value: 'one_on_one' },
+      { label: 'Partner', value: 'partner' },
+      { label: 'Small Group', value: 'small_group' },
+      { label: 'Group', value: 'group' },
+    ],
+  },
+  {
+    label: 'Client',
+    key: 'client_id',
+    type: 'select',
+  },
+  {
+    label: 'Trainer',
+    key: 'trainer_id',
+    type: 'select',
+  },
+  {
+    label: 'Notes',
+    key: 'notes',
+    type: 'text',
+  },
 ];

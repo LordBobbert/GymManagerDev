@@ -21,12 +21,15 @@ class LoginView(APIView):
                 # Create refresh token for the user
                 refresh = RefreshToken.for_user(user)
 
+                # Determine user role
+                roles = [role.name for role in user.roles.all()]
+
                 # Create a response with tokens and set cookies
                 response = Response({
                     'message': 'Login successful',
                     'user': {
                         'username': user.username,
-                        'roles': [role.name for role in user.roles.all()],
+                        'roles': roles,
                     },
                 })
 
@@ -35,10 +38,8 @@ class LoginView(APIView):
 
                 return response
             except Exception as e:
-                print(f"Error during token generation or response: {e}")
                 return Response({'error': 'Token generation failed'}, status=500)
 
-        print(f"Invalid login attempt for user: {username}")
         return Response({'error': 'Invalid credentials'}, status=401)
 
 

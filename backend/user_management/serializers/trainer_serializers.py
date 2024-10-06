@@ -1,7 +1,7 @@
-# user_management/serializers/trainer_serializers.py
+# File: user_management/serializers/trainer_serializers.py
 
 from rest_framework import serializers
-from user_management.models import TrainerProfile, User, Role  # Assuming there's a TrainerProfile model
+from user_management.models import TrainerProfile, User, Role  # Ensure Role is imported
 from .user_serializers import UserSerializer  # Assuming you have a UserSerializer
 from django.core.exceptions import ValidationError
 
@@ -20,7 +20,7 @@ class TrainerProfileSerializer(serializers.ModelSerializer):
         user = User.objects.create(**user_data)
 
         # Assign the 'trainer' role to the User
-        trainer_role, created = Role.objects.get_or_create(name='trainer')
+        trainer_role, _ = Role.objects.get_or_create(name='trainer')
         user.roles.add(trainer_role)
 
         # Create the TrainerProfile object

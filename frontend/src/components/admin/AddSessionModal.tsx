@@ -5,12 +5,12 @@ import { Box, Modal } from "@mui/material";
 import AddSessionForm from "@/components/admin/AddSessionForm";
 import { Client } from "@/interfaces/client";
 import { Trainer } from "@/interfaces/trainer";
-import { Session } from "@/interfaces/session";  // Correct import for Session
+import { Session } from "@/interfaces/session";
 
 interface AddSessionModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (newSession: Omit<Session, "id">) => Promise<void>;  // Return Promise<void>
+  onSubmit: (newSession: Omit<Session, "id">) => Promise<void>;
   clients: Client[];
   trainers: Trainer[];
   loading: boolean;
@@ -22,21 +22,32 @@ const AddSessionModal: React.FC<AddSessionModalProps> = ({
   onSubmit,
   clients,
   trainers,
-  loading,
+  loading
 }) => {
   return (
     <Modal open={open} onClose={onClose}>
-      <Box sx={{ /* your styles */ }}>
+      <Box sx={{ ...modalStyle }}>
         <AddSessionForm
+          onSubmit={onSubmit}
+          onClose={onClose}
           clients={clients}
           trainers={trainers}
           loading={loading}
-          onSubmit={onSubmit}  // Pass the correct async onSubmit function
-          onClose={onClose}
         />
       </Box>
     </Modal>
   );
+};
+
+const modalStyle = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  backgroundColor: "white",
+  boxShadow: 24,
+  padding: 4,
 };
 
 export default AddSessionModal;

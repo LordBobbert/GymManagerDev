@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from user_management.models import ClientProfile, User
+from user_management.models import ClientProfile, User, Role
 from .user_serializers import UserSerializer
 
 class ClientProfileSerializer(serializers.ModelSerializer):
@@ -25,17 +25,14 @@ class ClientProfileSerializer(serializers.ModelSerializer):
         new_username = user_data.get('username')
         new_email = user_data.get('email')
 
-        # Validate the username only if it is provided and has been changed
         if new_username and (not existing_user or new_username != existing_user.username):
             if User.objects.filter(username=new_username).exclude(id=existing_user.id if existing_user else None).exists():
                 raise serializers.ValidationError({'user': {'username': 'A user with that username already exists.'}})
 
-        # Validate the email only if it is provided and has been changed
         if new_email and (not existing_user or new_email != existing_user.email):
             if User.objects.filter(email=new_email).exclude(id=existing_user.id if existing_user else None).exists():
                 raise serializers.ValidationError({'user': {'email': 'A user with this email already exists.'}})
 
-    # Handle creation of a new ClientProfile and associated User
     def create(self, validated_data):
         # Extract nested user data
         user_data = validated_data.pop('user')
@@ -46,10 +43,15 @@ class ClientProfileSerializer(serializers.ModelSerializer):
         # Create the User instance
         user = User.objects.create(**user_data)
 
+        # Assign the client role
+        client_role, _ = Role.objects.get_or_create(name='client')
+        user.roles.add(client_role)
+
         # Create the ClientProfile instance
         client_profile = ClientProfile.objects.create(user=user, **validated_data)
 
         return client_profile
+
 
     # Handle updates to an existing ClientProfile and associated User
     def update(self, instance, validated_data):

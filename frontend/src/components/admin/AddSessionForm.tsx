@@ -1,5 +1,3 @@
-// File: src/components/admin/AddSessionForm.tsx
-
 import React, { useState } from 'react';
 import {
     DialogContent,
@@ -11,16 +9,16 @@ import {
     MenuItem,
     InputLabel
 } from '@mui/material';
-import { Client } from '../../interfaces/client';
-import { Trainer } from '../../interfaces/trainer';
+import { ClientProfile } from '../../interfaces/client';
+import { TrainerProfile } from '../../interfaces/trainer';
 
 interface AddSessionFormProps {
     onClose: () => void;
     onSubmit: (newSession: { client_id: number; trainer_id: number; session_type: string; date: string; notes?: string }) => Promise<void>;
-    clients: Client[];
-    trainers: Trainer[];
+    clients: ClientProfile[];
+    trainers: TrainerProfile[];
     loading: boolean;
-    session?: { client: Client; trainer: Trainer; session_type: string; date: string; notes?: string };  // Optional session data for editing
+    session?: { client: ClientProfile; trainer: TrainerProfile; session_type: string; date: string; notes?: string };  // Optional session data for editing
 }
 
 const SESSION_TYPE_CHOICES = [
@@ -39,7 +37,7 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ onClose, onSubmit, clie
         notes: session?.notes || '',
     });
 
-    const handleChange = (key: keyof typeof formData, value: string | Client | Trainer | undefined) => {
+    const handleChange = (key: keyof typeof formData, value: string | ClientProfile | TrainerProfile | undefined) => {
         setFormData((prev) => ({
             ...prev,
             [key]: value,
@@ -47,18 +45,18 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ onClose, onSubmit, clie
     };
 
     const handleSave = () => {
-        if (!formData.client || !formData.client.id) {
+        if (!formData.client || !formData.client.user?.id) {
             alert("Please select a client.");
             return;
         }
-        if (!formData.trainer || !formData.trainer.id) {
+        if (!formData.trainer || !formData.trainer.user?.id) {
             alert("Please select a trainer.");
             return;
         }
 
         const payload = {
-            client_id: formData.client.id,
-            trainer_id: formData.trainer.id,
+            client_id: formData.client.user.id,  // Access client ID through user
+            trainer_id: formData.trainer.user.id,  // Access trainer ID through user
             session_type: formData.session_type,
             date: formData.date,
             notes: formData.notes,
@@ -101,16 +99,16 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ onClose, onSubmit, clie
 
                 <InputLabel>Client</InputLabel>
                 <Select
-                    value={formData.client?.id || ''}
+                    value={formData.client?.user?.id || ''}
                     onChange={(e) => {
-                        const selectedClient = clients.find(client => client.id === Number(e.target.value));
+                        const selectedClient = clients.find(client => client.user.id === Number(e.target.value));
                         handleChange('client', selectedClient);
                     }}
                     fullWidth
                 >
                     <MenuItem value="">None</MenuItem>
                     {clients.map((client) => (
-                        <MenuItem key={client.id} value={client.id}>
+                        <MenuItem key={client.user.id} value={client.user.id}>
                             {client.user.first_name} {client.user.last_name}
                         </MenuItem>
                     ))}
@@ -118,16 +116,16 @@ const AddSessionForm: React.FC<AddSessionFormProps> = ({ onClose, onSubmit, clie
 
                 <InputLabel>Trainer</InputLabel>
                 <Select
-                    value={formData.trainer?.id || ''}
+                    value={formData.trainer?.user?.id || ''}
                     onChange={(e) => {
-                        const selectedTrainer = trainers.find(trainer => trainer.id === Number(e.target.value));
+                        const selectedTrainer = trainers.find(trainer => trainer.user.id === Number(e.target.value));
                         handleChange('trainer', selectedTrainer);
                     }}
                     fullWidth
                 >
                     <MenuItem value="">None</MenuItem>
                     {trainers.map((trainer) => (
-                        <MenuItem key={trainer.id} value={trainer.id}>
+                        <MenuItem key={trainer.user.id} value={trainer.user.id}>
                             {trainer.user.first_name} {trainer.user.last_name}
                         </MenuItem>
                     ))}

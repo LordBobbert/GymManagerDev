@@ -1,3 +1,5 @@
+# File: user_management/models.py
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
@@ -8,6 +10,7 @@ class Role(models.Model):
 
     def __str__(self):
         return self.name
+
 
 # Extending the default User model to include additional fields
 class User(AbstractUser):
@@ -20,13 +23,14 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES, blank=True, null=True)
     birthday = models.DateField(blank=True, null=True)
-    roles = models.ManyToManyField(Role, related_name='users', blank=True)  # Updated field to allow multiple roles
+    roles = models.ManyToManyField(Role, related_name='users', blank=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
 
 # ClientProfile Model
 class ClientProfile(models.Model):
@@ -51,6 +55,7 @@ class ClientProfile(models.Model):
 
     def __str__(self):
         return f"Client: {self.user.first_name} {self.user.last_name}"
+
 
 # TrainerProfile Model
 class TrainerProfile(models.Model):
