@@ -12,8 +12,8 @@ import AddClientForm from "@/components/admin/AddClientForm";
 import { getClientFieldConfig } from "@/config/fieldConfigs";
 
 const ClientsPage = () => {
-  const [clients, setClients] = useState<User[]>([]); // Clients state
-  const [trainers, setTrainers] = useState<User[]>([]); // Trainers state
+  const [clients, setClients] = useState<User[]>([]);
+  const [trainers, setTrainers] = useState<User[]>([]);
   const [selectedClient, setSelectedClient] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddClientOpen, setIsAddClientOpen] = useState<boolean>(false);
@@ -23,17 +23,19 @@ const ClientsPage = () => {
     const loadUsersData = async () => {
       try {
         const fetchedUsers: User[] = await fetchUsers();
-        
-        // Filter clients and trainers by their roles
+
+        // Adjusted filtering assuming roles is an array of strings
         const clients = fetchedUsers.filter((user) =>
-          user.roles.includes("client") // roles as string array
-        );
-        const trainers = fetchedUsers.filter((user) =>
-          user.roles.includes("trainer") // roles as string array
+          user.roles.includes("client")
         );
 
+        const trainers = fetchedUsers.filter((user) =>
+          user.roles.includes("trainer")
+        );
+
+
         setClients(clients);
-        setTrainers(trainers); // Set trainers state
+        setTrainers(trainers);
         setLoading(false);
       } catch (error) {
         setError("Failed to load clients and trainers");
@@ -45,19 +47,18 @@ const ClientsPage = () => {
   }, []);
 
   const handleClientSelect = (client: User) => {
-    setSelectedClient(null); // Deselect first
+    setSelectedClient(null);
     setTimeout(() => {
-      setSelectedClient(client); // Re-select the new client
+      setSelectedClient(client);
     }, 0);
   };
 
   const handleClientSave = async () => {
     try {
       if (selectedClient) {
-        // Call update service and refresh client list
-        const updatedClients = [...clients]; // Mock update for now
+        const updatedClients = [...clients];
         setClients(updatedClients);
-        setSelectedClient(null); // Reset selected client to refresh UI
+        setSelectedClient(null);
       }
     } catch (error) {
       console.error("Error updating client:", error);
@@ -66,8 +67,7 @@ const ClientsPage = () => {
 
   const handleAddClientSubmit = async () => {
     try {
-      // Call create service and refresh client list
-      const updatedClients = [...clients]; // Mock add for now
+      const updatedClients = [...clients];
       setClients(updatedClients);
       setIsAddClientOpen(false);
     } catch (error) {
@@ -118,13 +118,13 @@ const ClientsPage = () => {
       {selectedClient && (
         <Box sx={{ flex: 3 }}>
           <BaseListDetailsPage<User>
-            key={selectedClient.id} // Corrected to use selectedClient.id
+            key={selectedClient.id}
             data={selectedClient}
-            fieldConfig={getClientFieldConfig()} // Provide the correct fieldConfig
+            fieldConfig={getClientFieldConfig()}
             onSave={handleClientSave}
-            clients={clients} // Pass the list of clients
-            trainers={trainers} // Pass the list of trainers
-            isEditing={true} // Enable editing
+            clients={clients}
+            trainers={trainers}
+            isEditing={true}
             handleChange={(key, value) => {
               setSelectedClient((prev) =>
                 prev ? { ...prev, [key]: value } : null
@@ -138,7 +138,7 @@ const ClientsPage = () => {
         open={isAddClientOpen}
         onClose={() => setIsAddClientOpen(false)}
         onSubmit={handleAddClientSubmit}
-        trainers={trainers} // Pass trainers to AddClientForm
+        trainers={trainers}
         loading={loading}
       />
     </Box>
