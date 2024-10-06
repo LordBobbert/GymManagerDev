@@ -3,8 +3,6 @@
 import React, { useState } from "react";
 import { Box, TextField, Select, MenuItem, FormControl, InputLabel, Button } from "@mui/material";
 import { FieldConfig } from "@/interfaces/FieldConfig";
-import { ClientProfile } from "@/interfaces/client"; // Import ClientProfile
-import { TrainerProfile } from "@/interfaces/trainer"; // Import TrainerProfile
 
 interface BaseListDetailsPageProps<T> {
   data: T;
@@ -12,19 +10,15 @@ interface BaseListDetailsPageProps<T> {
   onSave: (updatedData: Partial<T>) => Promise<void>;
   isEditing: boolean;
   handleChange: (key: keyof T, value: unknown) => void;
-  clients?: ClientProfile[];  // Add clients prop
-  trainers?: TrainerProfile[];  // Add trainers prop
   selectOptions?: Partial<{ [key in keyof T]: Array<{ label: string; value: string | number }> }>;
 }
 
-const BaseListDetailsPage = <T extends {}>({
+const BaseListDetailsPage = <T extends unknown>({
   data,
   fieldConfig,
   onSave,
   isEditing,
   handleChange,
-  clients,  // Make clients available in props
-  trainers,  // Make trainers available in props
   selectOptions = {},
 }: BaseListDetailsPageProps<T>) => {
   const [formData, setFormData] = useState<Partial<T>>(data);
@@ -77,7 +71,6 @@ const BaseListDetailsPage = <T extends {}>({
           );
         }
       })}
-
       <Button variant="contained" onClick={handleSave} disabled={!isEditing}>
         Save
       </Button>

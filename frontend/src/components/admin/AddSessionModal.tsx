@@ -26,7 +26,7 @@ const AddSessionModal: React.FC<AddSessionModalProps> = ({
 }) => {
   return (
     <Modal open={open} onClose={onClose}>
-      <Box sx={{ ...modalStyle }}>
+      <Box sx={modalStyle}>
         <AddSessionForm
           onSubmit={onSubmit}
           onClose={onClose}
@@ -39,8 +39,9 @@ const AddSessionModal: React.FC<AddSessionModalProps> = ({
   );
 };
 
+// Refactor the modal style object to use `as const`
 const modalStyle = {
-  position: "absolute" as "absolute",
+  position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
@@ -48,6 +49,6 @@ const modalStyle = {
   backgroundColor: "white",
   boxShadow: 24,
   padding: 4,
-};
+} as const; // Use `as const` here to infer the entire object as immutable
 
 export default AddSessionModal;

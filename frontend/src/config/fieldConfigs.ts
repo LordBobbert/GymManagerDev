@@ -3,7 +3,7 @@
 import { FieldConfig } from '../interfaces/FieldConfig';
 import { ClientProfile } from '../interfaces/client';
 import { TrainerProfile } from '../interfaces/trainer';
-import { User } from '../interfaces/user';  // Import User as we will now be dealing with User objects
+import { User } from '../interfaces/user'; // Import User as we will now be dealing with User objects
 
 // Updated getClientFieldConfig function
 export const getClientFieldConfig = (trainers: User[]): FieldConfig<ClientProfile>[] => [
