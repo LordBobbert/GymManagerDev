@@ -32,12 +32,12 @@ const AddTrainerForm: React.FC<AddTrainerFormProps> = ({ open, onClose, onSubmit
         birthday: undefined,
         roles: ['trainer'],  // Predefined 'trainer' role
         status: 'sub_part_time',
-        monthly_rate: 250,  // Type as number
-        rent_rate_per_session: 20,  // Type as number
+        monthly_rate: 250,  // Ensure these are numbers
+        rent_rate_per_session: 20,  // Ensure these are numbers
     });
 
-    // Update typing to avoid 'any'
-    const handleChange = <K extends keyof Omit<User, 'id'>>(key: K, value: User[K]) => {
+    // Remove over-complicated generics and just strongly type the fields
+    const handleChange = (key: keyof Omit<User, 'id'>, value: string | number | boolean | undefined) => {
         setFormData((prev) => setNestedValue(prev, key, value));
     };
 
@@ -55,15 +55,19 @@ const AddTrainerForm: React.FC<AddTrainerFormProps> = ({ open, onClose, onSubmit
             <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     {getTrainerFieldConfig().map(({ label, key, type }) => {
-                        const typedKey = key as keyof Omit<User, 'id'>;  // Use more specific typing
-                        const value = getNestedValue(formData, typedKey) || '';  // Type-safe access
+                        const typedKey = key as keyof Omit<User, 'id'>;  // Safely cast key
+                        const value = getNestedValue(formData, typedKey) || '';  // Safely retrieve value
+
                         return (
                             <TextField
                                 key={String(key)}
                                 label={label}
                                 type={type}
-                                value={String(value)}  // Ensure value is converted to string
-                                onChange={(e) => handleChange(typedKey, e.target.value as any)}
+                                value={String(value)}  // Ensure value is a string
+                                onChange={(e) => {
+                                    const inputValue = type === 'number' ? Number(e.target.value) : e.target.value;
+                                    handleChange(typedKey, inputValue);
+                                }}
                                 fullWidth
                             />
                         );
