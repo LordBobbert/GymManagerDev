@@ -131,12 +131,15 @@ export const getTrainerFieldConfig = () => {
   ];
 };
 
-export const getSessionFieldConfig = () => {
-  return [
-    { label: 'Date', key: 'date', type: 'date' },
-    { label: 'Session Type', key: 'session_type', type: 'text' },
-    { label: 'Notes', key: 'notes', type: 'text' },
-    { label: 'Client', key: 'client.user.first_name', type: 'text' },
-    { label: 'Trainer', key: 'trainer.user.first_name', type: 'text' },
-  ];
-};
+export const getSessionFieldConfig = () => [
+  { label: 'Date', key: 'date', type: 'date' },
+  { label: 'Session Type', key: 'session_type', type: 'select', options: [
+    { label: 'One on One', value: 'one_on_one' },
+    { label: 'Partner', value: 'partner' },
+    { label: 'Small Group', value: 'small_group' },
+    { label: 'Group', value: 'group' }
+  ]},
+  { label: 'Client', key: 'client', type: 'select' },  // Use select for client
+  { label: 'Trainer', key: 'trainer', type: 'select' }, // Use select for trainer
+  { label: 'Notes', key: 'notes', type: 'text' },
+];
