@@ -1,23 +1,25 @@
 // File: src/components/common/BaseListDetailsPage.tsx
 
 import React from "react";
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, TextField, Select, MenuItem, InputLabel } from "@mui/material";
 import { FieldConfig } from "@/interfaces/FieldConfig";
 import { User } from "@/interfaces/user";
 
 interface BaseListDetailsPageProps<T> {
   data: T;
   fieldConfig: FieldConfig<T>[];
+  clients: User[];  // Now accepting User[] for clients
+  trainers: User[];  // Now accepting User[] for trainers
   onSave: (updatedData: T) => void;
   isEditing: boolean;
-  clients: User[];  // Accept User[] for clients
-  trainers: User[];  // Accept User[] for trainers
-  handleChange: (key: keyof T, value: T[keyof T]) => void;
+  handleChange: <K extends keyof T>(key: K, value: T[K]) => void;
 }
 
 const BaseListDetailsPage = <T extends object>({
   data,
   fieldConfig,
+  clients,
+  trainers,
   onSave,
   isEditing,
   handleChange,
@@ -33,20 +35,45 @@ const BaseListDetailsPage = <T extends object>({
         const value = (data[typedKey] as string | number | undefined) || "";
 
         const handleInputChange = (
-          e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+          e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | { value: unknown }>
         ) => {
-          let newValue: any = e.target.value;
+          let newValue: T[keyof T] = e.target.value as T[keyof T];
 
           // Coerce types based on the field type
           if (type === "number") {
-            newValue = parseFloat(newValue);
-            if (isNaN(newValue)) newValue = 0; // Handle invalid numbers
+            newValue = parseFloat(e.target.value as string) as T[keyof T];
           } else if (type === "date") {
-            newValue = new Date(newValue);
+            newValue = e.target.value as unknown as T[keyof T];
           }
 
-          handleChange(typedKey, newValue as T[keyof T]); // Cast based on expected type
+          handleChange(typedKey, newValue);
         };
+
+        if (key === "client_id" || key === "trainer_id") {
+          const options = key === "client_id" ? clients : trainers;
+          return (
+            <Box key={String(key)} sx={{ mb: 2 }}>
+              <InputLabel>{label}</InputLabel>
+              <Select
+                value={value || ""}
+                onChange={(e) =>
+                  handleChange(
+                    typedKey,
+                    Number(e.target.value) as unknown as T[keyof T]
+                  )
+                }
+                fullWidth
+              >
+                <MenuItem value="">None</MenuItem>
+                {options.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.first_name} {option.last_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
+          );
+        }
 
         return (
           <TextField
@@ -60,6 +87,7 @@ const BaseListDetailsPage = <T extends object>({
           />
         );
       })}
+
       <Button onClick={handleSave} disabled={!isEditing}>
         Save
       </Button>
