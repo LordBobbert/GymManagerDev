@@ -1,5 +1,7 @@
 // File: src/app/admin/clients/page.tsx
 
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import BaseList from '@/components/common/BaseList';
