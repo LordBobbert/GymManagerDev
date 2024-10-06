@@ -2,34 +2,37 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import { fetchSessions, addSession, updateSession } from "@/services/sessionService";
-import { fetchUsers } from "@/services/userService";  // Unified fetch method for users
+import { fetchUsersByRole } from "@/services/userService";
 import { Session } from "@/interfaces/session";
-import { User } from "@/interfaces/user";
 import BaseListDetailsPage from "@/components/common/BaseListDetailsPage";
 import AddSessionModal from "@/components/admin/AddSessionModal";
 import SessionTable from "@/components/admin/SessionTable";
 import { getSessionFieldConfig } from "@/config/fieldConfigs";
+import { User } from "@/interfaces/user";
 
 const SessionsPage = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
-  const [users, setUsers] = useState<User[]>([]);  // Unified user array
+  const [trainers, setTrainers] = useState<User[]>([]);
+  const [clients, setClients] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddSessionModalOpen, setIsAddSessionModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const loadSessionsData = async () => {
       try {
-        const [fetchedSessions, fetchedUsers] = await Promise.all([
+        const [fetchedSessions, fetchedTrainers, fetchedClients] = await Promise.all([
           fetchSessions(),
-          fetchUsers(),  // Fetch all users at once
+          fetchUsersByRole("trainer"),
+          fetchUsersByRole("client"),
         ]);
 
         setSessions(fetchedSessions);
-        setUsers(fetchedUsers);
+        setTrainers(fetchedTrainers);
+        setClients(fetchedClients);
         setLoading(false);
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -40,20 +43,35 @@ const SessionsPage = () => {
     loadSessionsData();
   }, []);
 
-  // Filter the users based on their roles
-  const trainers = users.filter((user) => user.roles.includes("trainer"));
-  const clients = users.filter((user) => user.roles.includes("client"));
-
   const handleSessionSelect = (session: Session) => {
     setSelectedSession(session);
   };
 
-  const handleAddSession = async (newSession: Omit<Session, "id">): Promise<void> => {
+  const handleOpenAddSessionModal = () => setIsAddSessionModalOpen(true);
+  const handleCloseAddSessionModal = () => setIsAddSessionModalOpen(false);
+
+  const handleAddSession = async (newSession: {
+    client_id: number;
+    trainer_id: number;
+    session_type: string;
+    date: string;
+    notes?: string;
+  }): Promise<void> => {
     try {
       setLoading(true);
-      const addedSession = await addSession(newSession);
+
+      // Payload creation
+      const sessionPayload: Omit<Session, "id"> = {
+        client: { id: newSession.client_id },  // Ensure client is an object with at least an id
+        trainer: { id: newSession.trainer_id },  // Ensure trainer is an object with at least an id
+        session_type: newSession.session_type,
+        date: newSession.date,
+        notes: newSession.notes || "",
+      };
+
+      const addedSession = await addSession(sessionPayload);
       setSessions((prevSessions) => [...prevSessions, addedSession]);
-      setIsAddSessionModalOpen(false);
+      handleCloseAddSessionModal();
     } catch (error) {
       console.error("Failed to add session:", error);
     } finally {
@@ -66,9 +84,7 @@ const SessionsPage = () => {
       setLoading(true);
       const savedSession = await updateSession(updatedSession.id!, updatedSession);
       setSessions((prevSessions) =>
-        prevSessions.map((session) =>
-          session.id === savedSession.id ? savedSession : session
-        )
+        prevSessions.map((session) => (session.id === savedSession.id ? savedSession : session))
       );
     } catch (error) {
       console.error("Failed to save session:", error);
@@ -88,7 +104,7 @@ const SessionsPage = () => {
         }}
       >
         <Typography variant="h4">Sessions</Typography>
-        <Button variant="contained" color="primary" onClick={() => setIsAddSessionModalOpen(true)}>
+        <Button variant="contained" color="primary" onClick={handleOpenAddSessionModal}>
           Add Session
         </Button>
       </Box>
@@ -96,7 +112,7 @@ const SessionsPage = () => {
       <SessionTable
         sessions={sessions}
         onSessionSelect={handleSessionSelect}
-        trainers={trainers}  // Pass filtered trainers
+        trainers={trainers}
       />
 
       {selectedSession && (
@@ -105,21 +121,22 @@ const SessionsPage = () => {
             key={selectedSession.id}
             data={selectedSession}
             fieldConfig={getSessionFieldConfig()}
-            clients={clients}  // Pass filtered clients
-            trainers={trainers}  // Pass filtered trainers
+            clients={clients}
+            trainers={trainers}
             onSave={handleSaveSession}
             isEditing={true}
-            handleChange={() => {}}  // Implement handleChange as needed
+            handleChange={() => {}}
           />
         </Box>
       )}
 
+      {/* Add Session Modal */}
       <AddSessionModal
         open={isAddSessionModalOpen}
-        onClose={() => setIsAddSessionModalOpen(false)}
+        onClose={handleCloseAddSessionModal}
         onSubmit={handleAddSession}
-        clients={clients}  // Pass filtered clients
-        trainers={trainers}  // Pass filtered trainers
+        clients={clients}
+        trainers={trainers}
         loading={loading}
       />
     </Box>

@@ -1,13 +1,12 @@
 // src/interfaces/session.ts
 
-import { Client } from './depriclient';
-import { Trainer } from './depritrainer';
+import { User } from './user';
 
 export interface Session {
-    id: number;
-    client?: Client;
-    trainer?: Trainer | { id: number }; // Allow either a full Trainer object or just an ID
-    session_type: string;
-    date: string; // ISO date string
-    notes?: string;
-  }
+  id: number;
+  client: User | { id: number };  // Can be either User object or just an object with an id
+  trainer: User | { id: number };  // Can be either User object or just an object with an id
+  session_type: string;
+  date: string;
+  notes?: string;
+}

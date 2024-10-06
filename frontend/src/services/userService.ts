@@ -2,7 +2,7 @@
 
 import { User } from "@/interfaces/user";
 
-// Fetch all users
+// Fetch all users (unfiltered)
 export const fetchUsers = async (): Promise<User[]> => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/users/`, {
@@ -10,7 +10,7 @@ export const fetchUsers = async (): Promise<User[]> => {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include",  // Ensure cookies (like session cookies) are sent with requests
+      credentials: "include",
     });
 
     if (!res.ok) {
@@ -25,7 +25,7 @@ export const fetchUsers = async (): Promise<User[]> => {
   }
 };
 
-// Fetch all users with a specific role
+// Fetch users with a specific role (e.g., clients, trainers)
 export const fetchUsersByRole = async (role: string): Promise<User[]> => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/users?role=${role}`, {
@@ -37,15 +37,25 @@ export const fetchUsersByRole = async (role: string): Promise<User[]> => {
     });
 
     if (!res.ok) {
-      throw new Error("Failed to fetch users by role");
+      throw new Error(`Failed to fetch users with role: ${role}`);
     }
 
     const data = await res.json();
     return data as User[];
   } catch (error) {
-    console.error("Error fetching users by role:", error);
-    throw new Error("Failed to fetch users by role");
+    console.error(`Error fetching users with role ${role}:`, error);
+    throw new Error(`Failed to fetch users with role: ${role}`);
   }
+};
+
+// Fetch clients
+export const fetchClients = async (): Promise<User[]> => {
+  return fetchUsersByRole("client");
+};
+
+// Fetch trainers
+export const fetchTrainers = async (): Promise<User[]> => {
+  return fetchUsersByRole("trainer");
 };
 
 // Fetch a single user by ID
