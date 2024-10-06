@@ -1,11 +1,12 @@
 // File: src/interfaces/payment.ts
 
-import { Client } from './depriclient';
+import { User } from './user';  // Use the consolidated User interface
 
 export interface Payment {
   id: number;
-  client: Client;  // Assuming each payment is associated with a client
-  date: string;    // ISO date string
-  amount: number;  // Payment amount
-  status: string;  // Status of the payment (e.g., "paid", "pending", "failed")
+  amount: number;
+  date: string;
+  client: User;  // Replace Client with User to refer to a client
+  method: 'credit_card' | 'paypal' | 'bank_transfer' | 'cash';  // Example payment methods
+  status: 'pending' | 'completed' | 'failed';
 }
