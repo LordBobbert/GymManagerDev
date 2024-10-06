@@ -109,16 +109,17 @@ const SessionsPage = () => {
 
       {selectedSession && (
         <Box sx={{ flex: 3 }}>
-          <BaseListDetailsPage
+          <BaseListDetailsPage<Session>
             key={selectedSession.id}
             data={selectedSession}
             fieldConfig={getSessionFieldConfig()}
-            clients={clients}
-            trainers={trainers}  // Pass full TrainerProfile[]
+            clients={clients}  // Explicitly pass clients
+            trainers={trainers}  // Explicitly pass trainers
             onSave={handleSaveSession}
-            isEditing={true}  // Assuming editing mode is always enabled for selected sessions
-            handleChange={() => {}}  // Implement as needed in BaseListDetailsPage
+            isEditing={true}
+            handleChange={() => { }}  // Implement as needed in BaseListDetailsPage
           />
+
         </Box>
       )}
 
