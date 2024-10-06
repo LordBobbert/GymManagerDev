@@ -23,7 +23,6 @@ const ClientsPage = () => {
   const [clients, setClients] = useState<ClientProfile[]>([]);
   const [selectedClient, setSelectedClient] = useState<ClientProfile | null>(null);
   const [trainers, setTrainers] = useState<TrainerProfile[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadClientsData = async () => {
@@ -35,10 +34,8 @@ const ClientsPage = () => {
 
         setClients(fetchedClients);
         setTrainers(fetchedTrainers);
-        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch data:", error);
-        setLoading(false);
       }
     };
 

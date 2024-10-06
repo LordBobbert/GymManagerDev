@@ -1,31 +1,35 @@
+// File: src/components/common/BaseListDetailsPage.tsx
+
 import React, { useState } from "react";
 import { Box, TextField, Select, MenuItem, FormControl, InputLabel, Button } from "@mui/material";
 import { FieldConfig } from "@/interfaces/FieldConfig";
-import { ClientProfile } from "@/interfaces/client";
-import { TrainerProfile } from "@/interfaces/trainer";
+import { ClientProfile } from "@/interfaces/client"; // Import ClientProfile
+import { TrainerProfile } from "@/interfaces/trainer"; // Import TrainerProfile
 
 interface BaseListDetailsPageProps<T> {
   data: T;
   fieldConfig: FieldConfig<T>[];
   onSave: (updatedData: Partial<T>) => Promise<void>;
-  clients: ClientProfile[];
-  trainers: TrainerProfile[];
   isEditing: boolean;
-  handleChange: (key: string, value: any) => void;
+  handleChange: (key: keyof T, value: unknown) => void;
+  clients?: ClientProfile[];  // Add clients prop
+  trainers?: TrainerProfile[];  // Add trainers prop
+  selectOptions?: Partial<{ [key in keyof T]: Array<{ label: string; value: string | number }> }>;
 }
 
 const BaseListDetailsPage = <T extends {}>({
   data,
   fieldConfig,
   onSave,
-  clients,
-  trainers,
   isEditing,
-  handleChange
+  handleChange,
+  clients,  // Make clients available in props
+  trainers,  // Make trainers available in props
+  selectOptions = {},
 }: BaseListDetailsPageProps<T>) => {
   const [formData, setFormData] = useState<Partial<T>>(data);
 
-  const handleInputChange = (key: string, value: any) => {
+  const handleInputChange = (key: keyof T, value: unknown) => {
     setFormData((prevData) => ({ ...prevData, [key]: value }));
     handleChange(key, value);
   };
@@ -36,56 +40,44 @@ const BaseListDetailsPage = <T extends {}>({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      {fieldConfig.map(({ label, key, type, options }) => {
-        // Ensure key is a string or number
-        const reactKey = String(key); // Explicitly cast key to string
+      {fieldConfig.map(({ label, key, type }) => {
+        const typedKey = key as keyof T;
+        const value = (formData[typedKey] as string | number | undefined) || "";
 
-        return type === "select" && key === "client_id" ? (
-          <FormControl fullWidth key={reactKey}>
-            <InputLabel>{label}</InputLabel>
-            <Select
-              value={(formData as any).client?.user.id || ""}
-              onChange={(e) =>
-                handleInputChange(key as string, clients.find(client => client.user.id === Number(e.target.value)))
-              }
+        if (type === "select" && selectOptions[typedKey]) {
+          const options = selectOptions[typedKey];
+
+          return (
+            <FormControl fullWidth key={String(key)}>
+              <InputLabel>{label}</InputLabel>
+              <Select
+                value={String(value)}
+                onChange={(e) => handleInputChange(typedKey, e.target.value)}
+                disabled={!isEditing}
+              >
+                {options?.map((option) => (
+                  <MenuItem key={String(option.value)} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          );
+        } else {
+          return (
+            <TextField
+              key={String(key)}
+              label={label}
+              type={type || "text"}
+              value={String(value)}
+              onChange={(e) => handleInputChange(typedKey, e.target.value)}
+              fullWidth
               disabled={!isEditing}
-            >
-              {clients.map(client => (
-                <MenuItem key={client.user.id} value={client.user.id}>
-                  {client.user.first_name} {client.user.last_name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ) : type === "select" && key === "trainer_id" ? (
-          <FormControl fullWidth key={reactKey}>
-            <InputLabel>{label}</InputLabel>
-            <Select
-              value={(formData as any).trainer?.user.id || ""}
-              onChange={(e) =>
-                handleInputChange(key as string, trainers.find(trainer => trainer.user.id === Number(e.target.value)))
-              }
-              disabled={!isEditing}
-            >
-              {trainers.map(trainer => (
-                <MenuItem key={trainer.user.id} value={trainer.user.id}>
-                  {trainer.user.first_name} {trainer.user.last_name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ) : (
-          <TextField
-            key={reactKey}  // Use the converted string as the key
-            label={label}
-            type={type || "text"}
-            value={(formData as any)[key] || ""}
-            onChange={(e) => handleInputChange(key as string, e.target.value)}
-            fullWidth
-            disabled={!isEditing}
-          />
-        );
+            />
+          );
+        }
       })}
+
       <Button variant="contained" onClick={handleSave} disabled={!isEditing}>
         Save
       </Button>
