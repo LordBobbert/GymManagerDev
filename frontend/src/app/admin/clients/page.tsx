@@ -68,19 +68,19 @@ const ClientsPage = () => {
 
   // File: src/components/admin/AddClientForm.tsx
 
-// Ensure onSubmit does not expect 'id' and 'roles'
-const handleAddClientSubmit = async (newClient: Omit<User, "id" | "roles">): Promise<void> => {
-  try {
-    // Add roles explicitly in the onSubmit logic
-    const clientToCreate = { ...newClient, roles: ["client"] };
-    await createUser(clientToCreate); // Ensure your user creation method handles the object without 'id'
-    setIsAddClientOpen(false); // Close the form on success
-    const updatedClients = await fetchUsers(); // Reload clients
-    setClients(updatedClients); // Update clients in state
-  } catch (error) {
-    console.error("Error adding client:", error);
-  }
-};
+  // Ensure onSubmit does not expect 'id' and 'roles'
+  const handleAddClientSubmit = async (newClient: Omit<User, "id" | "roles">): Promise<void> => {
+    try {
+      // Add roles explicitly in the onSubmit logic
+      const clientToCreate = { ...newClient, roles: ["client"] };
+      await createUser(clientToCreate); // Ensure your user creation method handles the object without 'id'
+      setIsAddClientOpen(false); // Close the form on success
+      const updatedClients = await fetchUsers(); // Reload clients
+      setClients(updatedClients); // Update clients in state
+    } catch (error) {
+      console.error("Error adding client:", error);
+    }
+  };
 
 
   if (error) {
@@ -147,6 +147,7 @@ const handleAddClientSubmit = async (newClient: Omit<User, "id" | "roles">): Pro
         onClose={() => setIsAddClientOpen(false)}
         onSubmit={handleAddClientSubmit}
         loading={loading}
+        trainers={[]} // Pass an empty array or actual trainers if available
       />
     </Box>
   );
