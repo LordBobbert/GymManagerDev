@@ -6,13 +6,13 @@ import React, { useEffect, useState } from 'react';
 import BaseList from '../../../components/common/BaseList';
 import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
 import AddTrainerForm from '../../../components/admin/AddTrainerForm';  // Create similar to AddClientForm
-import { Trainer } from '../../../interfaces/trainer';
+import { TrainerProfile } from '../../../interfaces/trainer';
 import { fetchTrainers, addTrainer, updateTrainer } from '../../../services/trainerService';
 import { getTrainerFieldConfig } from '../../../config/fieldConfigs';  // Field config for trainers
 
 const TrainersPage = () => {
-  const [trainers, setTrainers] = useState<Trainer[] | null>(null);
-  const [selectedTrainer, setSelectedTrainer] = useState<Trainer | null>(null);
+  const [trainers, setTrainers] = useState<TrainerProfile[] | null>(null);
+  const [selectedTrainer, setSelectedTrainer] = useState<TrainerProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddTrainerOpen, setIsAddTrainerOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,17 +24,17 @@ const TrainersPage = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleTrainerSelect = (trainer: Trainer) => {
+  const handleTrainerSelect = (trainer: TrainerProfile) => {
     setSelectedTrainer(null);
     setTimeout(() => {
       setSelectedTrainer(trainer);
     }, 0);
   };
 
-  const handleTrainerSave = async (updatedTrainer: Partial<Trainer>) => {
+  const handleTrainerSave = async (updatedTrainer: Partial<TrainerProfile>) => {
     try {
       if (selectedTrainer) {
-        await updateTrainer(selectedTrainer.id, updatedTrainer);
+        await updateTrainer(selectedTrainer.user.id, updatedTrainer);
         const updatedTrainers = await fetchTrainers();
         setTrainers(updatedTrainers);
         setSelectedTrainer(null);  // Reset selected trainer to refresh UI
@@ -44,7 +44,7 @@ const TrainersPage = () => {
     }
   };
 
-  const handleAddTrainerSubmit = async (newTrainer: Omit<Trainer, 'id'>) => {
+  const handleAddTrainerSubmit = async (newTrainer: Omit<TrainerProfile, 'id'>) => {
     try {
       await addTrainer(newTrainer);
       setIsAddTrainerOpen(false);
@@ -66,12 +66,12 @@ const TrainersPage = () => {
   return (
     <div style={{ display: 'flex', gap: '2rem' }}>
       <div style={{ flex: 1 }}>
-        <BaseList<Trainer>
+        <BaseList<TrainerProfile>
           data={trainers}
           section="trainers"
-          getKey={(trainer) => trainer.id}
+          getKey={(trainer) => trainer.user.id}
           onSelect={handleTrainerSelect}
-          renderItem={(trainer: Trainer) => (
+          renderItem={(trainer: TrainerProfile) => (
             <span>{trainer.user.first_name} {trainer.user.last_name}</span>
           )}
           onAddClient={() => setIsAddTrainerOpen(true)}
@@ -80,12 +80,39 @@ const TrainersPage = () => {
 
       {selectedTrainer && (
         <div style={{ flex: 3 }}>
-          <BaseListDetailsPage
-            key={selectedTrainer.id}
+          <BaseListDetailsPage<TrainerProfile>
+            key={selectedTrainer.user.id}
             data={selectedTrainer}
-            fieldConfig={getTrainerFieldConfig()}  // Provide the field config for trainers
+            fieldConfig={getTrainerFieldConfig()}
             onSave={handleTrainerSave}
+            isEditing={true}  // Set this to control editing mode
+            handleChange={(key, value) => {
+              setSelectedTrainer((prevTrainer) => {
+                if (!prevTrainer) return null;
+            
+                // Check if we're updating a nested 'user' field
+                if (key in prevTrainer.user) {
+                  return {
+                    ...prevTrainer,
+                    user: {
+                      ...prevTrainer.user,
+                      [key]: value,
+                    },
+                  };
+                } else {
+                  // Otherwise, update the trainer-level fields
+                  return {
+                    ...prevTrainer,
+                    [key]: value,
+                  };
+                }
+              });
+            }}
+            
+            clients={[]}  // You can pass an empty array if clients are not needed
+            trainers={[]}  // If you have trainers data to pass, use that here
           />
+
         </div>
       )}
 
