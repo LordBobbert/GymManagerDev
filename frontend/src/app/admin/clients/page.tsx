@@ -10,6 +10,7 @@ import BaseList from "@/components/common/BaseList";
 import BaseListDetailsPage from "@/components/common/BaseListDetailsPage";
 import AddClientForm from "@/components/admin/AddClientForm";
 import { getClientFieldConfig } from "@/config/fieldConfigs";
+import { createUser } from "@/services/userService";
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<User[]>([]);
@@ -65,15 +66,22 @@ const ClientsPage = () => {
     }
   };
 
-  const handleAddClientSubmit = async () => {
-    try {
-      const updatedClients = [...clients];
-      setClients(updatedClients);
-      setIsAddClientOpen(false);
-    } catch (error) {
-      console.error("Error adding client:", error);
-    }
-  };
+  // File: src/components/admin/AddClientForm.tsx
+
+// Ensure onSubmit does not expect 'id' and 'roles'
+const handleAddClientSubmit = async (newClient: Omit<User, "id" | "roles">): Promise<void> => {
+  try {
+    // Add roles explicitly in the onSubmit logic
+    const clientToCreate = { ...newClient, roles: ["client"] };
+    await createUser(clientToCreate); // Ensure your user creation method handles the object without 'id'
+    setIsAddClientOpen(false); // Close the form on success
+    const updatedClients = await fetchUsers(); // Reload clients
+    setClients(updatedClients); // Update clients in state
+  } catch (error) {
+    console.error("Error adding client:", error);
+  }
+};
+
 
   if (error) {
     return <div>{error}</div>;
@@ -138,7 +146,6 @@ const ClientsPage = () => {
         open={isAddClientOpen}
         onClose={() => setIsAddClientOpen(false)}
         onSubmit={handleAddClientSubmit}
-        trainers={trainers}
         loading={loading}
       />
     </Box>
