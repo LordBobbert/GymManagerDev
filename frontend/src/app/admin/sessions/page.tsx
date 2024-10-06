@@ -97,11 +97,13 @@ const SessionsPage = () => {
             key={selectedSession.id}
             data={selectedSession}
             fieldConfig={getSessionFieldConfig()}
+            clients={clients}  // Pass clients array
+            trainers={trainers}  // Pass trainers array
             onSave={async (updatedSession) => {
-              // Handle the save logic, e.g., call your API to update the session
               console.log("Session saved", updatedSession);
             }}
           />
+
         </Box>
       )}
 

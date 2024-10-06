@@ -8,12 +8,16 @@ import { getNestedValue, setNestedValue } from '../../utils/nestedUtils';
 interface BaseListDetailsPageProps<T> {
   data: T;
   fieldConfig: FieldConfig<T>[];
+  clients?: { id: number; user: { first_name: string; last_name: string } }[];  // Add clients prop
+  trainers?: { id: number; user: { first_name: string; last_name: string } }[]; // Add trainers prop
   onSave: (updatedItem: Partial<T>) => Promise<void>;
 }
 
 const BaseListDetailsPage = <T,>({
   data,
   fieldConfig,
+  clients = [],
+  trainers = [],
   onSave,
 }: BaseListDetailsPageProps<T>) => {
   const [formData, setFormData] = useState<Partial<T>>(data);
@@ -36,18 +40,50 @@ const BaseListDetailsPage = <T,>({
     <Paper elevation={3} sx={{ padding: 3, marginLeft: 2, flexGrow: 1 }}>
       <Grid container spacing={2}>
         {fieldConfig.map(({ label, key, type, options }) => {
-          const value: unknown = getNestedValue(formData || {}, key as string) || ''; // Safely access nested values
+          let value = getNestedValue(formData || {}, key as string) || '';
+
+          // Handle special cases for date, clients, and trainers
+          if (key === 'date') {
+            value = typeof value === 'string' ? value.split('T')[0] : '';  // Ensure the correct date format for input
+          }
 
           return (
             <Grid item xs={12} sm={6} key={String(key)}>
-              {type === 'select' && options ? (
+              {isEditing && key === 'client' && clients.length > 0 ? (
+                <FormControl fullWidth>
+                  <InputLabel>{label}</InputLabel>
+                  <Select
+                    value={getNestedValue(formData || {}, key as string) || ''}
+                    onChange={(e) => handleChange(key as string, e.target.value)}
+                  >
+                    {clients.map((client) => (
+                      <MenuItem key={client.id} value={client.id}>
+                        {client.user.first_name} {client.user.last_name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : isEditing && key === 'trainer' && trainers.length > 0 ? (
+                <FormControl fullWidth>
+                  <InputLabel>{label}</InputLabel>
+                  <Select
+                    value={getNestedValue(formData || {}, key as string) || ''}
+                    onChange={(e) => handleChange(key as string, e.target.value)}
+                  >
+                    {trainers.map((trainer) => (
+                      <MenuItem key={trainer.id} value={trainer.id}>
+                        {trainer.user.first_name} {trainer.user.last_name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : isEditing && options ? (
                 <FormControl fullWidth>
                   <InputLabel>{label}</InputLabel>
                   <Select
                     label={label}
-                    value={value as string}
+                    value={value}
                     onChange={(e) => handleChange(key as string, e.target.value)}
-                    disabled={!isEditing}
                   >
                     {options.map((option) => (
                       <MenuItem key={option.value} value={option.value}>
@@ -60,7 +96,7 @@ const BaseListDetailsPage = <T,>({
                 <TextField
                   label={label}
                   type={type || 'text'}
-                  value={value as string}
+                  value={value}
                   onChange={(e) => handleChange(key as string, e.target.value)}
                   fullWidth
                   disabled={!isEditing}
