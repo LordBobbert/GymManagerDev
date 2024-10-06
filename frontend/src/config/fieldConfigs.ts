@@ -3,7 +3,8 @@
 import { FieldConfig } from '../interfaces/FieldConfig';
 import { ClientProfile } from '../interfaces/client';
 import { TrainerProfile } from '../interfaces/trainer';
-import { User } from '../interfaces/user'; // Import User as we will now be dealing with User objects
+import { User } from '../interfaces/user';
+import { Session } from '../interfaces/session';  // Import Session type
 
 // Updated getClientFieldConfig function
 export const getClientFieldConfig = (trainers: User[]): FieldConfig<ClientProfile>[] => [
@@ -49,8 +50,8 @@ export const getClientFieldConfig = (trainers: User[]): FieldConfig<ClientProfil
   },
   {
     label: 'Roles',
-    key: 'user.roles',  // Assuming roles is an array of objects with a "name" field
-    type: 'text',  // You may need to customize this if it's a multi-select or display logic for roles
+    key: 'user.roles',
+    type: 'text',
   },
   {
     label: 'Training Status',
@@ -78,10 +79,10 @@ export const getClientFieldConfig = (trainers: User[]): FieldConfig<ClientProfil
   },
   {
     label: 'Trainer',
-    key: 'trainer.id',  // Trainer is linked via the User model
+    key: 'trainer.id',
     type: 'select',
     options: trainers.map((trainer) => ({
-      label: `${trainer.first_name} ${trainer.last_name}`,  // Access trainer's name directly from User model
+      label: `${trainer.first_name} ${trainer.last_name}`,
       value: trainer.id,
     })),
   },
@@ -171,8 +172,8 @@ export const getTrainerFieldConfig = (): FieldConfig<TrainerProfile>[] => [
   },
 ];
 
-// Updated getSessionFieldConfig function
-export const getSessionFieldConfig = (): FieldConfig<any>[] => [
+// Updated getSessionFieldConfig function - using Session instead of any
+export const getSessionFieldConfig = (): FieldConfig<Session>[] => [
   {
     label: 'Date',
     key: 'date',
