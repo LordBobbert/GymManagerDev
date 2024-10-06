@@ -1,5 +1,3 @@
-// File: src/components/admin/AddTrainerForm.tsx
-
 import React, { useState } from 'react';
 import {
     Dialog,
@@ -9,53 +7,43 @@ import {
     Button,
     Box,
     TextField,
-}
-from '@mui/material';
-import { Trainer } from '../../interfaces/depritrainer';
-import { getTrainerFieldConfig } from './../../config/fieldConfigs';  // Import the correct function
+} from '@mui/material';
+import { User } from '../../interfaces/user';
+import { getTrainerFieldConfig } from './../../config/fieldConfigs';
 import { setNestedValue, getNestedValue } from '../../utils/nestedUtils';
 
 interface AddTrainerFormProps {
     open: boolean;
     onClose: () => void;
-    onSubmit: (newTrainer: Omit<Trainer, 'id'>) => Promise<void>;  // Ensure async onSubmit
+    onSubmit: (newTrainer: Omit<User, 'id'>) => Promise<void>;
     loading: boolean;
 }
 
 const AddTrainerForm: React.FC<AddTrainerFormProps> = ({ open, onClose, onSubmit, loading }) => {
-    const [formData, setFormData] = useState<Omit<Trainer, 'id'>>({
-        user: {
-            id: '',
-            username: '',
-            first_name: '',
-            last_name: '',
-            email: '',
-            phone_number: '',
-            gender: undefined,
-            birthday: undefined,
-            roles: [],
-        },
+    const [formData, setFormData] = useState<Omit<User, 'id'>>({
+        first_name: '',
+        last_name: '',
+        username: '',
+        email: '',
+        phone_number: '',
+        gender: undefined,
+        birthday: undefined,
+        roles: ['trainer'],
         status: 'sub_part_time',
-        monthly_rate: '250',
-        rent_rate_per_session: '20',
+        monthly_rate: 250,  // Correctly typed as number
+        rent_rate_per_session: 20,  // Correctly typed as number
     });
 
-    const handleChange = (key: string, value: string | number | boolean | undefined) => {
+    const handleChange = (key: keyof Omit<User, 'id'>, value: any) => {
         setFormData((prev) => setNestedValue(prev, key, value));
     };
 
     const handleSave = () => {
         const newTrainer = {
             ...formData,
-            user: {
-                ...formData.user,
-                id: formData.user.id ?? '',  // Ensure `id` is a string or empty string
-                username: formData.user.username || '',  // Ensure `username` is always a string
-            },
+            username: formData.username || '',
         };
-
-        console.log('Submitting new trainer:', newTrainer);  // Debug: Log the new trainer data before submitting
-        onSubmit(newTrainer);  // Call `onSubmit` with the new trainer data
+        onSubmit(newTrainer);
     };
 
     return (
@@ -63,15 +51,16 @@ const AddTrainerForm: React.FC<AddTrainerFormProps> = ({ open, onClose, onSubmit
             <DialogTitle>Add Trainer</DialogTitle>
             <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {getTrainerFieldConfig().map(({ label, key, type }: { label: string; key: string; type: string }) => {
-                        const value = getNestedValue(formData, key as string) || '';  // Correct usage for retrieving nested value
+                    {getTrainerFieldConfig().map(({ label, key, type }) => {
+                        const value = getNestedValue(formData, key as keyof Omit<User, 'id'>) || '';
                         return (
                             <TextField
                                 key={String(key)}
                                 label={label}
                                 type={type}
                                 value={value}
-                                onChange={(e) => handleChange(key as string, e.target.value)}  // Update form data using setNestedValue
+                                onChange={(e) => handleChange(key as keyof Omit<User, 'id'>, e.target.value)}
+                                fullWidth
                             />
                         );
                     })}
@@ -82,9 +71,9 @@ const AddTrainerForm: React.FC<AddTrainerFormProps> = ({ open, onClose, onSubmit
                 <Button
                     variant="contained"
                     onClick={handleSave}
-                    disabled={loading}  // Disable button while loading
+                    disabled={loading}
                 >
-                    {loading ? 'Saving...' : 'Save'}  {/* Show loading text */}
+                    {loading ? 'Saving...' : 'Save'}
                 </Button>
             </DialogActions>
         </Dialog>
