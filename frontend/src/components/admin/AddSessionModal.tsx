@@ -3,16 +3,16 @@
 import React from "react";
 import { Box, Modal } from "@mui/material";
 import AddSessionForm from "@/components/admin/AddSessionForm";
-import { Client } from "@/interfaces/client";
-import { Trainer } from "@/interfaces/trainer";
+import { ClientProfile } from "@/interfaces/client";
+import { TrainerProfile } from "@/interfaces/trainer";
 import { Session } from "@/interfaces/session";
 
 interface AddSessionModalProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (newSession: Omit<Session, "id">) => Promise<void>;
-  clients: Client[];
-  trainers: Trainer[];
+  clients: ClientProfile[];
+  trainers: TrainerProfile[];
   loading: boolean;
 }
 
