@@ -1,7 +1,7 @@
 // File: src/components/admin/AddClientForm.tsx
 
 import React, { useState } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, TextField, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, TextField } from "@mui/material";
 import { User } from "@/interfaces/user";
 
 interface AddClientFormProps {
@@ -56,7 +56,7 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
             onChange={(e) => handleChange(e, "last_name")}
             fullWidth
           />
-          {/* Other fields here */}
+          {/* Other field heres */}
         </Box>
       </DialogContent>
       <DialogActions>
