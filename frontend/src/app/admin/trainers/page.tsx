@@ -1,31 +1,26 @@
-// File: src/app/admin/trainers/TrainersPage.tsx
-
-"use client";
-
-import React, { useEffect, useState } from 'react';
-import BaseList from '../../../components/common/BaseList';
-import BaseListDetailsPage from '../../../components/common/BaseListDetailsPage';
-import AddTrainerForm from '../../../components/admin/AddTrainerForm';
-import { User } from '../../../interfaces/user';
-import { fetchUsers, createUser, updateUser } from '../../../services/userService';
-import { getTrainerFieldConfig } from '../../../config/fieldConfigs';  // Field config for trainers
+import React, { useState, useEffect } from "react";
+import { Box } from "@mui/material";  // Ensure Box is imported
+import BaseList from "../../../components/common/BaseList";
+import BaseListDetailsPage from "../../../components/common/BaseListDetailsPage";
+import { User } from "../../../interfaces/user";  // Use the consolidated User interface
+import { fetchUsers } from "../../../services/userService";
+import { getTrainerFieldConfig } from "../../../config/fieldConfigs";
 
 const TrainersPage = () => {
-  const [trainers, setTrainers] = useState<User[] | null>(null);
+  const [trainers, setTrainers] = useState<User[]>([]);
   const [selectedTrainer, setSelectedTrainer] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isAddTrainerOpen, setIsAddTrainerOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadTrainers = async () => {
       try {
-        const fetchedUsers = await fetchUsers();
-        const trainerUsers = fetchedUsers.filter((user) => user.roles.includes("trainer"));
-        setTrainers(trainerUsers);
+        const users = await fetchUsers();
+        const trainers = users.filter(user => user.roles.includes("trainer")); // Filter for trainers
+        setTrainers(trainers);
         setLoading(false);
       } catch (error) {
-        setError('Failed to load trainers');
+        setError("Failed to load trainers");
         setLoading(false);
       }
     };
@@ -34,85 +29,43 @@ const TrainersPage = () => {
   }, []);
 
   const handleTrainerSelect = (trainer: User) => {
-    setSelectedTrainer(null);
-    setTimeout(() => {
-      setSelectedTrainer(trainer);
-    }, 0);
+    setSelectedTrainer(trainer);
   };
 
-  const handleTrainerSave = async (updatedTrainer: Partial<User>) => {
-    try {
-      if (selectedTrainer) {
-        await updateUser(selectedTrainer.id, updatedTrainer);
-        const fetchedUsers = await fetchUsers();
-        const updatedTrainers = fetchedUsers.filter((user) => user.roles.includes("trainer"));
-        setTrainers(updatedTrainers);
-        setSelectedTrainer(null);
-      }
-    } catch (error) {
-      console.error('Error updating trainer:', error);
-    }
-  };
-
-  const handleAddTrainerSubmit = async (newTrainer: Omit<User, 'id'>) => {
-    try {
-      await createUser(newTrainer);
-      setIsAddTrainerOpen(false);
-      const fetchedUsers = await fetchUsers();
-      const updatedTrainers = fetchedUsers.filter((user) => user.roles.includes("trainer"));
-      setTrainers(updatedTrainers);
-    } catch (error) {
-      console.error('Error adding trainer:', error);
-    }
-  };
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (!trainers) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
-    <div style={{ display: 'flex', gap: '2rem' }}>
-      <div style={{ flex: 1 }}>
+    <Box sx={{ display: "flex", gap: 2, height: "100%" }}>
+      {/* BaseList takes 25% of the width */}
+      <Box sx={{ flex: 1, width: "25%" }}>
         <BaseList<User>
           data={trainers}
           section="trainers"
           getKey={(trainer) => trainer.id}
           onSelect={handleTrainerSelect}
-          renderItem={(trainer: User) => (
+          renderItem={(trainer) => (
             <span>{trainer.first_name} {trainer.last_name}</span>
           )}
-          onAddItem={() => setIsAddTrainerOpen(true)}
         />
-      </div>
+      </Box>
 
+      {/* BaseListDetailsPage takes 75% of the width */}
       {selectedTrainer && (
-        <div style={{ flex: 3 }}>
+        <Box sx={{ flex: 3, width: "75%" }}>
           <BaseListDetailsPage<User>
             key={selectedTrainer.id}
             data={selectedTrainer}
-            fieldConfig={getTrainerFieldConfig()}  // FieldConfig now expects User
-            onSave={handleTrainerSave}
+            fieldConfig={getTrainerFieldConfig()}
+            onSave={() => {}}
             isEditing={true}
-            handleChange={(key, value) => {
-              setSelectedTrainer((prevTrainer) => prevTrainer ? { ...prevTrainer, [key]: value } : null);
-            }}
-            clients={[]}  // Pass empty clients if not needed
+            handleChange={(key, value) => {}}
+            clients={[]}  // You can pass an empty array if clients are not needed
             trainers={trainers}  // Pass trainers
           />
-        </div>
+        </Box>
       )}
-
-      <AddTrainerForm
-        open={isAddTrainerOpen}
-        onClose={() => setIsAddTrainerOpen(false)}
-        onSubmit={handleAddTrainerSubmit}
-        loading={loading}
-      />
-    </div>
+    </Box>
   );
 };
 

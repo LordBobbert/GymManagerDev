@@ -1,10 +1,12 @@
+// File: src/app/clients/page.tsx
+
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { User } from "@/interfaces/user";
 import { fetchUsers } from "@/services/userService";
-import { createUser, updateUser } from "@/services/userService"; // Updated client service
+import { createUser, updateUser } from "@/services/userService"; 
 import BaseList from "@/components/common/BaseList";
 import BaseListDetailsPage from "@/components/common/BaseListDetailsPage";
 import AddClientForm from "@/components/admin/AddClientForm";
@@ -78,35 +80,25 @@ const ClientsPage = () => {
   }
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", padding: 2 }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 2,
-        }}
-      >
-        <Typography variant="h4">Clients</Typography>
-        <Button variant="contained" color="primary" onClick={() => setIsAddClientOpen(true)}>
-          Add Client
-        </Button>
+    <Box sx={{ display: "flex", gap: 2, height: "100%" }}>
+      {/* BaseList takes 25% of the width */}
+      <Box sx={{ flex: 1, width: "25%" }}>
+        <BaseList<User>
+          data={clients}
+          section="clients"
+          getKey={(client) => client.id}
+          onSelect={handleClientSelect}
+          renderItem={(client) => (
+            <span>{client.first_name} {client.last_name}</span>
+          )}
+        />
       </Box>
 
-      <BaseList<User>
-        data={clients}
-        section="clients"
-        getKey={(client) => client.id}
-        onSelect={handleClientSelect}
-        renderItem={(client) => (
-          <span>{client.first_name} {client.last_name}</span>
-        )}
-      />
-
+      {/* BaseListDetailsPage takes 75% of the width */}
       {selectedClient && (
-        <Box sx={{ flex: 3 }}>
+        <Box sx={{ flex: 3, width: "75%" }}>
           <BaseListDetailsPage<User>
-            key={selectedClient.id}  // Corrected to use selectedClient.id
+            key={selectedClient.id}
             data={selectedClient}
             fieldConfig={getClientFieldConfig()}  // Provide the correct fieldConfig
             onSave={handleClientSave}
@@ -114,7 +106,6 @@ const ClientsPage = () => {
             trainers={trainers}  // Pass the list of trainers
             isEditing={true}  // Enable editing
             handleChange={(key, value) => {
-              // Implement handleChange to update the client details
               setSelectedClient((prev) => prev ? { ...prev, [key]: value } : null);
             }}
           />
