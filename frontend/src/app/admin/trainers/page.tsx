@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { Box } from "@mui/material";  // Ensure Box is imported
 import BaseList from "../../../components/common/BaseList";
