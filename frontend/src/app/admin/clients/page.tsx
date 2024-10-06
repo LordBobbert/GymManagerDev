@@ -1,7 +1,5 @@
 // File: src/app/admin/clients/page.tsx
 
-"use client";
-
 import React, { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import BaseList from '@/components/common/BaseList';
@@ -11,6 +9,7 @@ import { fetchUsers, createUser } from '@/services/userService';
 
 const ClientsPage: React.FC = () => {
   const [clients, setClients] = useState<User[]>([]);
+  const [trainers, setTrainers] = useState<User[]>([]); // State to store trainers
   const [isAddClientOpen, setIsAddClientOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -20,13 +19,20 @@ const ClientsPage: React.FC = () => {
     setClients(clientUsers);
   };
 
+  const loadTrainersData = async () => {
+    const fetchedUsers = await fetchUsers();
+    const trainerUsers = fetchedUsers.filter(user => user.roles.includes('trainer'));
+    setTrainers(trainerUsers);
+  };
+
   useEffect(() => {
     loadClientsData();
+    loadTrainersData(); // Fetch trainers when the component loads
   }, []);
 
   const handleAddClientSubmit = async (newClient: Omit<User, 'id' | 'roles'>) => {
     setLoading(true);
-    await createUser({ ...newClient, roles: ['client'] });
+    await createUser({ ...newClient, roles: ['client'] }); // Automatically assign the role of "client"
     setLoading(false);
     setIsAddClientOpen(false);
     loadClientsData(); // Reload clients after adding a new one
@@ -38,19 +44,19 @@ const ClientsPage: React.FC = () => {
         data={clients}
         section="clients"
         getKey={(client) => client.id}
-        onSelect={() => {}} // This can be left empty or removed if selection is not needed
+        onSelect={() => {}} // Selection not needed currently
         renderItem={(client) => (
           <span>{client.first_name} {client.last_name}</span>
         )}
-        onAddItem={() => setIsAddClientOpen(true)} // Trigger the modal from BaseList
+        onAddItem={() => setIsAddClientOpen(true)} // Open the Add Client form
       />
 
       <AddClientForm
         open={isAddClientOpen}
         onClose={() => setIsAddClientOpen(false)}
         onSubmit={handleAddClientSubmit}
-        trainers={[]} // Pass an empty array or actual trainers if available
         loading={loading}
+        trainers={trainers} // Pass the list of trainers to the form
       />
     </Box>
   );
