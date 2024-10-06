@@ -51,7 +51,7 @@ const ClientsPage = () => {
     }, 0);
   };
 
-  const handleClientSave = async (updatedClient: Partial<User>) => {
+  const handleClientSave = async () => {
     try {
       if (selectedClient) {
         // Call update service and refresh client list
@@ -64,7 +64,7 @@ const ClientsPage = () => {
     }
   };
 
-  const handleAddClientSubmit = async (newClient: Omit<User, "id">) => {
+  const handleAddClientSubmit = async () => {
     try {
       // Call create service and refresh client list
       const updatedClients = [...clients]; // Mock add for now
