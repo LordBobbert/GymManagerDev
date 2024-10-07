@@ -3,15 +3,13 @@
 import React, { useState } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, TextField, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import { User } from "@/interfaces/user";
-import { SelectChangeEvent } from '@mui/material';  // Import SelectChangeEvent
-
 
 interface AddClientFormProps {
     open: boolean;
     onClose: () => void;
     onSubmit: (newClient: Omit<User, "id" | "roles">) => Promise<void>;
     loading: boolean;
-    trainers: User[]; // Trainers prop to populate the dropdown
+    trainers: User[]; // Pass trainers to populate the trainer dropdown
 }
 
 const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, loading, trainers }) => {
@@ -31,19 +29,25 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
         trainer_id: undefined,
     });
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<number>,
-        key: keyof Omit<User, "id" | "roles">
-      ) => {
-        setFormData(prev => ({
-          ...prev,
-          [key]: e.target.value,
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: keyof Omit<User, "id" | "roles">) => {
+        setFormData((prev) => ({
+            ...prev,
+            [key]: e.target.value,
         }));
-      };
-      
+    };
+
+    const handleSelectChange = (
+        e: React.ChangeEvent<{ value: unknown }>,
+        key: keyof Omit<User, "id" | "roles">
+    ) => {
+        setFormData((prev) => ({
+            ...prev,
+            [key]: e.target.value as string | number, // Cast to appropriate type
+        }));
+    };
 
     const handleSave = () => {
-        onSubmit(formData); // Submit the form data
+        onSubmit(formData);
     };
 
     return (
@@ -63,21 +67,73 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
                         onChange={(e) => handleChange(e, "last_name")}
                         fullWidth
                     />
-                    {/* Other form fields */}
+                    <TextField
+                        label="Email"
+                        value={formData.email}
+                        onChange={(e) => handleChange(e, "email")}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Phone Number"
+                        value={formData.phone_number}
+                        onChange={(e) => handleChange(e, "phone_number")}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Emergency Contact Name"
+                        value={formData.emergency_contact_name}
+                        onChange={(e) => handleChange(e, "emergency_contact_name")}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Emergency Contact Phone"
+                        value={formData.emergency_contact_phone}
+                        onChange={(e) => handleChange(e, "emergency_contact_phone")}
+                        fullWidth
+                    />
                     <FormControl fullWidth>
                         <InputLabel>Trainer</InputLabel>
                         <Select
                             value={formData.trainer_id || ""}
-                            onChange={(e: SelectChangeEvent<number>) => handleChange(e, "trainer_id")}  // Correct typing
+                            onChange={(e) => handleSelectChange(e as React.ChangeEvent<{ value: unknown }>, "trainer_id")}
                         >
                             <MenuItem value="">None</MenuItem>
-                            {trainers.map(trainer => (
+                            {trainers.map((trainer) => (
                                 <MenuItem key={trainer.id} value={trainer.id}>
                                     {trainer.first_name} {trainer.last_name}
                                 </MenuItem>
                             ))}
                         </Select>
                     </FormControl>
+
+                    <FormControl fullWidth>
+                        <InputLabel>Training Status</InputLabel>
+                        <Select
+                            value={formData.training_status || ""}
+                            onChange={(e) => handleSelectChange(e as React.ChangeEvent<{ value: unknown }>, "training_status")}
+                        >
+                            <MenuItem value="active">Active</MenuItem>
+                            <MenuItem value="inactive">Inactive</MenuItem>
+                            <MenuItem value="vacation">Vacation</MenuItem>
+                        </Select>
+                    </FormControl>
+
+                    <TextField
+                        label="Personal Training Rate"
+                        type="number"
+                        value={formData.personal_training_rate || ""}
+                        onChange={(e) => handleChange(e as React.ChangeEvent<HTMLInputElement>, "personal_training_rate")}
+                        fullWidth
+                    />
+
+                    <TextField
+                        label="Birthday"
+                        type="date"
+                        InputLabelProps={{ shrink: true }}
+                        value={formData.birthday ? new Date(formData.birthday).toISOString().split("T")[0] : ""}
+                        onChange={(e) => handleChange(e, "birthday")}
+                        fullWidth
+                    />
                 </Box>
             </DialogContent>
             <DialogActions>
