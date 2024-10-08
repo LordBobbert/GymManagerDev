@@ -14,7 +14,7 @@ interface AddClientFormProps {
   trainers: User[]; // If trainers are needed
 }
 
-const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, loading }) => {
+const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, loading, trainers }) => {
   const fieldConfig = getClientFieldConfig();
 
   const initialValues: Omit<User, 'id' | 'roles'> = {
@@ -27,6 +27,8 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
     birthday: undefined,
     training_status: 'inactive',
     rent_rate_per_session: 0,
+    emergency_contact_name: '',
+    emergency_contact_phone: ''
   };
 
   const formik = useFormik<Omit<User, 'id' | 'roles'>>({
@@ -74,6 +76,22 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
                 )}
               </Grid>
             ))}
+            <Grid item xs={12} sm={6}>
+              <InputLabel>Trainer</InputLabel>
+              <Select
+                fullWidth
+                name="trainer"
+                value={formik.values.trainer || ''}
+                onChange={formik.handleChange}
+              >
+                <MenuItem value="">—</MenuItem>
+                {trainers.map((trainer) => (
+                  <MenuItem key={trainer.id} value={trainer.id}>
+                    {trainer.first_name} {trainer.last_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
           </Grid>
         </form>
       </DialogContent>
