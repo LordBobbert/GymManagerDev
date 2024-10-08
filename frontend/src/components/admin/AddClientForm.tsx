@@ -90,14 +90,14 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
               <Select
                 fullWidth
                 name="trainer"
-                value={formik.values.trainer || ''}
+                value={formik.values.trainer || ''} displayEmpty
                 onChange={formik.handleChange}
               >
                 <MenuItem value="">—</MenuItem>
                 {trainers.map((trainer) => (
                   <MenuItem key={trainer.id} value={trainer.id}>
-                    {trainer.first_name} {trainer.last_name}
-                  </MenuItem>
+                  {trainer.first_name ? `${trainer.first_name} ${trainer.last_name}` : trainer.username}
+                </MenuItem>
                 ))}
               </Select>
             </Grid>
