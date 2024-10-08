@@ -11,7 +11,7 @@ interface AddClientFormProps {
   onClose: () => void;
   onSubmit: (clientData: Omit<User, 'id' | 'roles'>) => void;
   loading: boolean;
-  trainers: User[]; // If trainers are needed
+  trainers: User[]; // List of trainers fetched from server
 }
 
 const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, loading, trainers }) => {
@@ -89,8 +89,8 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
               <InputLabel>Trainer</InputLabel>
               <Select
                 fullWidth
-                name="trainer"
-                value={formik.values.trainer || ''} displayEmpty
+                name="trainer_id"
+                value={formik.values.trainer_id || ''}
                 onChange={formik.handleChange}
               >
                 <MenuItem value="">—</MenuItem>
