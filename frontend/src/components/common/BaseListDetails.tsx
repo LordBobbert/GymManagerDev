@@ -36,7 +36,7 @@ const BaseListDetails: React.FC<BaseListDetailsProps> = ({ fields, formData, onF
 
         <Grid container spacing={2}>
           {fields.map((field) => (
-            <Grid item xs={12} sm={6} key={field.name}>
+            <Grid item xs={12} sm={6} key={field.name} sx={{ mb: 2 }}>
               <TextField
                 label={field.label}
                 value={formData[field.name]}
