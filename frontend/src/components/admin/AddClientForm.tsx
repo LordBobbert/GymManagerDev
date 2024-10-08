@@ -48,9 +48,9 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
       <DialogTitle>Add New Client</DialogTitle>
       <DialogContent>
         <form onSubmit={formik.handleSubmit}>
-          <Grid container spacing={2}>
+          <Grid container spacing={3}>
             {fieldConfig.map((field) => (
-              <Grid item xs={12} sm={6} key={field.key}>
+              <Grid item xs={12} sm={6} key={field.key} sx={{ mb: 2 }}>
                 {field.type === 'select' ? (
                   <Box>
                     <InputLabel>{field.label}</InputLabel>
@@ -81,7 +81,7 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
                 )}
               </Grid>
             ))}
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={6} sx={{ mb: 2 }}>
               <TextField
                 fullWidth
                 label="Username"
@@ -90,7 +90,7 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
                 onChange={formik.handleChange}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={6} sx={{ mb: 2 }}>
               <InputLabel>Trainer</InputLabel>
               <Select
                 fullWidth
