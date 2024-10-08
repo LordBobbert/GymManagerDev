@@ -15,6 +15,11 @@ interface AddClientFormProps {
 }
 
 const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, loading, trainers }) => {
+  const [trainerList, setTrainerList] = React.useState<User[]>([]);
+
+  React.useEffect(() => {
+    setTrainerList(trainers);
+  }, [trainers]);
   const fieldConfig = getClientFieldConfig();
 
   const initialValues: Omit<User, 'id' | 'roles'> = {
@@ -53,7 +58,7 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
                       fullWidth
                       name={field.key}
                       value={formik.values[field.key as keyof Omit<User, 'id' | 'roles'>] || ''}
-                      onChange={formik.handleChange}
+                      onChange={(e) => formik.setFieldValue('trainer', e.target.value)}
                     >
                       <MenuItem value="">—</MenuItem>
                       {field.options?.map((option) => (
@@ -70,7 +75,7 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
                     name={field.key}
                     type={field.type === 'number' ? 'number' : 'text'}
                     value={formik.values[field.key as keyof Omit<User, 'id' | 'roles'>] || ''}
-                    onChange={formik.handleChange}
+                    onChange={(e) => formik.setFieldValue('trainer', e.target.value)}
                     InputLabelProps={field.type === 'date' ? { shrink: true } : undefined}
                   />
                 )}
@@ -89,12 +94,12 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
               <InputLabel>Trainer</InputLabel>
               <Select
                 fullWidth
-                name="trainer_id"
-                value={formik.values.trainer_id || ''}
+                name="trainer"
+                value={formik.values.trainer || ''}
                 onChange={formik.handleChange}
               >
                 <MenuItem value="">—</MenuItem>
-                {trainers.map((trainer) => (
+                {trainerList.map((trainer) => (
                   <MenuItem key={trainer.id} value={trainer.id}>
                   {trainer.first_name ? `${trainer.first_name} ${trainer.last_name}` : trainer.username}
                 </MenuItem>
