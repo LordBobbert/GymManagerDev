@@ -13,18 +13,21 @@ import { fetchUsers, createUser } from "@/services/userService";
 
 const ClientsPage: React.FC = () => {
   const [clients, setClients] = useState<User[]>([]);
+  const [trainers, setTrainers] = useState<User[]>([]);
   const [selectedClient, setSelectedClient] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [isAddClientOpen, setIsAddClientOpen] = useState(false);
 
-  // Load clients data
+  // Load clients and trainers data
   const loadClientsData = async () => {
     try {
       const fetchedUsers = await fetchUsers();
       const clientUsers = fetchedUsers.filter(user => user.roles.includes('client'));
+      const trainerUsers = fetchedUsers.filter(user => user.roles.includes('trainer'));
       setClients(clientUsers);
+      setTrainers(trainerUsers);
     } catch (error) {
-      console.error("Error loading clients:", error);
+      console.error("Error loading clients and trainers:", error);
     }
   };
 
@@ -85,7 +88,7 @@ const ClientsPage: React.FC = () => {
             fieldConfig={getClientFieldConfig()} // Use the defined client field config
             onSave={handleClientSave}
             clients={clients}
-            trainers={[]} // Pass trainers if needed
+            trainers={trainers} // Pass trainers here if needed
             isEditing={true}
             handleChange={handleClientChange}
           />
@@ -97,7 +100,7 @@ const ClientsPage: React.FC = () => {
         onClose={() => setIsAddClientOpen(false)}
         onSubmit={handleAddClientSubmit}
         loading={loading}
-        trainers={[]} // Trainers can be passed if needed
+        trainers={trainers} // Pass the trainers fetched from the server
       />
     </Box>
   );
