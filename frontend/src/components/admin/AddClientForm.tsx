@@ -14,7 +14,7 @@ interface AddClientFormProps {
   trainers: User[]; // If trainers are needed
 }
 
-const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, loading, trainers }) => {
+const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, loading }) => {
   const fieldConfig = getClientFieldConfig();
 
   const initialValues: Omit<User, 'id' | 'roles'> = {
