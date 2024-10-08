@@ -9,7 +9,7 @@ import BaseListDetailsPage from "@/components/common/BaseListDetailsPage";
 import AddClientForm from "@/components/admin/AddClientForm";
 import { User } from "@/interfaces/user";
 import { getClientFieldConfig } from "@/config/fieldConfigs"; // Import the field config
-import { fetchUsers, createUser } from "@/services/userService";
+import { fetchClients, fetchTrainers, createUser } from "@/services/userService";
 
 const ClientsPage: React.FC = () => {
   const [clients, setClients] = useState<User[]>([]);
@@ -19,11 +19,9 @@ const ClientsPage: React.FC = () => {
   const [isAddClientOpen, setIsAddClientOpen] = useState(false);
 
   // Load clients and trainers data
-  const loadClientsData = async () => {
+  const loadClientsAndTrainersData = async () => {
     try {
-      const fetchedUsers = await fetchUsers();
-      const clientUsers = fetchedUsers.filter(user => user.roles.includes('client'));
-      const trainerUsers = fetchedUsers.filter(user => user.roles.includes('trainer'));
+      const [clientUsers, trainerUsers] = await Promise.all([fetchClients(), fetchTrainers()]);
       setClients(clientUsers);
       setTrainers(trainerUsers);
     } catch (error) {
@@ -32,7 +30,7 @@ const ClientsPage: React.FC = () => {
   };
 
   useEffect(() => {
-    loadClientsData();
+    loadClientsAndTrainersData();
   }, []);
 
   // Handle changes to client details
@@ -56,7 +54,7 @@ const ClientsPage: React.FC = () => {
     try {
       await createUser({ ...newClient, roles: ['client'] }); // Automatically assign the 'client' role
       setIsAddClientOpen(false);
-      loadClientsData(); // Reload clients after adding a new one
+      loadClientsAndTrainersData(); // Reload clients and trainers after adding a new one
     } catch (error) {
       console.error("Error adding client:", error);
     } finally {
