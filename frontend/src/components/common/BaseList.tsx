@@ -34,7 +34,7 @@ const BaseList = <T,>({
         <Typography variant="h5">
           {section.charAt(0).toUpperCase() + section.slice(1)} List
         </Typography>
-        <ActionButton section={section} onClick={onAddItem} />  {/* Attach onClick to open modal */}
+        {onAddItem && <ActionButton section={section} onClick={onAddItem} />} {/* Attach onClick to open modal */}
       </Box>
 
       <List sx={{ flexGrow: 1 }}>

@@ -2,63 +2,102 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Box } from '@mui/material';
-import BaseList from '@/components/common/BaseList';
-import AddClientForm from '@/components/admin/AddClientForm';
-import { User } from '@/interfaces/user';
-import { fetchUsers, createUser } from '@/services/userService';
+import React, { useEffect, useState } from "react";
+import { Box } from "@mui/material";
+import BaseList from "@/components/common/BaseList";
+import BaseListDetailsPage from "@/components/common/BaseListDetailsPage";
+import AddClientForm from "@/components/admin/AddClientForm";
+import { User } from "@/interfaces/user";
+import { getClientFieldConfig } from "@/config/fieldConfigs"; // Import the field config
+import { fetchUsers, createUser } from "@/services/userService";
 
 const ClientsPage: React.FC = () => {
   const [clients, setClients] = useState<User[]>([]);
-  const [trainers, setTrainers] = useState<User[]>([]); // State to store trainers
-  const [isAddClientOpen, setIsAddClientOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isAddClientOpen, setIsAddClientOpen] = useState(false);
 
+  // Load clients data
   const loadClientsData = async () => {
-    const fetchedUsers = await fetchUsers();
-    const clientUsers = fetchedUsers.filter(user => user.roles.includes('client'));
-    setClients(clientUsers);
-  };
-
-  const loadTrainersData = async () => {
-    const fetchedUsers = await fetchUsers();
-    const trainerUsers = fetchedUsers.filter(user => user.roles.includes('trainer'));
-    setTrainers(trainerUsers);
+    try {
+      const fetchedUsers = await fetchUsers();
+      const clientUsers = fetchedUsers.filter(user => user.roles.includes('client'));
+      setClients(clientUsers);
+    } catch (error) {
+      console.error("Error loading clients:", error);
+    }
   };
 
   useEffect(() => {
     loadClientsData();
-    loadTrainersData(); // Fetch trainers when the component loads
   }, []);
 
+  // Handle changes to client details
+  const handleClientChange = (key: keyof User, value: User[keyof User]) => {
+    if (selectedClient) {
+      setSelectedClient({ ...selectedClient, [key]: value });
+    }
+  };
+
+  // Handle saving updated client details
+  const handleClientSave = (updatedClient: User) => {
+    setClients((prev) =>
+      prev.map((client) => (client.id === updatedClient.id ? updatedClient : client))
+    );
+    setSelectedClient(updatedClient);
+  };
+
+  // Handle submission of new client data
   const handleAddClientSubmit = async (newClient: Omit<User, 'id' | 'roles'>) => {
     setLoading(true);
-    await createUser({ ...newClient, roles: ['client'] }); // Automatically assign the role of "client"
-    setLoading(false);
-    setIsAddClientOpen(false);
-    loadClientsData(); // Reload clients after adding a new one
+    try {
+      await createUser({ ...newClient, roles: ['client'] }); // Automatically assign the 'client' role
+      setIsAddClientOpen(false);
+      loadClientsData(); // Reload clients after adding a new one
+    } catch (error) {
+      console.error("Error adding client:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', px: 2 }}>
-      <BaseList
-        data={clients}
-        section="clients"
-        getKey={(client) => client.id}
-        onSelect={() => {}} // Selection not needed currently
-        renderItem={(client) => (
-          <span>{client.first_name} {client.last_name}</span>
-        )}
-        onAddItem={() => setIsAddClientOpen(true)} // Open the Add Client form
-      />
+    <Box sx={{ display: "flex", gap: 2, height: "100%" }}>
+      <Box sx={{ flex: 1, width: "25%" }}>
+        <BaseList<User>
+          data={clients}
+          section="clients"
+          getKey={(client) => client.id}
+          onSelect={setSelectedClient}
+          renderItem={(client) => (
+            <span>
+              {client.first_name} {client.last_name}
+            </span>
+          )}
+          onAddItem={() => setIsAddClientOpen(true)}
+        />
+      </Box>
+
+      {selectedClient && (
+        <Box sx={{ flex: 3, width: "75%" }}>
+          <BaseListDetailsPage<User>
+            data={selectedClient}
+            fieldConfig={getClientFieldConfig()} // Use the defined client field config
+            onSave={handleClientSave}
+            clients={clients}
+            trainers={[]} // Pass trainers if needed
+            isEditing={true}
+            handleChange={handleClientChange}
+          />
+        </Box>
+      )}
 
       <AddClientForm
         open={isAddClientOpen}
         onClose={() => setIsAddClientOpen(false)}
         onSubmit={handleAddClientSubmit}
         loading={loading}
-        trainers={trainers} // Pass the list of trainers to the form
+        trainers={[]} // Trainers can be passed if needed
       />
     </Box>
   );
