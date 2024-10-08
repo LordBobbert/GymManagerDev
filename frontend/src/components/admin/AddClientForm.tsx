@@ -81,7 +81,7 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
                 )}
               </Grid>
             ))}
-            <Grid item xs={12} sm={6} sx={{ mb: 2 }}>
+            <Grid item xs={12} sm={6} sx={{ mb: 6 }}>
               <TextField
                 fullWidth
                 label="Username"
@@ -90,7 +90,7 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
                 onChange={formik.handleChange}
               />
             </Grid>
-            <Grid item xs={12} sm={6} sx={{ mb: 2 }}>
+            <Grid item xs={12} sm={6} sx={{ mb: 6 }}>
               <InputLabel>Trainer</InputLabel>
               <Select
                 fullWidth
