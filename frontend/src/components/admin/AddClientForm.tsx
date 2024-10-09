@@ -48,11 +48,11 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ open, onClose, onSubmit, 
       <DialogTitle>Add New Client</DialogTitle>
       <DialogContent sx={{ pt: 4, pb: 4 }}>
         <form onSubmit={formik.handleSubmit}>
-          <Grid container spacing={6} sx={{ mt: 3, mb: 3 }}>
+          <Grid container spacing={3} sx={{ mt: 3, mb: 3 }}>
             {fieldConfig.map((field) => (
               <Grid item xs={12} sm={6} key={field.key} sx={{ mb: 2 }}>
                 {field.type === 'select' ? (
-                  <Box>
+                  <Box sx={{ mt: 4, mb: 4 }}>
                     <InputLabel>{field.label}</InputLabel>
                     <Select
                       fullWidth

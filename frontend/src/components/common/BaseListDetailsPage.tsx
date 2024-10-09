@@ -1,7 +1,7 @@
 // File: src/components/common/BaseListDetailsPage.tsx
 
 import React from "react";
-import { Box, Button, TextField, Select, MenuItem, InputLabel } from "@mui/material";
+import { Box, Button, TextField, Select, MenuItem, InputLabel, Grid } from "@mui/material";
 import { FieldConfig } from "@/interfaces/FieldConfig";
 import { User } from "@/interfaces/user";
 
@@ -29,68 +29,75 @@ const BaseListDetailsPage = <T extends object>({
   };
 
   return (
-    <Box>
-      {fieldConfig.map(({ label, key, type }) => {
-        const typedKey = key as keyof T;
-        const value = (data[typedKey] as string | number | undefined) || "";
+    <Box sx={{ padding: 4 }}>
+      <Grid container spacing={4}>
+        {fieldConfig.map(({ label, key, type }) => {
+          const typedKey = key as keyof T;
+          const value = (data[typedKey] as string | number | undefined) || "";
 
-        const handleInputChange = (
-          e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | { value: unknown }>
-        ) => {
-          let newValue: T[keyof T] = e.target.value as T[keyof T];
+          const handleInputChange = (
+            e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | { value: unknown }>
+          ) => {
+            let newValue: T[keyof T] = e.target.value as T[keyof T];
 
-          // Coerce types based on the field type
-          if (type === "number") {
-            newValue = parseFloat(e.target.value as string) as T[keyof T];
-          } else if (type === "date") {
-            newValue = e.target.value as unknown as T[keyof T];
+            // Coerce types based on the field type
+            if (type === "number") {
+              newValue = parseFloat(e.target.value as string) as T[keyof T];
+            } else if (type === "date") {
+              newValue = e.target.value as unknown as T[keyof T];
+            }
+
+            handleChange(typedKey, newValue);
+          };
+
+          if (key === "client_id" || key === "trainer_id") {
+            const options = key === "client_id" ? clients : trainers;
+            return (
+              <Grid item xs={12} key={String(key)}>
+                <Box sx={{ mb: 2 }}>
+                  <InputLabel>{label}</InputLabel>
+                  <Select
+                    value={value || ""}
+                    onChange={(e) =>
+                      handleChange(
+                        typedKey,
+                        Number(e.target.value) as unknown as T[keyof T]
+                      )
+                    }
+                    fullWidth
+                  >
+                    <MenuItem value="">None</MenuItem>
+                    {options.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.first_name} {option.last_name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+              </Grid>
+            );
           }
 
-          handleChange(typedKey, newValue);
-        };
-
-        if (key === "client_id" || key === "trainer_id") {
-          const options = key === "client_id" ? clients : trainers;
           return (
-            <Box key={String(key)} sx={{ mb: 2 }}>
-              <InputLabel>{label}</InputLabel>
-              <Select
-                value={value || ""}
-                onChange={(e) =>
-                  handleChange(
-                    typedKey,
-                    Number(e.target.value) as unknown as T[keyof T]
-                  )
-                }
+            <Grid item xs={12} key={String(key)}>
+              <TextField
+                label={label}
+                type={type || "text"}
+                value={String(value)}
+                onChange={handleInputChange}
+                disabled={!isEditing}
                 fullWidth
-              >
-                <MenuItem value="">None</MenuItem>
-                {options.map((option) => (
-                  <MenuItem key={option.id} value={option.id}>
-                    {option.first_name} {option.last_name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Box>
+              />
+            </Grid>
           );
-        }
+        })}
 
-        return (
-          <TextField
-            key={String(key)}
-            label={label}
-            type={type || "text"}
-            value={String(value)}
-            onChange={handleInputChange}
-            disabled={!isEditing}
-            fullWidth
-          />
-        );
-      })}
-
-      <Button onClick={handleSave} disabled={!isEditing}>
-        Save
-      </Button>
+        <Grid item xs={12}>
+          <Button onClick={handleSave} disabled={!isEditing} sx={{ mt: 2 }}>
+            Save
+          </Button>
+        </Grid>
+      </Grid>
     </Box>
   );
 };
