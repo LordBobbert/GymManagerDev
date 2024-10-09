@@ -22,7 +22,9 @@ const ClientsPage: React.FC = () => {
   const loadClientsAndTrainersData = async () => {
     try {
       const [clientUsers, trainerUsers] = await Promise.all([fetchClients(), fetchTrainers()]);
-      setClients(clientUsers);
+      
+      // Ensure we're only setting users with the client role
+      setClients(clientUsers.filter(user => user.roles.includes('client')));
       setTrainers(trainerUsers);
     } catch (error) {
       console.error("Error loading clients and trainers:", error);
