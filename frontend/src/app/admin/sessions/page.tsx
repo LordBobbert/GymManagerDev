@@ -1,145 +1,57 @@
-// File: src/app/sessions/page.tsx
+// File: src/app/admin/sessions/page.tsx
 
-"use client";
-
-import { Box, Button, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import { fetchSessions, addSession, updateSession } from "@/services/sessionService";
-import { fetchUsersByRole } from "@/services/userService";
-import { Session } from "@/interfaces/session";
-import BaseListDetailsPage from "@/components/common/BaseListDetailsPage";
-import AddSessionModal from "@/components/admin/AddSessionModal";
-import SessionTable from "@/components/admin/SessionTable";
-import { getSessionFieldConfig } from "@/config/fieldConfigs";
-import { User } from "@/interfaces/user";
+import React, { useState, useEffect } from 'react';
+import { Session } from '@/interfaces/session';
+import { addSession, fetchSessions, fetchSessionById } from '@/services/sessionService';
 
 const SessionsPage = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
-  const [trainers, setTrainers] = useState<User[]>([]);
-  const [clients, setClients] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [isAddSessionModalOpen, setIsAddSessionModalOpen] = useState<boolean>(false);
+  const [isAddSessionModalOpen, setAddSessionModalOpen] = useState(false);
 
-  useEffect(() => {
-    const loadSessionsData = async () => {
-      try {
-        const [fetchedSessions, fetchedTrainers, fetchedClients] = await Promise.all([
-          fetchSessions(),
-          fetchUsersByRole("trainer"),
-          fetchUsersByRole("client"),
-        ]);
-
-        setSessions(fetchedSessions);
-        setTrainers(fetchedTrainers);
-        setClients(fetchedClients);
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-        setLoading(false);
-      }
-    };
-
-    loadSessionsData();
-  }, []);
-
-  const handleSessionSelect = (session: Session) => {
-    setSelectedSession(session);
-  };
-
-  const handleOpenAddSessionModal = () => setIsAddSessionModalOpen(true);
-  const handleCloseAddSessionModal = () => setIsAddSessionModalOpen(false);
-
-  const handleAddSession = async (newSession: {
-    client_id: number;
-    trainer_id: number;
-    session_type: string;
-    date: string;
-    notes?: string;
-  }): Promise<void> => {
+  const loadSessions = async () => {
     try {
-      setLoading(true);
-
-      // Payload creation
-      const sessionPayload: Omit<Session, "id"> = {
-        client: { id: newSession.client_id },  // Ensure client is an object with at least an id
-        trainer: { id: newSession.trainer_id },  // Ensure trainer is an object with at least an id
-        session_type: newSession.session_type,
-        date: newSession.date,
-        notes: newSession.notes || "",
-      };
-
-      const addedSession = await addSession(sessionPayload);
-      setSessions((prevSessions) => [...prevSessions, addedSession]);
-      handleCloseAddSessionModal();
+      const sessionData = await fetchSessions();
+      setSessions(sessionData);
     } catch (error) {
-      console.error("Failed to add session:", error);
-    } finally {
-      setLoading(false);
+      console.error('Failed to load sessions:', error);
     }
   };
 
-  const handleSaveSession = async (updatedSession: Partial<Session>): Promise<void> => {
+  useEffect(() => {
+    loadSessions();
+  }, []);
+
+  const handleCloseAddSessionModal = () => {
+    setAddSessionModalOpen(false);
+  };
+
+  const handleAddSession = async (sessionPayload: Omit<Session, 'id'>) => {
     try {
-      setLoading(true);
-      const savedSession = await updateSession(updatedSession.id!, updatedSession);
-      setSessions((prevSessions) =>
-        prevSessions.map((session) => (session.id === savedSession.id ? savedSession : session))
-      );
+      const addedSession = await addSession(sessionPayload);
+      // Refetch the full session object with 'id'
+      const fullSession = await fetchSessionById(addedSession.id);
+      setSessions((prevSessions) => [...prevSessions, fullSession]); // Add the full session
+      handleCloseAddSessionModal(); // Close modal after adding
     } catch (error) {
-      console.error("Failed to save session:", error);
-    } finally {
-      setLoading(false);
+      console.error('Failed to add session:', error);
     }
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", padding: 2 }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 2,
-        }}
-      >
-        <Typography variant="h4">Sessions</Typography>
-        <Button variant="contained" color="primary" onClick={handleOpenAddSessionModal}>
-          Add Session
-        </Button>
-      </Box>
-
-      <SessionTable
-        sessions={sessions}
-        onSessionSelect={handleSessionSelect}
-        trainers={trainers}
-      />
-
-      {selectedSession && (
-        <Box sx={{ flex: 3 }}>
-          <BaseListDetailsPage<Session>
-            key={selectedSession.id}
-            data={selectedSession}
-            fieldConfig={getSessionFieldConfig()}
-            clients={clients}
-            trainers={trainers}
-            onSave={handleSaveSession}
-            isEditing={true}
-            handleChange={() => {}}
-          />
-        </Box>
-      )}
-
-      {/* Add Session Modal */}
-      <AddSessionModal
-        open={isAddSessionModalOpen}
-        onClose={handleCloseAddSessionModal}
-        onSubmit={handleAddSession}
-        clients={clients}
-        trainers={trainers}
-        loading={loading}
-      />
-    </Box>
+    <div>
+      {/* Render the list of sessions */}
+      <ul>
+  {sessions.map((session) => (
+    <li key={session.id}>
+      {/* Safely access client fields */}
+      {typeof session.client === 'object' && 'first_name' in session.client && 'last_name' in session.client
+        ? `${session.client.first_name} ${session.client.last_name}`
+        : 'Unknown Client'} 
+      - {session.session_type} - {session.date}
+    </li>
+  ))}
+</ul>
+    </div>
   );
 };
 

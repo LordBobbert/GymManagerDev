@@ -12,9 +12,8 @@ export const fetchSessionById = (id: number) =>
   CRUDService.fetchById<Session>(sessionUrl, id);
 
 export const addSession = (newSession: Omit<Session, 'id'>) => 
-  CRUDService.create(sessionUrl, newSession);
+  CRUDService.create<Session>(sessionUrl, newSession);
 
-// Ensure `updateSession` is correctly defined and exported
 export const updateSession = (id: number, updatedSession: Partial<Session>) => 
   CRUDService.update(sessionUrl, id, updatedSession);
 
