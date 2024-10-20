@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 from user_management.models import User
-from serializers import UserSerializer
+from user_management.serializers import UserSerializer
 from .permissions import IsAdmin, IsTrainer  # Assuming you have custom permissions defined
 
 # Function-based view to handle listing users by role
