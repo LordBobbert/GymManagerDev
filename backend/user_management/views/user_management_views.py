@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
-from models import User
+from user_management.models import User
 from serializers import UserSerializer
 from .permissions import IsAdmin, IsTrainer  # Assuming you have custom permissions defined
 
