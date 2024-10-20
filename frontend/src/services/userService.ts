@@ -6,6 +6,9 @@ import { User } from '../interfaces/user';
 
 const userUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/users`;
 
+export const fetchUsers = () => 
+  CRUDService.fetchAll<User>(userUrl);
+
 export const fetchUsersPaginated = (page = 1, limit = 10) => 
   CRUDService.fetchAll<User>(`${userUrl}/?page=${page}&limit=${limit}`);
 

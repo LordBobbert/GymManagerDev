@@ -1,24 +1,23 @@
 // File: src/services/sessionService.ts
 
-import { Session } from '../interfaces/session';
+import { CRUDService } from './CRUDService';
 import { handleResponse } from '@/utils/apiHelpers';
+import { Session } from '../interfaces/session';
 
-export const fetchSessions = async (queryParams: string = ''): Promise<Session[]> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/training-sessions/sessions${queryParams}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
-  return handleResponse(res, 'Failed to fetch sessions');
-};
+const sessionUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/training-sessions/sessions`;
 
-export const addSession = async (newSession: Omit<Session, 'id'>): Promise<Session> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/training-sessions/sessions/`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newSession),
-  });
-  return handleResponse(res, 'Failed to add session');
-};
+export const fetchSessions = (queryParams: string = '') => 
+  CRUDService.fetchAll<Session>(`${sessionUrl}${queryParams}`);
 
-// Similarly update other CRUD functions
+export const fetchSessionById = (id: number) => 
+  CRUDService.fetchById<Session>(sessionUrl, id);
+
+export const addSession = (newSession: Omit<Session, 'id'>) => 
+  CRUDService.create(sessionUrl, newSession);
+
+// Ensure `updateSession` is correctly defined and exported
+export const updateSession = (id: number, updatedSession: Partial<Session>) => 
+  CRUDService.update(sessionUrl, id, updatedSession);
+
+export const deleteSession = (id: number) => 
+  CRUDService.delete(sessionUrl, id);

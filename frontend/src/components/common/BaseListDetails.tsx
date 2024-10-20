@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Box, Grid, Button, Card, CardContent, Typography, TextField } from '@mui/material';
-import { FieldRenderer } from './FieldRenderer';
 
 interface FieldDefinition {
   label: string;

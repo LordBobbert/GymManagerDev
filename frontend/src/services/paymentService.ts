@@ -1,6 +1,5 @@
 // File: src/services/paymentService.ts
 
-import { CRUDService } from './CRUDService';
 import { handleResponse } from '@/utils/apiHelpers';
 import { Payment } from '../interfaces/payment';
 
