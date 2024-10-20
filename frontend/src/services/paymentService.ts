@@ -1,24 +1,25 @@
 // File: src/services/paymentService.ts
 
+import { CRUDService } from './CRUDService';
+import { handleResponse } from '@/utils/apiHelpers';
 import { Payment } from '../interfaces/payment';
+
+const paymentUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payments`;
 
 // Fetch all payments for a specific client
 export const fetchPayments = async (clientId: number): Promise<Payment[]> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payments?client_id=${clientId}`, {
+  const res = await fetch(`${paymentUrl}?client_id=${clientId}`, {
     method: 'GET',
     credentials: 'include',
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch payments');
-  }
-
-  return await res.json();
+  // Use handleResponse to process the fetch response
+  return handleResponse(res, 'Failed to fetch payments');
 };
 
 // Add a new payment
 export const addPayment = async (newPayment: Omit<Payment, 'id'>): Promise<Payment> => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payments/`, {
+  const res = await fetch(`${paymentUrl}/`, {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -27,13 +28,13 @@ export const addPayment = async (newPayment: Omit<Payment, 'id'>): Promise<Payme
     body: JSON.stringify(newPayment),
   });
 
-  if (!response.ok) throw new Error('Failed to add payment');
-  return response.json();
+  // Use handleResponse to process the fetch response
+  return handleResponse(res, 'Failed to add payment');
 };
 
 // Update an existing payment
 export const updatePayment = async (id: number, updatedFields: Partial<Payment>): Promise<Payment> => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payments/${id}`, {
+  const res = await fetch(`${paymentUrl}/${id}`, {
     method: 'PATCH',
     credentials: 'include',
     headers: {
@@ -42,21 +43,17 @@ export const updatePayment = async (id: number, updatedFields: Partial<Payment>)
     body: JSON.stringify(updatedFields),
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to update payment with ID ${id}`);
-  }
-
-  return response.json();
+  // Use handleResponse to process the fetch response
+  return handleResponse(res, `Failed to update payment with ID ${id}`);
 };
 
 // Delete a payment
 export const deletePayment = async (paymentId: number): Promise<void> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payments/${paymentId}`, {
+  const res = await fetch(`${paymentUrl}/${paymentId}`, {
     method: 'DELETE',
     credentials: 'include',
   });
 
-  if (!res.ok) {
-    throw new Error(`Failed to delete payment with ID ${paymentId}`);
-  }
+  // Use handleResponse to process the fetch response
+  await handleResponse(res, `Failed to delete payment with ID ${paymentId}`);
 };

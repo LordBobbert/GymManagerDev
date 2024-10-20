@@ -1,10 +1,11 @@
 // File: src/services/authService.ts
-
+import { handleResponse } from '@/utils/apiHelpers';
 import { User } from '../interfaces/user';
 
-// Login user
-export const login = async (username: string, password: string): Promise<User> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login/`, {
+const authUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth`;
+
+export const login = async (username: string, password: string) => {
+  const res = await fetch(`${authUrl}/login/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -12,43 +13,27 @@ export const login = async (username: string, password: string): Promise<User> =
     body: JSON.stringify({ username, password }),
     credentials: 'include',
   });
-
-  if (!res.ok) {
-    throw new Error('Failed to log in');
-  }
-
-  return await res.json();
+  return handleResponse(res, 'Failed to login');
 };
 
-// Logout user
-export const logout = async (): Promise<void> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/logout/`, {
+export const logout = async () => {
+  const res = await fetch(`${authUrl}/logout/`, {
     method: 'POST',
     credentials: 'include',
   });
-
-  if (!res.ok) {
-    throw new Error('Failed to log out');
-  }
+  return handleResponse(res, 'Failed to logout');
 };
 
-// Check authentication status
-export const checkAuthStatus = async (): Promise<User | null> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/status/`, {
+export const checkAuthStatus = async () => {
+  const res = await fetch(`${authUrl}/status/`, {
     method: 'GET',
     credentials: 'include',
   });
-
-  if (!res.ok) {
-    return null;
-  }
-
-  return await res.json();
+  return handleResponse(res, 'Failed to check authentication status');
 };
 
-// Register new user (if applicable)
-export const register = async (newUser: Omit<User, 'id'>): Promise<User> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/register/`, {
+export const register = async (newUser: Omit<User, 'id'>) => {
+  const res = await fetch(`${authUrl}/register/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -56,10 +41,5 @@ export const register = async (newUser: Omit<User, 'id'>): Promise<User> => {
     body: JSON.stringify(newUser),
     credentials: 'include',
   });
-
-  if (!res.ok) {
-    throw new Error('Failed to register');
-  }
-
-  return await res.json();
+  return handleResponse(res, 'Failed to register');
 };

@@ -10,6 +10,8 @@ from user_management.serializers import UserSerializer
 from user_management.serializers.client_serializers import ClientProfileSerializer
 from user_management.serializers.trainer_serializers import TrainerProfileSerializer
 from user_management.permissions import IsAdmin, IsAdminOrTrainer
+from user_management.views.permissions import AdminTrainerPermissionMixin
+
 
 
 @api_view(['GET'])
@@ -46,18 +48,9 @@ class CreateTrainerView(CreateAPIView):
     def perform_create(self, serializer):
         serializer.save()
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(AdminTrainerPermissionMixin, viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
-    def get_permissions(self):
-        if self.action in ['list', 'retrieve', 'clients']:  # Add 'clients' to the action list
-            permission_classes = [IsAdmin]
-        elif self.action in ['create']:
-            permission_classes = [IsAdminOrTrainer]
-        else:
-            permission_classes = [IsAuthenticated]
-        return [permission() for permission in permission_classes]
 
     @action(detail=False, methods=['get'], url_path='clients', url_name='clients')
     def clients(self, request):
@@ -67,10 +60,12 @@ class UserViewSet(viewsets.ModelViewSet):
         queryset = ClientProfile.objects.all()
         serializer = ClientProfileSerializer(queryset, many=True)
         return Response(serializer.data)
-    
+
     @action(detail=False, methods=['get'], url_path='trainers')
     def trainers(self, request):
-        # Filter users who have the 'trainer' role, regardless of other roles they may have
+        """
+        Custom action to list all trainers.
+        """
         trainers = User.objects.filter(Q(roles__name='trainer')).distinct()
         serializer = self.get_serializer(trainers, many=True)
         return Response(serializer.data)

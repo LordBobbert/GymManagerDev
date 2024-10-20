@@ -10,7 +10,7 @@ interface BaseListProps<T> {
   renderItem: (item: T) => React.ReactNode;
   section: 'clients' | 'trainers' | 'sessions';
   getKey: (item: T) => string | number;
-  onAddItem?: () => void;  // Rename to more generic `onAddItem`
+  onAddItem?: () => void;
 }
 
 const BaseList = <T,>({
@@ -19,7 +19,7 @@ const BaseList = <T,>({
   renderItem,
   section,
   getKey,
-  onAddItem,  // Updated prop name
+  onAddItem,
 }: BaseListProps<T>) => {
   const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
@@ -34,7 +34,7 @@ const BaseList = <T,>({
         <Typography variant="h5">
           {section.charAt(0).toUpperCase() + section.slice(1)} List
         </Typography>
-        {onAddItem && <ActionButton section={section} onClick={onAddItem} />} {/* Attach onClick to open modal */}
+        {onAddItem && <ActionButton section={section} onClick={onAddItem} />}
       </Box>
 
       <List sx={{ flexGrow: 1 }}>
@@ -43,13 +43,7 @@ const BaseList = <T,>({
             key={getKey(item)}
             onClick={() => handleSelect(item)}
             selected={item === selectedItem}
-            sx={{
-              mb: 1,
-              borderRadius: 1,
-              border: '1px solid #ccc',
-              '&:hover': { backgroundColor: '#f0f0f0' },
-              backgroundColor: item === selectedItem ? '#e0e0e0' : 'inherit',
-            }}
+            sx={{ mb: 1, borderRadius: 1, border: '1px solid #ccc', '&:hover': { backgroundColor: '#f0f0f0' } }}
           >
             {renderItem(item)}
           </ListItemButton>

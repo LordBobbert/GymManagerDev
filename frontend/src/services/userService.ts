@@ -1,147 +1,52 @@
 // File: src/services/userService.ts
 
-import { User } from "@/interfaces/user";
+import { CRUDService } from './CRUDService';
+import { handleResponse } from '@/utils/apiHelpers';
+import { User } from '../interfaces/user';
 
-// Fetch all users (unfiltered)
-export const fetchUsers = async (): Promise<User[]> => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/users/`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
+const userUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/users`;
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch users");
-    }
+export const fetchUsersPaginated = (page = 1, limit = 10) => 
+  CRUDService.fetchAll<User>(`${userUrl}/?page=${page}&limit=${limit}`);
 
-    const data = await res.json();
-    return data as User[];
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    throw new Error("Failed to fetch users");
-  }
-};
+export const searchUsers = (query: string) => 
+  CRUDService.fetchAll<User>(`${userUrl}/?search=${query}`);
 
-// Fetch users with a specific role (e.g., clients, trainers)
-export const fetchUsersByRole = async (role: string): Promise<User[]> => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/users?role=${role}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
+export const fetchUsersByRole = (role: string) => 
+  CRUDService.fetchAll<User>(`${userUrl}?role=${role}`);
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch users with role: ${role}`);
-    }
+export const fetchClients = () => fetchUsersByRole('client');
 
-    const data = await res.json();
-    return data as User[];
-  } catch (error) {
-    console.error(`Error fetching users with role ${role}:`, error);
-    throw new Error(`Failed to fetch users with role: ${role}`);
-  }
-};
+export const fetchTrainers = () => fetchUsersByRole('trainer');
 
-// Fetch clients
-export const fetchClients = async (): Promise<User[]> => {
-  return fetchUsersByRole("client");
-};
+export const fetchUserById = (id: number) => 
+  CRUDService.fetchById<User>(userUrl, id);
 
-// Fetch trainers
-export const fetchTrainers = async (): Promise<User[]> => {
-  return fetchUsersByRole("trainer");
-};
+export const createUser = (newUser: Partial<User>) => 
+  CRUDService.create(userUrl, newUser);
 
-// Fetch a single user by ID
-export const fetchUserById = async (userId: number): Promise<User> => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/users/${userId}/`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
+export const updateUser = (id: number, updatedUser: Partial<User>) => 
+  CRUDService.update(userUrl, id, updatedUser);
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch user");
-    }
+export const deleteUser = (id: number) => 
+  CRUDService.delete(userUrl, id);
 
-    const data = await res.json();
-    return data as User;
-  } catch (error) {
-    console.error("Error fetching user by ID:", error);
-    throw new Error("Failed to fetch user");
-  }
-};
+export const deleteUsersBulk = (userIds: number[]) => 
+  CRUDService.create(`${userUrl}/bulk-delete`, { userIds });
 
-// Create a new user
-export const createUser = async (newUser: Partial<User>): Promise<User> => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/users/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(newUser),
-    });
+export const toggleUserActivation = (id: number, isActive: boolean) => 
+  CRUDService.update(userUrl, id, { isActive });
 
-    if (!res.ok) {
-      throw new Error("Failed to create user");
-    }
+export const uploadUserProfileImage = async (id: number, imageFile: File): Promise<void> => {
+  const formData = new FormData();
+  formData.append('image', imageFile);
 
-    const data = await res.json();
-    return data as User;
-  } catch (error) {
-    console.error("Error creating user:", error);
-    throw new Error("Failed to create user");
-  }
-};
+  const res = await fetch(`${userUrl}/${id}/upload-profile-image`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
 
-// Update an existing user
-export const updateUser = async (userId: number, updatedUser: Partial<User>): Promise<User> => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/users/${userId}/`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(updatedUser),
-    });
-
-    if (!res.ok) {
-      throw new Error("Failed to update user");
-    }
-
-    const data = await res.json();
-    return data as User;
-  } catch (error) {
-    console.error("Error updating user:", error);
-    throw new Error("Failed to update user");
-  }
-};
-
-// Delete a user
-export const deleteUser = async (userId: number): Promise<void> => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-management/users/${userId}/`, {
-      method: "DELETE",
-      credentials: "include",
-    });
-
-    if (!res.ok) {
-      throw new Error("Failed to delete user");
-    }
-  } catch (error) {
-    console.error("Error deleting user:", error);
-    throw new Error("Failed to delete user");
-  }
+  // Directly use handleResponse to process the fetch response
+  await handleResponse(res, 'Failed to upload profile image');
 };
