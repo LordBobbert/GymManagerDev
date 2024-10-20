@@ -1,7 +1,6 @@
 // File: src/services/sessionService.ts
 
 import { CRUDService } from './CRUDService';
-import { handleResponse } from '@/utils/apiHelpers';
 import { Session } from '../interfaces/session';
 
 const sessionUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/training-sessions/sessions`;
