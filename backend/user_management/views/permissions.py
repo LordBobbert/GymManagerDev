@@ -1,7 +1,5 @@
-# File: user_management/views/permissions.py
-
 from rest_framework.permissions import IsAuthenticated
-from user_management.permissions import IsAdmin, IsAdminOrTrainer
+from user_management.permissions import IsAdmin, IsAdminOrTrainer  # This line is correct
 
 class AdminTrainerPermissionMixin:
     """
