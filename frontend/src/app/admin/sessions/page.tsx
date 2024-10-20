@@ -1,4 +1,5 @@
 // File: src/app/admin/sessions/page.tsx
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import { Session } from '@/interfaces/session';
